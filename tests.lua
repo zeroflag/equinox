@@ -108,3 +108,12 @@ assert_tos(2, "5 2 min")
 -- max
 assert_tos(6, "4 6 max")
 assert_tos(5, "5 2 max")
+
+--- var
+if false then
+assert_tos(10, [[
+  var v1
+  10 v1 !
+  v1 @
+]])
+end

@@ -8,6 +8,14 @@
 -- TODO:
 -- true/false
 -- user defined control structues
+-- ! / @ const lofasz 1 / var lofasz
+-- comment
+-- case
+-- begin while repeat
+-- for
+-- second sstack
+-- not
+-- rot/-rot/tuck stb
 
 local stack = require("stack")
 local macros = require("macros")
@@ -48,8 +56,12 @@ function compiler.compile(self, token)
   end
 end
 
-function compiler.define(self, alias, name, immediate)
-  dict.define(alias, name, immediate)
+function compiler.defword(self, alias, name, immediate)
+  dict.defword(alias, name, immediate)
+end
+
+function compiler.defvar(self, alias, name)
+  print("defining " .. alias)
 end
 
 function compiler.exec(self, word)

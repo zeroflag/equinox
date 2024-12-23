@@ -11,8 +11,15 @@ end
 function macros.colon(compiler)
   local alias = compiler:word()
   local name = "w_" .. alias
-  compiler:define(alias, name, false)
+  compiler:defword(alias, name, false)
   compiler:emit("function " .. name .. "()")
+end
+
+function macros.var(compiler)
+  local alias = compiler:word()
+  local name = "v_" .. alias
+  compiler:defvar(alias, name)
+  compiler:emit("local" .. name)
 end
 
 function macros._if(compiler)
