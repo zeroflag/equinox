@@ -37,6 +37,8 @@ local dict = {
   ["if"] = { name = "macros._if", imm = true },
   ["then"] = { name = "macros._then", imm = true },
   ["else"] = { name = "macros._else", imm = true },
+  ["begin"] = { name = "macros._begin", imm = true },
+  ["until"] = { name = "macros._until", imm = true },
   [":"] = { name = "macros.colon", imm = true },
   [";"] = { name = "macros._end", imm = true },
 }

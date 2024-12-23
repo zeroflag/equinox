@@ -31,6 +31,17 @@ function macros._then(compiler)
   compiler:emit("::" .. stack.pop() .. "::")
 end
 
+function macros._begin(compiler)
+  local label = gen_label()
+  compiler:emit("::" .. label .. "::")
+  stack.push(label)
+end
+
+function macros._until(compiler)
+  local label = stack.pop()
+  compiler:emit("  if not stack.pop() then goto " .. label .. " end")
+end
+
 function macros._end(compiler)
   compiler:emit("end")
 end
