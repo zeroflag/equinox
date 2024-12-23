@@ -1,5 +1,7 @@
 local compiler = require("compiler")
 
+compiler:eval_file("lib.eqx")
+
 function assert_tos(result, code)
   local stack = compiler:eval(code)
   assert(stack.depth() == 1,
@@ -98,3 +100,11 @@ assert_tos(2048, "2 10 begin 1 - swap 2 * swap dup 0 = until drop")
 -- def :
 assert_tos(42, ": tst 42 ; tst")
 assert_tos(6, ": dbl dup + ; 3 dbl")
+
+-- min
+assert_tos(4, "4 6 min")
+assert_tos(2, "5 2 min")
+
+-- max
+assert_tos(6, "4 6 max")
+assert_tos(5, "5 2 max")

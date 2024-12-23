@@ -9,8 +9,9 @@ function gen_label()
 end
 
 function macros.colon(compiler)
-  local name = compiler:word()
-  compiler:define(name, false)
+  local alias = compiler:word()
+  local name = "w_" .. alias
+  compiler:define(alias, name, false)
   compiler:emit("function " .. name .. "()")
 end
 

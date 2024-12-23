@@ -6,42 +6,16 @@
 -- Native Lua tables
 -- Lua interop
 -- TODO:
--- 2dup cannot be defined
 -- true/false
--- define dict via funcall
 -- user defined control structues
 
 local stack = require("stack")
 local macros = require("macros")
 local ops = require("ops")
+local dict = require("dict")
 
 -- TODO XXX
 _G["macros"] = macros
-
-local dict = {
-  ["+"] = { name = "ops.add", imm = false },
-  ["-"] = { name = "ops.sub", imm = false },
-  ["*"] = { name = "ops.mul", imm = false },
-  ["/"] = { name = "ops.div", imm = false },
-  ["."] = { name = "ops.dot", imm = false },
-  ["="] = { name = "ops.eq", imm = false },
-  ["!="] = { name = "ops.neq", imm = false },
-  ["<"] = { name = "ops.lt", imm = false },
-  ["<="] = { name = "ops.lte", imm = false },
-  [">"] = { name = "ops.gt", imm = false },
-  [">="] = { name = "ops.gte", imm = false },
-  ["swap"] = { name = "ops.swap", imm = false },
-  ["over"] = { name = "ops.over", imm = false },
-  ["drop"] = { name = "ops.drop", imm = false },
-  ["dup"] = { name = "ops.dup", imm = false },
-  ["if"] = { name = "macros._if", imm = true },
-  ["then"] = { name = "macros._then", imm = true },
-  ["else"] = { name = "macros._else", imm = true },
-  ["begin"] = { name = "macros._begin", imm = true },
-  ["until"] = { name = "macros._until", imm = true },
-  [":"] = { name = "macros.colon", imm = true },
-  [";"] = { name = "macros._end", imm = true },
-}
 
 local compiler = { source = "", index = 1, output = "" }
 
@@ -74,8 +48,8 @@ function compiler.compile(self, token)
   end
 end
 
-function compiler.define(self, name, immediate)
-  dict[name] = { ["name"] = name, imm = immediate }
+function compiler.define(self, alias, name, immediate)
+  dict.define(alias, name, immediate)
 end
 
 function compiler.exec(self, word)
@@ -111,22 +85,18 @@ function compiler.eval(self, text)
   return stack
 end
 
-function compiler.emit(self, token)
-  self.output = self.output .. token .. "\n"
+function compiler.eval_file(self, path)
+  local file = io.open(path, "r")
+  if not file then
+    error("Could not open file: " .. path)
+  end
+  local content = file:read("*a")
+  file:close()
+  return self:eval(content)
 end
 
-if false then
-print(compiler:eval([[
-  : nip swap drop ;
-  : min over over < if drop else nip then ;
-  : max over over < if nip else drop then ;
-
-  4 5 min .
-  5 2 min .
-
-  4 5 max .
-  6 2 max .
-]]))
+function compiler.emit(self, token)
+  self.output = self.output .. token .. "\n"
 end
 
 return compiler
