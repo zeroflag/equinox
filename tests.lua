@@ -87,3 +87,11 @@ assert_tos(10, "5 5 +")
 assert_tos(3, "7 10 swap -")
 -- stack - over
 assert_tos(2, "1 2 over - +")
+
+-- control if
+assert_tos(8, "1 2 < if 8 then")
+assert_tos(4, "1 2 > if 8 else 4 then")
+
+-- def :
+assert_tos(42, ": tst 42 ; tst")
+assert_tos(6, ": dbl dup + ; 3 dbl")
