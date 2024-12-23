@@ -20,4 +20,8 @@ function stack.tos2()
   return stack[sp-2]
 end
 
+function stack.depth()
+  return sp - 1
+end
+
 return stack

@@ -25,7 +25,11 @@ local dict = {
   ["/"] = { name = "ops.div", imm = false },
   ["."] = { name = "ops.dot", imm = false },
   ["="] = { name = "ops.eq", imm = false },
+  ["!="] = { name = "ops.neq", imm = false },
   ["<"] = { name = "ops.lt", imm = false },
+  ["<="] = { name = "ops.lte", imm = false },
+  [">"] = { name = "ops.gt", imm = false },
+  [">="] = { name = "ops.gte", imm = false },
   ["swap"] = { name = "ops.swap", imm = false },
   ["over"] = { name = "ops.over", imm = false },
   ["drop"] = { name = "ops.drop", imm = false },
@@ -96,18 +100,20 @@ function compiler.parse(self, text)
     end
     token = self:word()
   end
-  print(self.output)
+  --print(self.output)
   return self.output
 end
 
 function compiler.eval(self, text)
-  return load(self:parse(text))()
+  load(self:parse(text))()
+  return stack
 end
 
 function compiler.emit(self, token)
   self.output = self.output .. token .. "\n"
 end
 
+if false then
 print(compiler:eval([[
   : nip swap drop ;
   : min over over < if drop else nip then ;
@@ -119,3 +125,6 @@ print(compiler:eval([[
   4 5 max .
   6 2 max .
 ]]))
+end
+
+return compiler

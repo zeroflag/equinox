@@ -44,8 +44,24 @@ function ops.eq()
   stack.push(stack.pop() == stack.pop())
 end
 
+function ops.neq()
+  stack.push(stack.pop() ~= stack.pop())
+end
+
 function ops.lt()
   stack.push(stack.pop() > stack.pop())
+end
+
+function ops.lte()
+  stack.push(stack.pop() >= stack.pop())
+end
+
+function ops.gt()
+  stack.push(stack.pop() < stack.pop())
+end
+
+function ops.gte()
+  stack.push(stack.pop() <= stack.pop())
 end
 
 function ops.dot()
