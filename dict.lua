@@ -1,7 +1,15 @@
-local dict = {}
+local dict  = {}
 
 function dict.defword(alias, name, immediate)
-  dict[alias] = { ["name"] = name, imm = immediate }
+  dict[alias] = { ["name"] = name, imm = immediate, callable = true }
+end
+
+function dict.defvar(alias, name)
+  dict[alias] = { ["name"] = name, callable = false }
+end
+
+function dict.find(name)
+  return dict[name]
 end
 
 dict.defword("+", "ops.add", false)
@@ -24,7 +32,9 @@ dict.defword("then", "macros._then", true)
 dict.defword("else", "macros._else", true)
 dict.defword("begin", "macros._begin", true)
 dict.defword("until", "macros._until", true)
-dict.defword("var", "macros.var", true)
+dict.defword("->", "macros.assignment", true)
+dict.defword("local", "macros._local", true)
+dict.defword("(", "macros.comment", true)
 dict.defword(":", "macros.colon", true)
 dict.defword(";", "macros._end", true)
 

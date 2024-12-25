@@ -1,5 +1,6 @@
 local compiler = require("compiler")
 
+compiler.trace = true
 compiler:eval_file("lib.eqx")
 
 function assert_tos(result, code)
@@ -109,11 +110,36 @@ assert_tos(2, "5 2 min")
 assert_tos(6, "4 6 max")
 assert_tos(5, "5 2 max")
 
---- var
-if false then
-assert_tos(10, [[
-  var v1
-  10 v1 !
-  v1 @
+assert_tos(5, [[
+( 1 2 +
+ 1 1 *
+ 3 4 + )
+ 3 2 +
+( this is a comment )
 ]])
-end
+
+-- var local
+assert_tos(22, [[
+  local v1 local v2
+  10 -> v1 12 -> v2
+  v1 v2 +
+]])
+
+-- var local
+assert_tos(-3, [[
+  local v1 local v2
+  10 -> v1 v1 -> v2
+  3 v2 + -> v2 ( 13 = v2 )
+  v1 v2 - ( 10 13 - )
+]])
+
+-- var global
+assert_tos(12, [[
+  3 -> v1
+  4 -> v2
+  v1 v2 *
+]])
+
+assert_tos("asd fgh", [[
+  "asd" "fgh" ..
+]])

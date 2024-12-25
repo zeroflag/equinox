@@ -68,6 +68,14 @@ function ops.dot()
   print(stack.pop())
 end
 
+function ops.stor()
+  -- TODO
+end
+
+function ops.fetch()
+  -- TODO
+end
+
 function ops.lit(literal)
   stack.push(literal)
 end
