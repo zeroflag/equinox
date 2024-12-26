@@ -73,7 +73,7 @@ function compiler.emit_lua_call(self, name, arity, vararg)
   self:emit_line("stack.push(" .. name .. "(" .. params .. "))")
 end
 
-function compiler.compile(self, token, kind)
+function compiler.compile_token(self, token, kind)
   if kind == "string" then
     self:emit_string(token)
   else
@@ -116,7 +116,7 @@ function compiler.init(self, text)
   self:emit_line("local stack = require(\"stack\")")
 end
 
-function compiler.parse(self, text)
+function compiler.compile(self, text)
   self:init(text)
   local token, kind = self:word()
   while token ~= "" do
@@ -126,7 +126,7 @@ function compiler.parse(self, text)
     then
       self:exec(token)
     else
-      self:compile(token, kind)
+      self:compile_token(token, kind)
     end
     token, kind = self:word()
   end
@@ -134,7 +134,7 @@ function compiler.parse(self, text)
 end
 
 function compiler.eval(self, text)
-  load(self:parse(text))()
+  load(self:compile(text))()
   return stack
 end
 
