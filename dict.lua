@@ -40,6 +40,7 @@ dict.defword("until", "macros._until", true)
 dict.defword("->", "macros.assignment", true)
 dict.defword("local", "macros._local", true)
 dict.defword("(", "macros.comment", true)
+dict.defword("\\", "macros.single_line_comment", true)
 dict.defword(":", "macros.colon", true)
 dict.defword(";", "macros._end", true)
 

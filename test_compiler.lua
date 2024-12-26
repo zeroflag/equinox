@@ -138,11 +138,19 @@ assert_tos(6, "4 6 max")
 assert_tos(5, "5 2 max")
 
 assert_tos(5, [[
+\ 1 2 +
+ \ 1 1 *
+  \ 3 4 +
+ 3 2 +
+\ this is a comment
+]])
+
+assert_tos(5, [[
 ( 1 2 +
  1 1 *
  3 4 + )
  3 2 +
-( this is a comment )
+( this is a comment)
 ]])
 
 -- var local

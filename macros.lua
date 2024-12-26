@@ -16,7 +16,11 @@ function macros.colon(compiler)
 end
 
 function macros.comment(compiler)
-  repeat until (")" == compiler:word())
+  repeat until ")" == compiler:next()
+end
+
+function macros.single_line_comment(compiler)
+  repeat until "\n" == compiler:next()
 end
 
 function macros._local(compiler)

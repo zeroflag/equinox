@@ -9,7 +9,6 @@
 -- user defined control structues
 -- var/local scopes
 -- case
--- single line comment
 -- begin while repeat
 -- for
 -- symbols
@@ -34,6 +33,10 @@ local compiler = { input = nil, output = nil }
 
 function compiler.word(self)
   return self.input:parse()
+end
+
+function compiler.next(self)
+  return self.input:next()
 end
 
 function compiler.emit_string(self, token)

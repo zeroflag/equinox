@@ -1,4 +1,5 @@
-: nip swap drop ;
-: 2dup over over ;
-: -rot rot rot ;
-: tuck swap over ;
+\ stack juggling
+: nip ( a b -- b ) swap drop ;
+: 2dup ( a b -- a b a b ) over over ;
+: -rot ( a b c -- c a b ) rot rot ;
+: tuck ( a b -- b a b ) swap over ;
