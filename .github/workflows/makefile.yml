@@ -17,6 +17,9 @@ jobs:
         
     - name: Check Lua
       run: lua -v
+
+    - name: Check cwd
+      run: ls -al
       
     - name: Run tests
       run: make test
