@@ -10,12 +10,14 @@ function Input.parse(self)
   local token = ""
   local begin_str = false
   local stop = false
+  local kind = "word"
   while not self:ended() and not stop do
     local chr = self:next()
     if self:is_quote(chr) then
       if begin_str then
         stop = true
       else
+        kind = "string"
         begin_str = true
       end
     end
@@ -27,7 +29,10 @@ function Input.parse(self)
       token = token .. chr
     end
   end
-  return token, (begin_str and "string" or "word")
+  if token:match("^:.+") then
+    kind = "symbol"
+  end
+  return token, kind
 end
 
 function Input.is_quote(self, chr)

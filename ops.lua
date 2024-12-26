@@ -25,6 +25,10 @@ function ops.sub()
   stack.push(b - a)
 end
 
+function ops.depth()
+  stack.push(stack.depth())
+end
+
 function ops.swap()
   local a = stack.pop()
   local b = stack.pop()

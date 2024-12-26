@@ -175,6 +175,8 @@ assert_tos(12, [[
   v1 v2 *
 ]])
 
+assert_tos(3, [[:xyz string.len/1]])
+
 assert_tos(4, [["asdf" string.len/1]])
 assert_tos(9, [["asdf jkle" string.len/1]])
 assert_tos(10, [["asdf jkle " string.len/1]])

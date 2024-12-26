@@ -17,6 +17,7 @@
 -- benchmarks
 -- fix Lua's accidental global
 -- table
+--
 
 local stack = require("stack")
 local macros = require("macros")
@@ -41,6 +42,10 @@ end
 
 function compiler.emit_lit(self, token)
   self:emit_line("ops.lit(" .. token .. ")")
+end
+
+function compiler.emit_symbol(self, token)
+  self:emit_lit('"' .. token:sub(2) .. '"')
 end
 
 function compiler.emit_word(self, word)
@@ -70,6 +75,8 @@ end
 function compiler.compile_token(self, token, kind)
   if kind == "string" then
     self:emit_lit(token)
+  elseif kind == "symbol" then
+    self:emit_symbol(token)
   else
     local word = dict.find(token)
     if word then
