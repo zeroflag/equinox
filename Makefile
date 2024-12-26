@@ -2,6 +2,10 @@ LUA = lua5.4
 TEST_FILES = $(wildcard test_*.lua)
 REPL = repl.lua
 
+ifeq ($(shell command -v $(LUA) 2>/dev/null),)
+	LUA = lua
+endif
+
 # Default target
 all: test
 
