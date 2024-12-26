@@ -64,6 +64,22 @@ function ops.gte()
   stack.push(stack.pop() <= stack.pop())
 end
 
+function ops._not()
+  stack.push(not stack.pop())
+end
+
+function ops._and()
+  local a = stack.pop()
+  local b = stack.pop()
+  stack.push(a and b)
+end
+
+function ops._or()
+  local a = stack.pop()
+  local b = stack.pop()
+  stack.push(a or b)
+end
+
 function ops.concat()
   local a = stack.pop()
   local b = stack.pop()

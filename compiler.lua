@@ -6,9 +6,8 @@
 -- Native Lua tables
 -- Lua interop
 -- TODO:
--- true/false
 -- user defined control structues
--- ! / @ const lofasz 1 / var lofasz
+-- var/local scopes
 -- case
 -- single line comment
 -- begin while repeat
@@ -16,7 +15,6 @@
 -- symbols
 -- hyperstatic glob
 -- second stack
--- not
 -- rot/-rot/tuck stb
 -- benchmarks
 -- fix Lua's accidental global
@@ -112,6 +110,8 @@ function compiler.init(self, text)
   self.output = Output.new()
   self:emit_line("local ops = require(\"ops\")")
   self:emit_line("local stack = require(\"stack\")")
+  dict.defvar("true", "true")
+  dict.defvar("false", "false")
 end
 
 function compiler.compile(self, text)

@@ -59,6 +59,20 @@ assert_tos(false, "6 -6 <")
 assert_tos(true, "3 5 <")
 assert_tos(true, "-1 5 <")
 assert_tos(true, "-6 -2 <")
+-- booleans - not
+assert_tos(true, "false not")
+assert_tos(false, "true not")
+assert_tos(true, "true not not")
+-- booleans - and
+assert_tos(true, "true true and")
+assert_tos(false, "true false and")
+assert_tos(false, "false true and")
+assert_tos(false, "false false and")
+-- booleans - or
+assert_tos(true, "true true or")
+assert_tos(true, "true false or")
+assert_tos(true, "false true or")
+assert_tos(false, "false false or")
 -- arithmetics - gt
 assert_tos(false, "5 5 >")
 assert_tos(true, "6 5 >")
