@@ -15,13 +15,11 @@
 -- for
 -- symbols
 -- hyperstatic glob
--- second sstack
+-- second stack
 -- not
 -- rot/-rot/tuck stb
 -- benchmarks
 -- fix Lua's accidental global
--- strings
--- repl
 -- table
 
 local stack = require("stack")
