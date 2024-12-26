@@ -6,7 +6,6 @@
 -- Native Lua tables
 -- Lua interop
 -- TODO:
--- stringbuilder instead of concat
 -- true/false
 -- user defined control structues
 -- ! / @ const lofasz 1 / var lofasz
@@ -30,12 +29,13 @@ local macros = require("macros")
 local ops = require("ops")
 local dict = require("dict")
 local Input = require("input")
+local Output = require("output")
 local interop = require("interop")
 
 -- TODO XXX
 _G["macros"] = macros
 
-local compiler = { input = nil, output = "" }
+local compiler = { input = nil, output = nil }
 
 function compiler.word(self)
   return self.input:parse()
@@ -111,7 +111,7 @@ end
 
 function compiler.init(self, text)
   self.input = Input.new(text)
-  self.output = ""
+  self.output = Output.new()
   self:emit_line("local ops = require(\"ops\")")
   self:emit_line("local stack = require(\"stack\")")
 end
@@ -134,7 +134,8 @@ function compiler.compile(self, text)
 end
 
 function compiler.eval(self, text)
-  load(self:compile(text))()
+  local out = self:compile(text)
+  out:load()
   return stack
 end
 
@@ -149,12 +150,12 @@ function compiler.eval_file(self, path)
 end
 
 function compiler.emit_line(self, token)
-  self:emit(token .. "\n")
+  self:emit(token)
+  self.output:cr()
 end
 
 function compiler.emit(self, token)
-  self.output = self.output .. token
-  print(self.output)
+  self.output:append(token)
 end
 
 return compiler
