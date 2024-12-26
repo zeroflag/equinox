@@ -41,7 +41,23 @@ function compiler.word(self)
   return self.input:parse()
 end
 
-function compiler.compile_lua_call(self, name, arity, vararg)
+function compiler.emit_string(self, token)
+  self:emit_line("ops.lit(" .. token .. ")")
+end
+
+function compiler.emit_word(self, word)
+  if word.callable then
+    self:emit_line(word.name .. "()")
+  else
+    self:emit_line("ops.lit(" .. word.name .. ")")
+  end
+end
+
+function compiler.emit_number(self, num)
+  self:emit_line("ops.lit(" .. num .. ")")
+end
+
+function compiler.emit_lua_call(self, name, arity, vararg)
   if vararg then
     error(name .. " has variable number of arguments." ..
           "Use " .. name .. "/n" .. " to specify arity.")
@@ -59,23 +75,19 @@ end
 
 function compiler.compile(self, token, kind)
   if kind == "string" then
-    self:emit_line("ops.lit(" .. token .. ")")
+    self:emit_string(token)
   else
     local word = dict.find(token)
     if word then
-      if word.callable then
-        self:emit_line(word.name .. "()")
-      else
-        self:emit_line("ops.lit(" .. word.name .. ")")
-      end
+      self:emit_word(word)
     else
       local num = tonumber(token)
       if num then
-        self:emit_line("ops.lit(" .. num .. ")")
+        self:emit_number(num)
       else
         local res = interop.resolve_lua_func_with_arity(token)
         if res then
-          self:compile_lua_call(res.name, res.arity, res.vararg)
+          self:emit_lua_call(res.name, res.arity, res.vararg)
         else
           error("Word not found: '" .. token .. "'")
         end
