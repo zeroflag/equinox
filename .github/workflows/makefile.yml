@@ -11,11 +11,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - uses: actions/checkout@master
     - uses: leafo/gh-actions-lua@v10
       with:
         luaVersion: "5.4"
-
-    - uses: actions/checkout@master
         
     - name: Check Lua
       run: lua -v
