@@ -39,7 +39,7 @@ function compiler.next(self)
   return self.input:next()
 end
 
-function compiler.emit_string(self, token)
+function compiler.emit_lit(self, token)
   self:emit_line("ops.lit(" .. token .. ")")
 end
 
@@ -49,10 +49,6 @@ function compiler.emit_word(self, word)
   else
     self:emit_line("ops.lit(" .. word.name .. ")")
   end
-end
-
-function compiler.emit_number(self, num)
-  self:emit_line("ops.lit(" .. num .. ")")
 end
 
 function compiler.emit_lua_call(self, name, arity, vararg)
@@ -73,7 +69,7 @@ end
 
 function compiler.compile_token(self, token, kind)
   if kind == "string" then
-    self:emit_string(token)
+    self:emit_lit(token)
   else
     local word = dict.find(token)
     if word then
@@ -81,7 +77,7 @@ function compiler.compile_token(self, token, kind)
     else
       local num = tonumber(token)
       if num then
-        self:emit_number(num)
+        self:emit_lit(num)
       else
         local res = interop.resolve_lua_func_with_arity(token)
         if res then
