@@ -1,4 +1,2 @@
 : nip swap drop ;
 : 2dup over over ;
-: min ( n n -- n ) 2dup < if drop else nip then ;
-: max ( n n -- n ) 2dup < if nip else drop then ;

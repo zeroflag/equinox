@@ -102,11 +102,12 @@ assert_tos(2048, "2 10 begin 1 - swap 2 * swap dup 0 = until drop")
 assert_tos(42, ": tst 42 ; tst")
 assert_tos(6, ": dbl dup + ; 3 dbl")
 
--- min
+compiler:eval(": min ( n n -- n ) 2dup < if drop else nip then ;")
 assert_tos(4, "4 6 min")
 assert_tos(2, "5 2 min")
 
 -- max
+compiler:eval(": max ( n n -- n ) 2dup < if nip else drop then ;")
 assert_tos(6, "4 6 max")
 assert_tos(5, "5 2 max")
 
@@ -140,6 +141,33 @@ assert_tos(12, [[
   v1 v2 *
 ]])
 
-assert_tos("asd fgh", [[
-  "asd" "fgh" ..
+assert_tos(4, [["asdf" string.len/1]])
+assert_tos(9, [["asdf jkle" string.len/1]])
+assert_tos(10, [["asdf jkle " string.len/1]])
+assert_tos(10, [[" asdf jkle" string.len/1]])
+assert_tos(11, [[" asdf jkle " string.len/1]])
+assert_tos(0, [["" string.len/1]])
+assert_tos(1, [[" " string.len/1]])
+assert_tos(2, [["  " string.len/1]])
+assert_tos(14, [["  asdf  jkle  " string.len/1]])
+
+assert_tos(256, [[
+  8 2 math.pow/2
 ]])
+
+assert_tos(502, [[
+  502 1002 math.min/2
+]])
+assert_tos(1002, [[
+  502 1002 math.max/2
+]])
+
+assert_tos(502, [[
+  502 1002 math.min/2
+]])
+
+local status, result = pcall(
+  function()
+    return compiler:eval("1 2 math.min")
+  end)
+assert(not status)

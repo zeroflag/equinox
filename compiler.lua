@@ -14,6 +14,7 @@
 -- single line comment
 -- begin while repeat
 -- for
+-- symbols
 -- hyperstatic glob
 -- second sstack
 -- not
@@ -28,42 +29,57 @@ local stack = require("stack")
 local macros = require("macros")
 local ops = require("ops")
 local dict = require("dict")
+local Input = require("input")
+local interop = require("interop")
 
 -- TODO XXX
 _G["macros"] = macros
 
-local compiler = { source = "", index = 1, output = "" }
+local compiler = { input = nil, output = "" }
 
 function compiler.word(self)
-  local word = ""
-  while self.index <= #self.source do
-    local chr = self.source:sub(self.index, self.index)
-    if chr:match("%s") then
-      if #word > 0 then
-        break
-      end
-    else
-      word = word .. chr
-    end
-    self.index = self.index + 1
-  end
-  return word
+  return self.input:parse()
 end
 
-function compiler.compile(self, token)
-  local word = dict.find(token)
-  if word then
-    if word.callable then
-      self:emit_line(word.name .. "()")
-    else
-      self:emit_line("ops.lit(" .. word.name .. ")")
+function compiler.compile_lua_call(self, name, arity, vararg)
+  if vararg then
+    error(name .. " has variable number of arguments." ..
+          "Use " .. name .. "/n" .. " to specify arity.")
+  end
+  local params = ""
+  for i = 1, arity do
+    params = params .. "stack.pop()"
+    if i < arity then
+      params = params .. ", "
     end
+  end
+  -- TODO reverse the order of params?
+  self:emit_line("stack.push(" .. name .. "(" .. params .. "))")
+end
+
+function compiler.compile(self, token, kind)
+  if kind == "string" then
+    self:emit_line("ops.lit(" .. token .. ")")
   else
-    local num = tonumber(token)
-    if num == nil then
-      error("Word not found: '" .. token .. "'")
+    local word = dict.find(token)
+    if word then
+      if word.callable then
+        self:emit_line(word.name .. "()")
+      else
+        self:emit_line("ops.lit(" .. word.name .. ")")
+      end
     else
-      self:emit_line("ops.lit(" .. num .. ")")
+      local num = tonumber(token)
+      if num then
+        self:emit_line("ops.lit(" .. num .. ")")
+      else
+        local res = interop.resolve_lua_func_with_arity(token)
+        if res then
+          self:compile_lua_call(res.name, res.arity, res.vararg)
+        else
+          error("Word not found: '" .. token .. "'")
+        end
+      end
     end
   end
 end
@@ -82,8 +98,7 @@ function compiler.exec(self, word)
 end
 
 function compiler.init(self, text)
-  self.source = text
-  self.index = 1
+  self.input = Input.new(text)
   self.output = ""
   self:emit_line("local ops = require(\"ops\")")
   self:emit_line("local stack = require(\"stack\")")
@@ -91,14 +106,17 @@ end
 
 function compiler.parse(self, text)
   self:init(text)
-  local token = self:word()
+  local token, kind = self:word()
   while token ~= "" do
-    if dict.find(token) and dict.find(token).imm then
+    if kind == "word"
+      and dict.find(token)
+      and dict.find(token).imm
+    then
       self:exec(token)
     else
-      self:compile(token)
+      self:compile(token, kind)
     end
-    token = self:word()
+    token, kind = self:word()
   end
   return self.output
 end
