@@ -15,7 +15,6 @@
 -- symbols
 -- hyperstatic glob
 -- second stack
--- rot/-rot/tuck stb
 -- benchmarks
 -- fix Lua's accidental global
 -- table

@@ -104,6 +104,18 @@ assert_tos(10, "5 5 +")
 assert_tos(3, "7 10 swap -")
 -- stack - over
 assert_tos(2, "1 2 over - +")
+-- stack - rot
+assert_tos(1, "1 2 3 rot nip nip")
+assert_tos(3, "1 2 3 rot drop nip")
+assert_tos(2, "1 2 3 rot drop drop")
+-- stack - -rot
+assert_tos(2, "1 2 3 -rot nip nip")
+assert_tos(1, "1 2 3 -rot drop nip")
+assert_tos(3, "1 2 3 -rot drop drop")
+-- stack - tuck
+assert_tos(2, "1 2 tuck nip nip")
+assert_tos(1, "1 2 tuck drop nip")
+assert_tos(2, "1 2 tuck drop drop")
 
 -- control if
 assert_tos(8, "1 2 < if 8 then")

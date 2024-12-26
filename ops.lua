@@ -36,6 +36,15 @@ function ops.over()
   stack.push(stack.tos2())
 end
 
+function ops.rot()
+  local c = stack.pop()
+  local b = stack.pop()
+  local a = stack.pop()
+  stack.push(b)
+  stack.push(c)
+  stack.push(a)
+end
+
 function ops.drop()
   stack.pop()
 end

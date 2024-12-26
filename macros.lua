@@ -10,7 +10,7 @@ end
 
 function macros.colon(compiler)
   local alias = compiler:word()
-  local name = "w_" .. alias
+  local name = "w_" .. string.gsub(alias, "-", "_minus_")
   compiler:defword(alias, name, false)
   compiler:emit_line("function " .. name .. "()")
 end
