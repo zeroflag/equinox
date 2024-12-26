@@ -151,6 +151,12 @@ assert_tos(1, [[" " string.len/1]])
 assert_tos(2, [["  " string.len/1]])
 assert_tos(14, [["  asdf  jkle  " string.len/1]])
 
+assert_tos(" abc  xyz ", [[
+" abc "
+" xyz "
+..
+]])
+
 assert_tos(256, [[
   8 2 math.pow/2
 ]])

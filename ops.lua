@@ -64,6 +64,12 @@ function ops.gte()
   stack.push(stack.pop() <= stack.pop())
 end
 
+function ops.concat()
+  local a = stack.pop()
+  local b = stack.pop()
+  stack.push(b .. a)
+end
+
 function ops.dot()
   print(stack.pop())
 end
