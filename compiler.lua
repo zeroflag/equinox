@@ -11,7 +11,6 @@
 -- case
 -- begin while repeat
 -- for
--- symbols
 -- hyperstatic glob
 -- second stack
 -- benchmarks
