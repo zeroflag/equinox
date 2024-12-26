@@ -1,4 +1,4 @@
 # Equinox
 Forth Programming Language, hosted by Lua. 
 
-![master](https://github.com/github/docs/actions/workflows/main.yml/badge.svg?branch=master) 
+![{master}](https://github.com/zeroflag/equinox/actions/workflows/makefile.yml/badge.svg) 
