@@ -16,17 +16,19 @@ assert(result.vararg == false)
 function test_func(a, b, c) end
 function test_func_vararg(...) end
 
-result = interop.resolve_lua_func_with_arity("test_func")
-assert(result.name == "test_func")
-assert(result.arity == 3)
-assert(result.vararg == false)
+if _VERSION >= "Lua 5.2" then
+  result = interop.resolve_lua_func_with_arity("test_func")
+  assert(result.name == "test_func")
+  assert(result.arity == 3)
+  assert(result.vararg == false)
 
-result = interop.resolve_lua_func_with_arity("test_func_vararg")
-assert(result.name == "test_func_vararg")
-assert(result.arity == 0)
-assert(result.vararg == true)
+  result = interop.resolve_lua_func_with_arity("test_func_vararg")
+  assert(result.name == "test_func_vararg")
+  assert(result.arity == 0)
+  assert(result.vararg == true)
 
-result = interop.resolve_lua_func_with_arity("print")
-assert(result.name == "print")
-assert(result.arity == 0)
-assert(result.vararg == true)
+  result = interop.resolve_lua_func_with_arity("print")
+  assert(result.name == "print")
+  assert(result.arity == 0)
+  assert(result.vararg == true)
+end

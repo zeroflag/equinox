@@ -1,4 +1,5 @@
 \ stack juggling
+\ TODO make them macros
 : nip ( a b -- b ) swap drop ;
 : 2dup ( a b -- a b a b ) over over ;
 : -rot ( a b c -- c a b ) rot rot ;

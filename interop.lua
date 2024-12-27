@@ -28,7 +28,7 @@ function interop.resolve_lua_func_with_arity(signature)
   local vararg = false
   if not func then return nil end
   if not arity then
-    local info = debug.getinfo(func, "u") -- Doesn't work with C funcs
+    local info = debug.getinfo(func, "u") -- Doesn't work with C funcs or older than Lua5.2
     arity, vararg = info.nparams, info.isvararg
   end
   return { name = name, arity = arity, vararg = vararg }

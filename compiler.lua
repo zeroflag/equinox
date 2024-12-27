@@ -7,6 +7,7 @@
 -- Lua interop
 -- TODO:
 -- user defined control structues
+-- remove goto-s from if then else
 -- var/local scopes
 -- case
 -- begin while repeat
@@ -15,7 +16,7 @@
 -- benchmarks
 -- fix Lua's accidental global
 -- table
---
+-- words
 local stack = require("stack")
 local macros = require("macros")
 local ops = require("ops")
@@ -23,6 +24,7 @@ local dict = require("dict")
 local Input = require("input")
 local Output = require("output")
 local interop = require("interop")
+local err  = require("err")
 
 -- TODO XXX
 _G["macros"] = macros
@@ -55,7 +57,7 @@ end
 
 function compiler.emit_lua_call(self, name, arity, vararg)
   if vararg then
-    error(name .. " has variable number of arguments." ..
+    err.abort(name .. " has variable number of arguments." ..
           "Use " .. name .. "/n" .. " to specify arity.")
   end
   local params = ""
@@ -87,7 +89,7 @@ function compiler.compile_token(self, token, kind)
         if res then
           self:emit_lua_call(res.name, res.arity, res.vararg)
         else
-          error("Word not found: '" .. token .. "'")
+          err.abort("Word not found: '" .. token .. "'")
         end
       end
     end
@@ -144,7 +146,7 @@ end
 function compiler.eval_file(self, path)
   local file = io.open(path, "r")
   if not file then
-    error("Could not open file: " .. path)
+    err.abort("Could not open file: " .. path)
   end
   local content = file:read("*a")
   file:close()

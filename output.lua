@@ -19,7 +19,12 @@ function Output.text(self)
 end
 
 function Output.load(self)
-  load(self:text())()
+  local text = self:text()
+  if loadstring then
+    loadstring(text)()
+  else -- Since Lua 5.2, loadstring has been replaced by load.
+    load(text)()
+  end
 end
 
 return Output

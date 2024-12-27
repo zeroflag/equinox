@@ -105,7 +105,8 @@ function ops.concat()
 end
 
 function ops.dot()
-  print(stack:pop())
+  io.write(stack:pop())
+  io.write(" ")
 end
 
 function ops.lit(literal)

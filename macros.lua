@@ -65,31 +65,23 @@ function macros.assignment(compiler)
 end
 
 function macros._if(compiler)
-  local label = gen_id("LBL")
-  compiler:emit_line("if not stack:pop() then goto " .. label .. " end")
-  stack:push(label)
+  compiler:emit_line("if stack:pop() then")
 end
 
 function macros._else(compiler)
-  local label = gen_id("LBL")
-  compiler:emit_line("goto " .. label)
-  compiler:emit_line("::" .. stack:pop() .. "::")
-  stack:push(label)
+  compiler:emit_line("else")
 end
 
 function macros._then(compiler)
-  compiler:emit_line("::" .. stack:pop() .. "::")
+  compiler:emit_line("end")
 end
 
 function macros._begin(compiler)
-  local label = gen_id("LBL")
-  compiler:emit_line("::" .. label .. "::")
-  stack:push(label)
+  compiler:emit_line("repeat")
 end
 
 function macros._until(compiler)
-  local label = stack:pop()
-  compiler:emit_line("if not stack:pop() then goto " .. label .. " end")
+  compiler:emit_line("until(stack:pop())")
 end
 
 -- TODO this might overwrite user defined i/j ?
