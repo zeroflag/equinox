@@ -10,7 +10,6 @@ all: test
 
 test:
 	@for luaver in $(LUA_VERSIONS); do \
-		echo ""; \
 		echo "* $$luaver"; \
 		if ! command -v $$luaver > /dev/null 2>&1; then \
 			echo "$$luaver is not installed skippping"; \

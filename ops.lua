@@ -105,7 +105,7 @@ function ops.concat()
 end
 
 function ops.dot()
-  io.write(stack:pop())
+  io.write(tostring(stack:pop()))
   io.write(" ")
 end
 
@@ -119,6 +119,32 @@ end
 
 function ops.from_aux()
   stack:push(aux:pop())
+end
+
+function ops.new_table()
+  stack:push({})
+end
+
+function ops.table_size()
+  stack:push(#stack:pop())
+end
+
+function ops.table_at()
+  local n = stack:pop()
+  local t = stack:pop()
+  stack:push(t[n])
+end
+
+function ops:table_prepend()
+  local tbl = stack:pop()
+  local item = stack:pop()
+  table.insert(tbl, 1, item)
+end
+
+function ops:table_append()
+  local tbl = stack:pop()
+  local item = stack:pop()
+  table.insert(tbl, item)
 end
 
 return ops
