@@ -30,6 +30,10 @@ function ops.depth()
   stack:push(stack:depth())
 end
 
+function ops.adepth()
+  stack:push(aux:depth())
+end
+
 function ops.swap()
   local a = stack:pop()
   local b = stack:pop()

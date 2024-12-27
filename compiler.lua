@@ -12,7 +12,6 @@
 -- begin while repeat
 -- for
 -- hyperstatic glob
--- second stack
 -- benchmarks
 -- fix Lua's accidental global
 -- table
@@ -113,6 +112,7 @@ function compiler.init(self, text)
   self.output = Output.new()
   self:emit_line("local ops = require(\"ops\")")
   self:emit_line("local stack = require(\"stack\")")
+  self:emit_line("local aux = require(\"aux\")")
   dict.defvar("true", "true")
   dict.defvar("false", "false")
 end
@@ -131,6 +131,7 @@ function compiler.compile(self, text)
     end
     token, kind = self:word()
   end
+  --print(self.output:text())
   return self.output
 end
 

@@ -1,11 +1,12 @@
 local stack = require("stack")
+local aux = require("aux")
 local macros = {}
 
-local label_counter = 1
+local id_counter = 1
 
-function gen_label()
-  label_counter = label_counter + 1
-  return "LBL" .. label_counter
+function gen_id(prefix)
+  id_counter = id_counter + 1
+  return prefix .. id_counter
 end
 
 function macros.colon(compiler)
@@ -64,13 +65,13 @@ function macros.assignment(compiler)
 end
 
 function macros._if(compiler)
-  local label = gen_label()
+  local label = gen_id("LBL")
   compiler:emit_line("if not stack:pop() then goto " .. label .. " end")
   stack:push(label)
 end
 
 function macros._else(compiler)
-  local label = gen_label()
+  local label = gen_id("LBL")
   compiler:emit_line("goto " .. label)
   compiler:emit_line("::" .. stack:pop() .. "::")
   stack:push(label)
@@ -81,7 +82,7 @@ function macros._then(compiler)
 end
 
 function macros._begin(compiler)
-  local label = gen_label()
+  local label = gen_id("LBL")
   compiler:emit_line("::" .. label .. "::")
   stack:push(label)
 end
@@ -89,6 +90,27 @@ end
 function macros._until(compiler)
   local label = stack:pop()
   compiler:emit_line("if not stack:pop() then goto " .. label .. " end")
+end
+
+-- TODO this might overwrite user defined i/j ?
+function macros._i(compiler)
+  compiler:emit_line("stack:push(aux:tos())")
+end
+
+-- TODO this might overwrite user defined i/j ?
+function macros._j(compiler)
+  compiler:emit_line("stack:push(aux:tos2())")
+end
+
+function macros._do(compiler)
+  local var = gen_id("loop_var")
+  compiler:emit_line("for ".. var .."=stack:pop(), stack:pop() -1 do")
+  compiler:emit_line("aux:push(".. var ..")")
+end
+
+function macros._loop(compiler)
+  compiler:emit_line("aux:pop()") -- unloop i/j
+  compiler:emit_line("end")
 end
 
 function macros._end(compiler)
