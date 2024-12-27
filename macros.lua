@@ -23,7 +23,7 @@ function macros.single_line_comment(compiler)
   repeat until "\n" == compiler:next()
 end
 
-function macros._local(compiler)
+function macros.var(compiler)
   local alias = compiler:word()
   local name = "v_" .. alias
   compiler:defvar(alias, name)

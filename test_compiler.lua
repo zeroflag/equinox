@@ -155,14 +155,17 @@ assert_tos(5, [[
 
 -- var local
 assert_tos(22, [[
-  local v1 local v2
-  10 -> v1 12 -> v2
+  var v1
+  var v2
+  10 -> v1
+  12 -> v2
   v1 v2 +
 ]])
 
 -- var local
 assert_tos(-3, [[
-  local v1 local v2
+  var v1
+  var v2
   10 -> v1 v1 -> v2
   3 v2 + -> v2 ( 13 = v2 )
   v1 v2 - ( 10 13 - )
