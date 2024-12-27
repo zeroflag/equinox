@@ -1,6 +1,6 @@
 LUA54 = lua5.4
 LUA51 = lua5.1
-LUA_VERSIONS := $(LUA54) $(LUA51)
+LUA_VERSIONS := $(LUA54) $(LUA51) lua
 TEST_LUA_FILES = $(wildcard test_*.lua)
 TEST_EQX_FILES = $(wildcard test_*.eqx)
 EQUINOX = equinox.lua
@@ -10,9 +10,9 @@ all: test
 
 test:
 	@for luaver in $(LUA_VERSIONS); do \
-    echo ""; \
-    echo "* $$luaver"; \
-    if ! command -v $$luaver > /dev/null 2>&1; then \
+		echo ""; \
+		echo "* $$luaver"; \
+		if ! command -v $$luaver > /dev/null 2>&1; then \
 			echo "$$luaver is not installed skippping"; \
 		else \
 			echo "Running Lua tests ..."; \
