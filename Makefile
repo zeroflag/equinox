@@ -17,12 +17,12 @@ test:
 		else \
 			echo "Running Lua tests ..."; \
 			for file in $(TEST_LUA_FILES); do \
-				echo "Running $$file..."; \
+				echo " - $$file..."; \
 				$$luaver $$file || exit 1; \
 			done; \
 			echo "Running Equinox tests ..."; \
 			for file in $(TEST_EQX_FILES); do \
-				echo "Running $$file..."; \
+				echo " - $$file..."; \
 				$$luaver $(EQUINOX) $$file || exit 1; \
 			done; \
 		fi; \

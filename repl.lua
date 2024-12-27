@@ -2,7 +2,7 @@ local compiler = require("compiler")
 compiler:eval_file("lib.eqx")
 
 print("Welcome to the Delta Quadrant on Equinox (" .. _VERSION .. ")")
-print("Engage warp speed and may your stack never overflow.")
+print("Engage warp speed and may your stack never overflow.\n")
 
 while true do
   io.write("# ")
