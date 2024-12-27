@@ -5,12 +5,12 @@ compiler:eval_file("lib.eqx")
 
 function assert_tos(result, code)
   local stack = compiler:eval(code)
-  assert(stack.depth() == 1,
-         "'" .. code .. "' depth: " .. stack.depth())
-  assert(stack.tos() == result,
-         "'" .. code .. "' " .. tostring(stack.tos())
+  assert(stack:depth() == 1,
+         "'" .. code .. "' depth: " .. stack:depth())
+  assert(stack:tos() == result,
+         "'" .. code .. "' " .. tostring(stack:tos())
          .. " <> " .. tostring(result))
-  stack.pop()
+  stack:pop()
 end
 
 -- arithmetics - add
@@ -209,6 +209,10 @@ assert_tos(1002, [[
 
 assert_tos(502, [[
   502 1002 math.min/2
+]])
+
+assert_tos(0, [[
+ 1 2 >a 3 a> - -
 ]])
 
 local status, result = pcall(

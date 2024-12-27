@@ -17,7 +17,6 @@
 -- fix Lua's accidental global
 -- table
 --
-
 local stack = require("stack")
 local macros = require("macros")
 local ops = require("ops")
@@ -62,13 +61,13 @@ function compiler.emit_lua_call(self, name, arity, vararg)
   end
   local params = ""
   for i = 1, arity do
-    params = params .. "stack.pop()"
+    params = params .. "stack:pop()"
     if i < arity then
       params = params .. ", "
     end
   end
   -- TODO reverse the order of params?
-  self:emit_line("stack.push(" .. name .. "(" .. params .. "))")
+  self:emit_line("stack:push(" .. name .. "(" .. params .. "))")
 end
 
 function compiler.compile_token(self, token, kind)
