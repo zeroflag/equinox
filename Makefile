@@ -1,5 +1,7 @@
 LUA = lua5.4
-TEST_FILES = $(wildcard test_*.lua)
+TEST_LUA_FILES = $(wildcard test_*.lua)
+TEST_EQX_FILES = $(wildcard test_*.eqx)
+EQUINOX = equinox.lua
 REPL = repl.lua
 
 ifeq ($(shell command -v $(LUA) 2>/dev/null),)
@@ -11,10 +13,17 @@ all: test
 
 test:
 	@echo "Running Lua tests..."
-	@for file in $(TEST_FILES); do \
+	@for file in $(TEST_LUA_FILES); do \
 		echo "Running $$file..."; \
 		$(LUA) $$file || exit 1; \
 	done
+
+	@echo "Running Equinox tests..."
+	@for file in $(TEST_EQX_FILES); do \
+		echo "Running $$file..."; \
+		$(LUA) $(EQUINOX) $$file || exit 1; \
+	done
+
 	@echo "All tests passed!"
 
 repl:
