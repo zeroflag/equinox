@@ -24,4 +24,19 @@ tbl 6 append
 tbl 7 at 6 =assert
 tbl 1 at 0 =assert
 
+[ "a" ] -> tbl
+tbl 1 "b" put \ [ "b" "a" ]
+tbl 1 at "b" =assert
+tbl 2 at "a" =assert
+
+tbl 2 "c" put \ [ "b" "c" "a" ]
+tbl 1 at "b" =assert
+tbl 2 at "c" =assert
+tbl 3 at "a" =assert
+
+tbl 2 del \ [ "b" "a" ]
+tbl 1 at "b" =assert
+tbl 2 at "a" =assert
+tbl size 2 =assert
+
 depth 0 =assert

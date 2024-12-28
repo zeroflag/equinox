@@ -148,6 +148,19 @@ function ops:table_append()
   table.insert(tbl, item)
 end
 
+function ops:table_insert()
+  local value = stack:pop()
+  local key = stack:pop()
+  local tbl = stack:pop()
+  table.insert(tbl, key, value)
+end
+
+function ops:table_remove()
+  local index = stack:pop()
+  local tbl = stack:pop()
+  table.remove(tbl, index)
+end
+
 function ops:shields_up()
   Stack.safety(true)
 end
