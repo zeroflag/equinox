@@ -136,14 +136,14 @@ function ops.table_at()
 end
 
 function ops:table_prepend()
-  local tbl = stack:pop()
   local item = stack:pop()
+  local tbl = stack:pop()
   table.insert(tbl, 1, item)
 end
 
 function ops:table_append()
-  local tbl = stack:pop()
   local item = stack:pop()
+  local tbl = stack:pop()
   table.insert(tbl, item)
 end
 

@@ -12,5 +12,5 @@
 : ] <table>
   depth a> - 1 - 0
   do
-    tuck prepend
+    tuck swap prepend
   loop ;
