@@ -58,40 +58,31 @@ function compiler.emit_lua_call(self, name, arity, vararg)
     err.abort(name .. " has variable number of arguments." ..
           "Use " .. name .. "/n" .. " to specify arity.")
   end
-
-  -- if ariry > 0
-  local lhs = "local "
-  for i = 1, arity do
-    lhs = lhs .. "__p" .. (arity - i +1)
-    if i < arity then
-      lhs = lhs .. ", "
-    else
-      lhs = lhs .. " = "
-    end
-  end
-
-  local rhs = ""
-  for i = 1, arity do
-    rhs = rhs .. "stack:pop()"
-    if i < arity then
-      rhs = rhs .. ", "
-    end
-  end
-
-  -- e.g.: local p3, p2, p1 = stack:pop(), stack:pop(), stack:pop()
   if arity > 0 then
-    self:emit_line(lhs .. rhs)
-  end
-
-  local params = ""
-  for i = 1, arity do
-    params = params .. "__p" .. i
-    if i < arity then
-      params = params .. ", "
+    self:emit("local ")
+    for i = 1, arity do
+      self:emit("__p" .. (arity - i +1))
+      if i < arity then
+        self:emit(", ")
+      else
+        self:emit(" = ")
+      end
+    end
+    for i = 1, arity do
+      self:emit("stack:pop()")
+      if i < arity then
+        self:emit(", ")
+      end
     end
   end
-
-  self:emit_line("stack:push(" .. name .. "(" .. params .. "))")
+  self:emit("stack:push(" .. name .. "(")
+  for i = 1, arity do
+    self:emit("__p" .. i)
+    if i < arity then
+      self:emit(", ")
+    end
+  end
+  self:emit_line("))")
 end
 
 function compiler.compile_token(self, token, kind)
