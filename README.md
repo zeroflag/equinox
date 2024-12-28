@@ -1,10 +1,13 @@
 # Equinox
 Forth Programming Language, hosted by Lua. 
 
+### Design goals
+
 * Compiles directly to Lua source code
 * Modeless with no interpretation mode
 * Uses Lua call semantics, no return stack
 * Lua table and array support 
+* Seamless Love2D integration
 
 <img src="logo/logo.png" alt="logo" width="300"/>
 
