@@ -1,10 +1,3 @@
--- Design:
--- Modeless
--- No rstack, native Lua return stack
--- Native Lua locals
--- No heap, here and ,
--- Native Lua tables
--- Lua interop
 -- TODO:
 -- user defined control structues
 -- var/local scopes
@@ -15,6 +8,8 @@
 -- benchmarks
 -- fix Lua's accidental global
 -- table kw
+-- underflow/overflow detection
+-- ncurses REPL with stack (main/aux) visualization
 local stack = require("stack")
 local macros = require("macros")
 local ops = require("ops")

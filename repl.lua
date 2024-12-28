@@ -1,9 +1,20 @@
 local compiler = require("compiler")
+local stack = require("stack")
 compiler:eval_file("lib.eqx")
 
 print("Welcome to the Delta Quadrant on Equinox (" .. _VERSION .. ")")
 print("Engage warp speed and may your stack never overflow.")
-print("Type words to see wordlist and bye to exit.\n")
+print("Type words to see wordlist and bye to exit.")
+
+print([[
+  ___________________          _-_
+  \__(==========/_=_/ ____.---'---`---.____
+              \_ \    \----._________.----/
+               \ \   /  /    `-_-'
+           __,--`.`-'..'-_
+          /____          ||
+               `--.____,-'
+]])
 
 while true do
   io.write("# ")
@@ -16,7 +27,11 @@ while true do
       return compiler:eval(input)
     end)
   if status then
-    print("ok")
+    if stack:depth() > 0 then
+      print("ok (" .. stack:depth() .. ")")
+    else
+      print("ok")
+    end
   else
     print(result)
   end
