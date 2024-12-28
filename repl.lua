@@ -4,17 +4,18 @@ compiler:eval_file("lib.eqx")
 
 print("Welcome to the Delta Quadrant on Equinox (" .. _VERSION .. ")")
 print("Engage warp speed and may your stack never overflow.")
-print("Type words to see wordlist and bye to exit.")
 
 print([[
-  ___________________          _-_
-  \__(==========/_=_/ ____.---'---`---.____
-              \_ \    \----._________.----/
-               \ \   /  /    `-_-'
-           __,--`.`-'..'-_
-          /____          ||
-               `--.____,-'
+ ___________________          _-_
+ \__(==========/_=_/ ____.---'---`---.____
+             \_ \    \----._________.----/
+              \ \   /  /    `-_-'
+          __,--`.`-'..'-_
+         /____          ||
+              `--.____,-'
 ]])
+
+print("Type words to see wordlist or bye to exit.")
 
 while true do
   io.write("# ")
