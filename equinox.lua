@@ -1,11 +1,30 @@
 compiler = require("compiler")
+repl = require("repl")
 
-if #arg < 1 then
-  print("Usage: lua equinox.lua <script.eqx>")
-  os.exit(1)
+local equinox = {}
+
+function equinox.main()
+  compiler:eval_file("lib.eqx")
+  if #arg < 1 then
+    repl.welcome()
+    repl.start()
+  else
+    local filename = arg[1]
+    print("Loading " .. filename)
+    compiler:eval_file(filename)
+  end
 end
 
-local filename = arg[1]
+function equinox.eval(str)
+  return compiler:eval(str)
+end
 
-compiler:eval_file("lib.eqx")
-compiler:eval_file(filename)
+function equinox.eval_file(str)
+  return compiler:eval_file(str)
+end
+
+if arg and arg[0] == "equinox.lua" then
+  equinox.main(arg)
+end
+
+return equinox

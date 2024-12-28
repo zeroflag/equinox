@@ -4,9 +4,10 @@ LUA_VERSIONS := $(LUA54) $(LUA51) lua
 TEST_LUA_FILES = $(wildcard test_*.lua)
 TEST_EQX_FILES = $(wildcard test_*.eqx)
 EQUINOX = equinox.lua
-REPL = repl.lua
+BUNDLE = equinox_bundle.lua
+AMALG = amalg.lua
 
-all: test
+all: clean test bundle
 
 test:
 	@for luaver in $(LUA_VERSIONS); do \
@@ -26,14 +27,18 @@ test:
 			done; \
 		fi; \
   done
-
 	@echo "All tests passed!"
 
+bundle:
+	@echo "Creating $(BUNDLE)"
+	$(AMALG) -s $(EQUINOX) compiler aux dict err interop input macros ops output stack_def repl stack -o $(BUNDLE)
+
 repl:
-	lua $(REPL)
+	lua $(EQUINOX)
 
 clean:
-	@echo "No cleanup necessary for Lua tests."
+	@echo "Cleaning up"
+	rm -f $(BUNDLE)
 
 # Add a phony directive to prevent file conflicts
 .PHONY: all test clean
