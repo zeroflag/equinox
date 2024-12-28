@@ -40,11 +40,15 @@
 6 5 = assert-false
 -6 -6 =assert
 6 -6 = assert-false
+nil nil = assert-true
+nil "nil" = assert-false
 
 5 5 != assert-false
 6 5 != assert-true
 -6 -6 != assert-false
 6 -6 != assert-true
+nil 6 != assert-true
+nil nil != assert-false
 
 5 5 < assert-false
 6 5 < assert-false

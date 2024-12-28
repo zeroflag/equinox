@@ -31,3 +31,8 @@ assert(p3 == "p3")
 
 assert(stack:pop() == "xx")
 assert(stack:depth() == 0)
+
+stack:push(nil)
+assert(stack:depth() == 1)
+assert(nil == stack:pop())
+assert(stack:depth() == 0)

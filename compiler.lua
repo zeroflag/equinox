@@ -7,13 +7,11 @@
 -- hyperstatic glob
 -- benchmarks
 -- fix Lua's accidental global
--- table kw
--- nil
--- lua interop: ignore ret val if ends with "!"
 -- ncurses REPL with stack (main/aux) visualization
 local stack = require("stack")
 local macros = require("macros")
 local ops = require("ops")
+local Stack = require("stack_def")
 local dict = require("dict")
 local Input = require("input")
 local Output = require("output")
@@ -53,10 +51,11 @@ function compiler.emit_word(self, word)
   end
 end
 
-function compiler.emit_lua_call(self, name, arity, vararg)
+function compiler.emit_lua_call(self, name, arity, vararg, void)
   if vararg then
-    err.abort(name .. " has variable number of arguments." ..
-          "Use " .. name .. "/n" .. " to specify arity.")
+    err.abort(name .. " has variable/unknown number of arguments. " ..
+          "Use " .. name .. "/n" .. " to specify arity. " ..
+          "For example " .. name .. "/1")
   end
   if arity > 0 then
     self:emit("local ")
@@ -75,14 +74,22 @@ function compiler.emit_lua_call(self, name, arity, vararg)
       end
     end
   end
-  self:emit("stack:push(" .. name .. "(")
+  if void then
+    self:emit(name .. "(")
+  else
+    self:emit("stack:push(" .. name .. "(")
+  end
   for i = 1, arity do
     self:emit("__p" .. i)
     if i < arity then
       self:emit(", ")
     end
   end
-  self:emit_line("))")
+  if void then
+    self:emit_line(")")
+  else
+    self:emit_line("))")
+  end
 end
 
 function compiler.compile_token(self, token, kind)
@@ -101,7 +108,7 @@ function compiler.compile_token(self, token, kind)
       else
         local res = interop.resolve_lua_func_with_arity(token)
         if res then
-          self:emit_lua_call(res.name, res.arity, res.vararg)
+          self:emit_lua_call(res.name, res.arity, res.vararg, res.void)
         else
           err.abort("Word not found: '" .. token .. "'")
         end
@@ -131,6 +138,7 @@ function compiler.init(self, text)
   self:emit_line("local aux = require(\"aux\")")
   dict.defvar("true", "true")
   dict.defvar("false", "false")
+  dict.defvar("nil", "NIL")
 end
 
 function compiler.compile(self, text)

@@ -1,6 +1,7 @@
 local err = require("err")
 
 local Stack = {}
+local NIL = "__NIL__"
 
 function Stack.new(name)
   local obj = {stack = {}, name = name}
@@ -9,7 +10,7 @@ function Stack.new(name)
 end
 
 function Stack.push(self, e)
-  table.insert(self.stack, e)
+  table.insert(self.stack, e ~= nil and e or NIL)
 end
 
 function Stack.pop_safe(self)
@@ -17,11 +18,12 @@ function Stack.pop_safe(self)
   if item == nil then
     err.abort("Stack underflow: " .. self.name)
   end
-  return item
+  return item ~= NIL and item or nil
 end
 
 function Stack.pop_unsafe(self)
-  return table.remove(self.stack)
+  local item = table.remove(self.stack)
+  return item ~= NIL and item or nil
 end
 
 function Stack.tos(self)
