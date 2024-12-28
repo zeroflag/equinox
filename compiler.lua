@@ -7,6 +7,7 @@
 -- hyperstatic glob
 -- benchmarks
 -- fix Lua's accidental global
+-- tab auto complete repl
 -- ncurses REPL with stack (main/aux) visualization
 local stack = require("stack")
 local macros = require("macros")
