@@ -13,4 +13,9 @@ make-table 3 at 2 at 6 =assert
 make-table 4 at "orange" =assert
 make-table 5 at "grapes" =assert
 
+var tbl
+[ 1 2 3 4 5 ] -> tbl
+tbl size 5 =assert
+tbl size 1 + 1 do tbl i at i =assert loop
+
 depth 0 =assert
