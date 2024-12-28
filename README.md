@@ -1,6 +1,11 @@
 # Equinox
 Forth Programming Language, hosted by Lua. 
 
+* Compiles directly to Lua source code
+* Modeless with no interpretation mode
+* Uses Lua call semantics, no return stack
+* Lua table and array support 
+
 <img src="logo/logo.png" alt="logo" width="300"/>
 
 Lua table operations
