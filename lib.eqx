@@ -9,8 +9,19 @@
 : tuck ( a b -- b a b ) swap over ;
 
 : [ depth >a ;
-: ] <table>
+: ]
+  <table>
   depth a> - 1 - 0
   do
-    tuck swap prepend
+    dup >a
+    1 rot table.insert/3 ( tbl idx value )
+    a>
   loop ;
+
+: #[ ( -- ) depth >a ;
+: ]#
+    <table>
+    depth a> - 1 - \ TODO check div 2
+    2 / 0 do
+      dup >a -rot put a>
+    loop ;

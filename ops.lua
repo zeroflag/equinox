@@ -136,29 +136,11 @@ function ops.table_at()
   stack:push(t[n])
 end
 
-function ops:table_prepend()
-  local item = stack:pop()
-  local tbl = stack:pop()
-  table.insert(tbl, 1, item)
-end
-
-function ops:table_append()
-  local item = stack:pop()
-  local tbl = stack:pop()
-  table.insert(tbl, item)
-end
-
-function ops:table_insert()
+function ops:table_put()
   local value = stack:pop()
   local key = stack:pop()
   local tbl = stack:pop()
-  table.insert(tbl, key, value)
-end
-
-function ops:table_remove()
-  local index = stack:pop()
-  local tbl = stack:pop()
-  table.remove(tbl, index)
+  tbl[key] = value
 end
 
 function ops:shields_up()

@@ -8,6 +8,8 @@
 -- benchmarks
 -- fix Lua's accidental global
 -- table kw
+-- nil
+-- lua interop: ignore ret val if ends with "!"
 -- ncurses REPL with stack (main/aux) visualization
 local stack = require("stack")
 local macros = require("macros")
@@ -56,14 +58,39 @@ function compiler.emit_lua_call(self, name, arity, vararg)
     err.abort(name .. " has variable number of arguments." ..
           "Use " .. name .. "/n" .. " to specify arity.")
   end
+
+  -- if ariry > 0
+  local lhs = "local "
+  for i = 1, arity do
+    lhs = lhs .. "__p" .. (arity - i +1)
+    if i < arity then
+      lhs = lhs .. ", "
+    else
+      lhs = lhs .. " = "
+    end
+  end
+
+  local rhs = ""
+  for i = 1, arity do
+    rhs = rhs .. "stack:pop()"
+    if i < arity then
+      rhs = rhs .. ", "
+    end
+  end
+
+  -- e.g.: local p3, p2, p1 = stack:pop(), stack:pop(), stack:pop()
+  if arity > 0 then
+    self:emit_line(lhs .. rhs)
+  end
+
   local params = ""
   for i = 1, arity do
-    params = params .. "stack:pop()"
+    params = params .. "__p" .. i
     if i < arity then
       params = params .. ", "
     end
   end
-  -- TODO reverse the order of params?
+
   self:emit_line("stack:push(" .. name .. "(" .. params .. "))")
 end
 

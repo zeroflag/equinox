@@ -179,7 +179,7 @@ v1 v2 - ( 10 13 - )
 
 " abc " " xyz " .. " abc  xyz " =assert
 
-8 2 math.pow/2 256 =assert
+2 8 math.pow/2 256 =assert
 
 502 1002 math.min/2 502 =assert
 502 1002 math.max/2 1002 =assert
