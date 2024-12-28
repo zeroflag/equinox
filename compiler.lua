@@ -10,6 +10,7 @@
 -- tab auto complete repl
 -- alias lua table operationokre
 -- ncurses REPL with stack (main/aux) visualization
+-- : p.x 123 ;
 local stack = require("stack")
 local macros = require("macros")
 local ops = require("ops")
@@ -64,15 +65,15 @@ function compiler.emit_lua_call(self, name, arity, vararg, void)
     for i = 1, arity do
       self:emit("__p" .. (arity - i +1))
       if i < arity then
-        self:emit(", ")
+        self:emit(",")
       else
-        self:emit(" = ")
+        self:emit("=")
       end
     end
     for i = 1, arity do
       self:emit("stack:pop()")
       if i < arity then
-        self:emit(", ")
+        self:emit(",")
       end
     end
   end
@@ -85,7 +86,7 @@ function compiler.emit_lua_call(self, name, arity, vararg, void)
   for i = 1, arity do
     self:emit("__p" .. i)
     if i < arity then
-      self:emit(", ")
+      self:emit(",")
     end
   end
   if void then

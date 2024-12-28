@@ -13,7 +13,7 @@ function interop.resolve_lua_func(name)
   end
 end
 
-function parse(signature)
+function interop.parse_signature(signature)
   local name, arity = string.match(signature, "([^%/]+)(%/%d+)")
   if name and arity then
     return name, tonumber(arity:sub(2)), false
@@ -26,7 +26,7 @@ function parse(signature)
 end
 
 function interop.resolve_lua_func_with_arity(signature)
-  local name, arity, void = parse(signature)
+  local name, arity, void = interop.parse_signature(signature)
   local func = interop.resolve_lua_func(name)
   local vararg = false
   if not func then return nil end

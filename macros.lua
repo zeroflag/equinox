@@ -1,5 +1,6 @@
 local stack = require("stack")
 local aux = require("aux")
+local interop = require("interop")
 local macros = {}
 
 local id_counter = 1
@@ -10,7 +11,7 @@ function gen_id(prefix)
 end
 
 function macros.colon(compiler)
-  local alias = compiler:word()
+  local alias, arity, void = interop.parse_signature(compiler:word())
   local name =
     alias:gsub("-", "_mi_")
          :gsub("%+", "_pu_")
@@ -42,7 +43,22 @@ function macros.colon(compiler)
     name = "_" .. name
   end
   compiler:defword(alias, name, false)
-  compiler:emit_line("function " .. name .. "()")
+  if not arity or arity == 0 then
+    compiler:emit_line("function " .. name .. "()")
+  else
+    compiler:emit("function " .. name .. "(")
+    for i = 1, arity do
+      compiler:emit("__a" .. i)
+      if i < arity then
+        compiler:emit(",")
+      else
+        compiler:emit_line(")")
+      end
+    end
+    for i = 1, arity do
+      compiler:emit_line("stack:push(__a" .. i ..")")
+    end
+  end
 end
 
 function macros.comment(compiler)
