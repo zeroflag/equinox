@@ -1,15 +1,26 @@
-local dict  = {}
+local dict  = { words = {} }
+
+-- TODO kuloncs kulcs alatt legyen a dict
+-- mert igy a wordlistben latszik
 
 function dict.defword(alias, name, immediate)
-  dict[alias] = { ["name"] = name, imm = immediate, callable = true }
+  dict["words"][alias] = { ["name"] = name, imm = immediate, callable = true }
 end
 
 function dict.defvar(alias, name)
-  dict[alias] = { ["name"] = name, callable = false }
+  dict["words"][alias] = { ["name"] = name, callable = false }
 end
 
 function dict.find(name)
-  return dict[name]
+  return dict["words"][name]
+end
+
+function dict.word_list()
+  local words = {}
+  for name, val in pairs(dict["words"]) do
+    table.insert(words, name)
+  end
+  return words
 end
 
 dict.defword("+", "ops.add", false)
@@ -42,6 +53,7 @@ dict.defword("size", "ops.table_size", false)
 dict.defword("at", "ops.table_at", false)
 dict.defword("prepend", "ops.table_prepend", false)
 dict.defword("append", "ops.table_append", false)
+dict.defword("words", "macros.words", true)
 dict.defword("if", "macros._if", true)
 dict.defword("then", "macros._then", true)
 dict.defword("else", "macros._else", true)

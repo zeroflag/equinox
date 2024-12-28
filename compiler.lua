@@ -7,7 +7,6 @@
 -- Lua interop
 -- TODO:
 -- user defined control structues
--- remove goto-s from if then else
 -- var/local scopes
 -- case
 -- begin while repeat
@@ -15,8 +14,7 @@
 -- hyperstatic glob
 -- benchmarks
 -- fix Lua's accidental global
--- table
--- words
+-- table kw
 local stack = require("stack")
 local macros = require("macros")
 local ops = require("ops")
@@ -37,6 +35,10 @@ end
 
 function compiler.next(self)
   return self.input:next()
+end
+
+function compiler.word_list(self)
+  return dict.word_list()
 end
 
 function compiler.emit_lit(self, token)
