@@ -10,38 +10,42 @@ function gen_id(prefix)
   return prefix .. id_counter
 end
 
+function sanitize(str)
+  str = str:gsub("-", "_mi_")
+    :gsub("%+", "_pu_")
+    :gsub("%%", "_pe_")
+    :gsub("/", "_fs_")
+    :gsub("\\", "_bs_")
+    :gsub("~", "_ti_")
+    :gsub("#", "_hs_")
+    :gsub("%*", "_sr_")
+    :gsub(";", "_sc_")
+    :gsub("&", "_an_")
+    :gsub("|", "_or_")
+    :gsub("@", "_at_")
+    :gsub("`", "_bt_")
+    :gsub("=", "_eq_")
+    :gsub("'", "_sq_")
+    :gsub('"', "_dq_")
+    :gsub("?", "_qe_")
+    :gsub("!", "_ex_")
+    :gsub(",", "_ca_")
+    :gsub(":", "_cm_")
+    :gsub("%{", "_c1_")
+    :gsub("%}", "_c2_")
+    :gsub("%[", "_b1_")
+    :gsub("%]", "_b2_")
+    :gsub("%(", "_p1_")
+    :gsub("%(", "_p2_")
+  if str:match("^%d+") then
+    str = "_" .. str
+  end
+  return str
+end
+
 function macros.colon(compiler)
   local alias, arity, void = interop.parse_signature(compiler:word())
-  local name =
-    alias:gsub("-", "_mi_")
-         :gsub("%+", "_pu_")
-         :gsub("%%", "_pe_")
-         :gsub("/", "_fs_")
-         :gsub("\\", "_bs_")
-         :gsub("~", "_ti_")
-         :gsub("#", "_hs_")
-         :gsub("%*", "_sr_")
-         :gsub(";", "_sc_")
-         :gsub("&", "_an_")
-         :gsub("|", "_or_")
-         :gsub("@", "_at_")
-         :gsub("`", "_bt_")
-         :gsub("=", "_eq_")
-         :gsub("'", "_sq_")
-         :gsub('"', "_dq_")
-         :gsub("?", "_qe_")
-         :gsub("!", "_ex_")
-         :gsub(",", "_ca_")
-         :gsub(":", "_cm_")
-         :gsub("%{", "_c1_")
-         :gsub("%}", "_c2_")
-         :gsub("%[", "_b1_")
-         :gsub("%]", "_b2_")
-         :gsub("%(", "_p1_")
-         :gsub("%(", "_p2_")
-  if name:match("^%d+") then
-    name = "_" .. name
-  end
+  local name = sanitize(alias)
   compiler:defword(alias, name, false)
   if not arity or arity == 0 then
     compiler:emit_line("function " .. name .. "()")
