@@ -11,7 +11,7 @@ end
 
 function macros.colon(compiler)
   local alias = compiler:word()
-  local name = "w_" ..
+  local name =
     alias:gsub("-", "_mi_")
          :gsub("%+", "_pu_")
          :gsub("%%", "_pe_")
@@ -32,13 +32,15 @@ function macros.colon(compiler)
          :gsub("!", "_ex_")
          :gsub(",", "_ca_")
          :gsub(":", "_cm_")
-         :gsub("%.", "_dt_")
          :gsub("%{", "_c1_")
          :gsub("%}", "_c2_")
          :gsub("%[", "_b1_")
          :gsub("%]", "_b2_")
          :gsub("%(", "_p1_")
          :gsub("%(", "_p2_")
+  if name:match("^%d+") then
+    name = "_" .. name
+  end
   compiler:defword(alias, name, false)
   compiler:emit_line("function " .. name .. "()")
 end

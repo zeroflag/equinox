@@ -8,6 +8,7 @@
 -- benchmarks
 -- fix Lua's accidental global
 -- tab auto complete repl
+-- alias lua table operationokre
 -- ncurses REPL with stack (main/aux) visualization
 local stack = require("stack")
 local macros = require("macros")
