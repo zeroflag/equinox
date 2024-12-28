@@ -21,6 +21,12 @@ function ops.div()
   stack:push(b / a)
 end
 
+function ops.mod()
+  local a = stack:pop()
+  local b = stack:pop()
+  stack:push(b % a)
+end
+
 function ops.sub()
   local a = stack:pop()
   local b = stack:pop()
