@@ -1,3 +1,4 @@
+local Stack = require("stack_def")
 local stack = require("stack")
 local aux = require("aux")
 local ops = {}
@@ -145,6 +146,14 @@ function ops:table_append()
   local item = stack:pop()
   local tbl = stack:pop()
   table.insert(tbl, item)
+end
+
+function ops:shields_up()
+  Stack.safety(true)
+end
+
+function ops:shields_down()
+  Stack.safety(false)
 end
 
 return ops

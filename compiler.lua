@@ -8,7 +8,6 @@
 -- benchmarks
 -- fix Lua's accidental global
 -- table kw
--- underflow/overflow detection
 -- ncurses REPL with stack (main/aux) visualization
 local stack = require("stack")
 local macros = require("macros")
