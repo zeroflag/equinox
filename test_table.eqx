@@ -60,7 +60,9 @@ tbl "k3" at "val3" =assert
 
 tbl "notfound" at nil =assert
 
-\ tbl "k2" del \ TODO table.remove doesn't work with non-seq tables
+tbl "k2" nil put \ remove k2
+tbl "k2" at nil =assert \ k2 is removed
+tbl "k3" at "val3" =assert \ k3 is still there
 
 tbl size 0 =assert \ size doesn't work with non-seq tables
 
