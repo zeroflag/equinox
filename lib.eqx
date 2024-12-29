@@ -1,5 +1,6 @@
 lua-alias: table.insert!2 append
 lua-alias: table.insert!3 insert
+lua-alias: table.remove!2 remove
 
 : assert-true assert/1 drop ;
 : assert-false not assert-true ;

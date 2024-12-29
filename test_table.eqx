@@ -84,6 +84,11 @@ tbl 1 at 1 =assert
 tbl 3 at 2 =assert
 tbl size 3 =assert
 
+[ "x" "y" ] -> tbl
+tbl 1 remove
+tbl 1 at "y" =assert
+tbl size 1 =assert
+
 
 (
 [ 1 2 ] -> tbl
