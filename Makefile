@@ -31,7 +31,7 @@ test:
 				$$luaver $(EQUINOX) $$file || exit 1; \
 			done; \
 		fi; \
-  done
+	done
 	@echo "$(GREEN)All tests passed!$(NC)"
 
 bundle:

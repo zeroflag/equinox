@@ -933,9 +933,19 @@ function equinox.main()
     repl.welcome()
     repl.start()
   else
-    local filename = arg[1]
-    print("Loading " .. filename)
-    compiler:eval_file(filename)
+    local log_result = false
+    local files = {}
+    for i, param in ipairs(arg) do
+      if param == "-d" then
+        log_result = true
+      else
+        table.insert(files, param)
+      end
+    end
+    for i, filename in ipairs(files) do
+      print("Loading " .. filename)
+      equinox.eval_file(filename, log_result)
+    end
   end
 end
 
