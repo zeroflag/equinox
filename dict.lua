@@ -1,21 +1,32 @@
 local words = {}
 local dict  = { ["words"] = words }
 
-function entry(forth_name, lua_name, immediate, callable)
+function entry(forth_name, lua_name, immediate, callable, is_lua_alias)
   return {
     forth_name = forth_name,
     lua_name = lua_name,
     immediate = immediate,
-    callable = callable
+    callable = callable,
+    is_lua_alias = is_lua_alias
   }
 end
 
 function dict.defword(forth_name, lua_name, immediate)
-  table.insert(words, entry(forth_name, lua_name, immediate, true))
+  table.insert(words, entry(forth_name, lua_name, immediate, true, false))
+end
+
+function dict.def_lua_alias(lua_name, forth_name)
+  local e = dict.find(forth_name)
+  if not e then
+    table.insert(words, entry(forth_name, lua_name, immediate, false, true))
+  else
+    -- TODO err
+    print("ALREADY DEFINED")
+  end
 end
 
 function dict.defvar(forth_name, lua_name)
-  table.insert(words, entry(forth_name, lua_name, immediate, false))
+  table.insert(words, entry(forth_name, lua_name, immediate, false, false))
 end
 
 function dict.find(forth_name)
@@ -82,6 +93,7 @@ dict.defword("->", "macros.assignment", true)
 dict.defword("var", "macros.var", true)
 dict.defword("(", "macros.comment", true)
 dict.defword("\\", "macros.single_line_comment", true)
+dict.defword("lua-alias:", "macros.def_lua_alias", true)
 dict.defword(":", "macros.colon", true)
 dict.defword(";", "macros._end", true)
 

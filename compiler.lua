@@ -39,6 +39,10 @@ function compiler.word_list(self)
   return dict.word_list()
 end
 
+function compiler.alias(self, lua_name, forth_alias)
+  return dict.def_lua_alias(lua_name, forth_alias)
+end
+
 function compiler.emit_lit(self, token)
   self:emit_line("ops.lit(" .. token .. ")")
 end
@@ -104,7 +108,7 @@ function compiler.compile_token(self, token, kind)
     self:emit_symbol(token)
   else
     local word = dict.find(token)
-    if word then
+    if word and not word.is_lua_alias then
       self:emit_word(word)
     else
       local num = tonumber(token)
@@ -112,6 +116,9 @@ function compiler.compile_token(self, token, kind)
         self:emit_lit(num)
       else
         local res = interop.resolve_lua_func_with_arity(token)
+        if word and word.is_lua_alias then
+          res = interop.resolve_lua_func_with_arity(word.lua_name)
+        end
         if res then
           self:emit_lua_call(res.name, res.arity, res.vararg, res.void)
         else
@@ -161,7 +168,7 @@ function compiler.compile(self, text)
     end
     token, kind = self:word()
   end
-  --print(self.output:text())
+  print(self.output:text())
   return self.output
 end
 

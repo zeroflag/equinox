@@ -68,3 +68,28 @@ tbl size 0 =assert \ size doesn't work with non-seq tables
 
 depth 0 =assert
 adepth 0 =assert
+
+\ test aliases
+[ 1 2 ] -> tbl
+tbl "a" append
+tbl 3 at "a" =assert
+tbl 1 at 1 =assert
+tbl 2 at 2 =assert
+tbl size 3 =assert
+
+[ 1 2 ] -> tbl
+tbl 2 "a" insert
+tbl 2 at "a" =assert
+tbl 1 at 1 =assert
+tbl 3 at 2 =assert
+tbl size 3 =assert
+
+
+(
+[ 1 2 ] -> tbl
+tbl "a" prepend
+tbl 1 at "a" =assert
+tbl 2 at 1 =assert
+tbl 3 at 2 =assert
+tbl size 3 =assert
+)

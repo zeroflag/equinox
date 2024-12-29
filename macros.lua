@@ -43,6 +43,13 @@ function sanitize(str)
   return str
 end
 
+function macros.def_lua_alias(compiler)
+  -- local lua_name, _, _ = interop.parse_signature(compiler:word())
+  local lua_name = compiler:word()
+  forth_alias = compiler:word()
+  compiler:alias(lua_name, forth_alias)
+end
+
 function macros.colon(compiler)
   local forth_name, arity, void = interop.parse_signature(compiler:word())
   local lua_name = sanitize(forth_name)

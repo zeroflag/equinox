@@ -52,6 +52,10 @@ function compiler.word_list(self)
   return dict.word_list()
 end
 
+function compiler.alias(self, lua_name, forth_alias)
+  return dict.def_lua_alias(lua_name, forth_alias)
+end
+
 function compiler.emit_lit(self, token)
   self:emit_line("ops.lit(" .. token .. ")")
 end
@@ -117,7 +121,7 @@ function compiler.compile_token(self, token, kind)
     self:emit_symbol(token)
   else
     local word = dict.find(token)
-    if word then
+    if word and not word.is_lua_alias then
       self:emit_word(word)
     else
       local num = tonumber(token)
@@ -125,6 +129,9 @@ function compiler.compile_token(self, token, kind)
         self:emit_lit(num)
       else
         local res = interop.resolve_lua_func_with_arity(token)
+        if word and word.is_lua_alias then
+          res = interop.resolve_lua_func_with_arity(word.lua_name)
+        end
         if res then
           self:emit_lua_call(res.name, res.arity, res.vararg, res.void)
         else
@@ -174,7 +181,7 @@ function compiler.compile(self, text)
     end
     token, kind = self:word()
   end
-  --print(self.output:text())
+  print(self.output:text())
   return self.output
 end
 
@@ -213,21 +220,32 @@ package.preload[ "dict" ] = function( ... ) local arg = _G.arg;
 local words = {}
 local dict  = { ["words"] = words }
 
-function entry(forth_name, lua_name, immediate, callable)
+function entry(forth_name, lua_name, immediate, callable, is_lua_alias)
   return {
     forth_name = forth_name,
     lua_name = lua_name,
     immediate = immediate,
-    callable = callable
+    callable = callable,
+    is_lua_alias = is_lua_alias
   }
 end
 
 function dict.defword(forth_name, lua_name, immediate)
-  table.insert(words, entry(forth_name, lua_name, immediate, true))
+  table.insert(words, entry(forth_name, lua_name, immediate, true, false))
+end
+
+function dict.def_lua_alias(lua_name, forth_name)
+  local e = dict.find(forth_name)
+  if not e then
+    table.insert(words, entry(forth_name, lua_name, immediate, false, true))
+  else
+    -- TODO err
+    print("ALREADY DEFINED")
+  end
 end
 
 function dict.defvar(forth_name, lua_name)
-  table.insert(words, entry(forth_name, lua_name, immediate, false))
+  table.insert(words, entry(forth_name, lua_name, immediate, false, false))
 end
 
 function dict.find(forth_name)
@@ -294,6 +312,7 @@ dict.defword("->", "macros.assignment", true)
 dict.defword("var", "macros.var", true)
 dict.defword("(", "macros.comment", true)
 dict.defword("\\", "macros.single_line_comment", true)
+dict.defword("lua-alias:", "macros.def_lua_alias", true)
 dict.defword(":", "macros.colon", true)
 dict.defword(";", "macros._end", true)
 
@@ -473,6 +492,13 @@ function sanitize(str)
     str = "_" .. str
   end
   return str
+end
+
+function macros.def_lua_alias(compiler)
+  -- local lua_name, _, _ = interop.parse_signature(compiler:word())
+  local lua_name = compiler:word()
+  forth_alias = compiler:word()
+  compiler:alias(lua_name, forth_alias)
 end
 
 function macros.colon(compiler)
