@@ -129,8 +129,8 @@ function compiler.compile_token(self, token, kind)
   end
 end
 
-function compiler.defword(self, alias, name, immediate)
-  dict.defword(alias, name, immediate)
+function compiler.def_word(self, alias, name, immediate)
+  dict.def_word(alias, name, immediate)
 end
 
 function compiler.defvar(self, alias, name)

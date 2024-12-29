@@ -53,7 +53,7 @@ end
 function macros.colon(compiler)
   local forth_name, arity, void = interop.parse_signature(compiler:word())
   local lua_name = sanitize(forth_name)
-  compiler:defword(forth_name, lua_name, false)
+  compiler:def_word(forth_name, lua_name, false)
   if not arity or arity == 0 then
     compiler:emit_line("function " .. lua_name .. "()")
   else
