@@ -1,26 +1,39 @@
-local dict  = { words = {} }
+local words = {}
+local dict  = { ["words"] = words }
 
--- TODO kuloncs kulcs alatt legyen a dict
--- mert igy a wordlistben latszik
-
-function dict.defword(alias, name, immediate)
-  dict["words"][alias] = { ["name"] = name, imm = immediate, callable = true }
+function entry(forth_name, lua_name, immediate, callable)
+  return {
+    forth_name = forth_name,
+    lua_name = lua_name,
+    immediate = immediate,
+    callable = callable
+  }
 end
 
-function dict.defvar(alias, name)
-  dict["words"][alias] = { ["name"] = name, callable = false }
+function dict.defword(forth_name, lua_name, immediate)
+  table.insert(words, entry(forth_name, lua_name, immediate, true))
 end
 
-function dict.find(name)
-  return dict["words"][name]
+function dict.defvar(forth_name, lua_name)
+  table.insert(words, entry(forth_name, lua_name, immediate, false))
+end
+
+function dict.find(forth_name)
+  for i = #words, 1, -1 do
+    local each = words[i]
+    if each.forth_name == forth_name then
+      return each
+    end
+  end
+  return nil
 end
 
 function dict.word_list()
-  local words = {}
-  for name, val in pairs(dict["words"]) do
-    table.insert(words, name)
+  local result = {}
+  for i, each in ipairs(words) do
+    table.insert(result, each.forth_name)
   end
-  return words
+  return result
 end
 
 dict.defword("+", "ops.add", false)

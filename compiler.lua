@@ -8,6 +8,7 @@
 -- benchmarks
 -- fix Lua's accidental global
 -- tab auto complete repl
+-- aliases
 -- alias lua table operationokre
 -- ncurses REPL with stack (main/aux) visualization
 -- : p.x 123 ;
@@ -48,9 +49,9 @@ end
 
 function compiler.emit_word(self, word)
   if word.callable then
-    self:emit_line(word.name .. "()")
+    self:emit_line(word.lua_name .. "()")
   else
-    self:emit_line("ops.lit(" .. word.name .. ")")
+    self:emit_line("ops.lit(" .. word.lua_name .. ")")
   end
 end
 
@@ -130,7 +131,7 @@ function compiler.defvar(self, alias, name)
 end
 
 function compiler.exec(self, word)
-  local mod, fun = dict.find(word).name:match("^(.-)%.(.+)$")
+  local mod, fun = dict.find(word).lua_name:match("^(.-)%.(.+)$")
   _G[mod][fun](self)
 end
 
@@ -149,9 +150,10 @@ function compiler.compile(self, text)
   self:init(text)
   local token, kind = self:word()
   while token ~= "" do
+    local word_def = dict.find(token)
     if kind == "word"
-      and dict.find(token)
-      and dict.find(token).imm
+      and word_def
+      and word_def.immediate
     then
       self:exec(token)
     else

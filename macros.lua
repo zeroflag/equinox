@@ -44,13 +44,13 @@ function sanitize(str)
 end
 
 function macros.colon(compiler)
-  local alias, arity, void = interop.parse_signature(compiler:word())
-  local name = sanitize(alias)
-  compiler:defword(alias, name, false)
+  local forth_name, arity, void = interop.parse_signature(compiler:word())
+  local lua_name = sanitize(forth_name)
+  compiler:defword(forth_name, lua_name, false)
   if not arity or arity == 0 then
-    compiler:emit_line("function " .. name .. "()")
+    compiler:emit_line("function " .. lua_name .. "()")
   else
-    compiler:emit("function " .. name .. "(")
+    compiler:emit("function " .. lua_name .. "(")
     for i = 1, arity do
       compiler:emit("__a" .. i)
       if i < arity then

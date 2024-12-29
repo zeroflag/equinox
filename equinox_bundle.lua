@@ -21,6 +21,7 @@ package.preload[ "compiler" ] = function( ... ) local arg = _G.arg;
 -- benchmarks
 -- fix Lua's accidental global
 -- tab auto complete repl
+-- aliases
 -- alias lua table operationokre
 -- ncurses REPL with stack (main/aux) visualization
 -- : p.x 123 ;
@@ -61,9 +62,9 @@ end
 
 function compiler.emit_word(self, word)
   if word.callable then
-    self:emit_line(word.name .. "()")
+    self:emit_line(word.lua_name .. "()")
   else
-    self:emit_line("ops.lit(" .. word.name .. ")")
+    self:emit_line("ops.lit(" .. word.lua_name .. ")")
   end
 end
 
@@ -143,7 +144,7 @@ function compiler.defvar(self, alias, name)
 end
 
 function compiler.exec(self, word)
-  local mod, fun = dict.find(word).name:match("^(.-)%.(.+)$")
+  local mod, fun = dict.find(word).lua_name:match("^(.-)%.(.+)$")
   _G[mod][fun](self)
 end
 
@@ -162,9 +163,10 @@ function compiler.compile(self, text)
   self:init(text)
   local token, kind = self:word()
   while token ~= "" do
+    local word_def = dict.find(token)
     if kind == "word"
-      and dict.find(token)
-      and dict.find(token).imm
+      and word_def
+      and word_def.immediate
     then
       self:exec(token)
     else
@@ -208,29 +210,42 @@ end
 do
 local _ENV = _ENV
 package.preload[ "dict" ] = function( ... ) local arg = _G.arg;
-local dict  = { words = {} }
+local words = {}
+local dict  = { ["words"] = words }
 
--- TODO kuloncs kulcs alatt legyen a dict
--- mert igy a wordlistben latszik
-
-function dict.defword(alias, name, immediate)
-  dict["words"][alias] = { ["name"] = name, imm = immediate, callable = true }
+function entry(forth_name, lua_name, immediate, callable)
+  return {
+    forth_name = forth_name,
+    lua_name = lua_name,
+    immediate = immediate,
+    callable = callable
+  }
 end
 
-function dict.defvar(alias, name)
-  dict["words"][alias] = { ["name"] = name, callable = false }
+function dict.defword(forth_name, lua_name, immediate)
+  table.insert(words, entry(forth_name, lua_name, immediate, true))
 end
 
-function dict.find(name)
-  return dict["words"][name]
+function dict.defvar(forth_name, lua_name)
+  table.insert(words, entry(forth_name, lua_name, immediate, false))
+end
+
+function dict.find(forth_name)
+  for i = #words, 1, -1 do
+    local each = words[i]
+    if each.forth_name == forth_name then
+      return each
+    end
+  end
+  return nil
 end
 
 function dict.word_list()
-  local words = {}
-  for name, val in pairs(dict["words"]) do
-    table.insert(words, name)
+  local result = {}
+  for i, each in ipairs(words) do
+    table.insert(result, each.forth_name)
   end
-  return words
+  return result
 end
 
 dict.defword("+", "ops.add", false)
@@ -461,13 +476,13 @@ function sanitize(str)
 end
 
 function macros.colon(compiler)
-  local alias, arity, void = interop.parse_signature(compiler:word())
-  local name = sanitize(alias)
-  compiler:defword(alias, name, false)
+  local forth_name, arity, void = interop.parse_signature(compiler:word())
+  local lua_name = sanitize(forth_name)
+  compiler:defword(forth_name, lua_name, false)
   if not arity or arity == 0 then
-    compiler:emit_line("function " .. name .. "()")
+    compiler:emit_line("function " .. lua_name .. "()")
   else
-    compiler:emit("function " .. name .. "(")
+    compiler:emit("function " .. lua_name .. "(")
     for i = 1, arity do
       compiler:emit("__a" .. i)
       if i < arity then

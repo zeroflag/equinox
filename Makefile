@@ -7,6 +7,11 @@ EQUINOX = equinox.lua
 BUNDLE = equinox_bundle.lua
 AMALG = amalg.lua
 
+# Define color variables
+GREEN := \033[0;32m
+RED := \033[0;31m
+NC := \033[0m # No color
+
 all: clean test bundle
 
 test:
@@ -27,7 +32,7 @@ test:
 			done; \
 		fi; \
   done
-	@echo "All tests passed!"
+	@echo "$(GREEN)All tests passed!$(NC)"
 
 bundle:
 	@echo "Creating $(BUNDLE)"
