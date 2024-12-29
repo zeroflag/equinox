@@ -137,7 +137,7 @@ function compiler.compile_token(self, token, kind)
         -- Unknown lua call
         local res = interop.resolve_lua_method_call(token)
         if res then
-          self:emit_lua_call("v_".. res.name, res.arity, res.vararg, res.void)
+          self:emit_lua_call(res.name, res.arity, res.vararg, res.void)
         else
           local res = interop.resolve_lua_func_with_arity(token)
           if res then
@@ -548,16 +548,13 @@ function macros.single_line_comment(compiler)
 end
 
 function macros.var(compiler)
-  local alias = compiler:word()
-  local name = "v_" .. alias
-  compiler:def_var(alias, name)
+  local name = compiler:word()
+  compiler:def_var(name, name)
   compiler:emit_line("local " .. name)
 end
 
 function macros.assignment(compiler)
-  local alias = compiler:word()
-  local name = "v_" .. alias
-  compiler:emit_line(name .. " = stack:pop()")
+  compiler:emit_line(compiler:word() .. " = stack:pop()")
 end
 
 function macros._if(compiler)

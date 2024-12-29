@@ -81,16 +81,13 @@ function macros.single_line_comment(compiler)
 end
 
 function macros.var(compiler)
-  local alias = compiler:word()
-  local name = "v_" .. alias
-  compiler:def_var(alias, name)
+  local name = compiler:word()
+  compiler:def_var(name, name)
   compiler:emit_line("local " .. name)
 end
 
 function macros.assignment(compiler)
-  local alias = compiler:word()
-  local name = "v_" .. alias
-  compiler:emit_line(name .. " = stack:pop()")
+  compiler:emit_line(compiler:word() .. " = stack:pop()")
 end
 
 function macros._if(compiler)

@@ -124,7 +124,7 @@ function compiler.compile_token(self, token, kind)
         -- Unknown lua call
         local res = interop.resolve_lua_method_call(token)
         if res then
-          self:emit_lua_call("v_".. res.name, res.arity, res.vararg, res.void)
+          self:emit_lua_call(res.name, res.arity, res.vararg, res.void)
         else
           local res = interop.resolve_lua_func_with_arity(token)
           if res then
