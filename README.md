@@ -13,15 +13,14 @@ Forth Programming Language, hosted by Lua.
 
 Lua table operations
 
-| Operation       | Array                       | Table             |
-|-----------------|-----------------------------|-------------------|
-| Create          | [ 1 2 3 ]                   | #[ :key1 :val1 ]# |
-| Append          | tbl item table.insert!2     |                   |
-| Prepend         | tbl 1 item table.insert!3   |                   |
-| Insert          | tbl idx item table.insert!3 | tbl key value put |
-| Lookup          | tbl idx at                  | tbl key at        |
-| Remove          | tbl idx table.remove!2      | tbl key nil put   |
-| Remove & Return | tbl idx table.remove/2      |                   |
-| Size            | tbl size                    |                   |
+| Operation       | Array                  | Table             |
+|-----------------|------------------------|-------------------|
+| Create          | [ 1 2 3 ]              | #[ :key1 :val1 ]# |
+| Append          | tbl item append        |                   |
+| Insert          | tbl idx item insert    | tbl key value put |
+| Lookup          | tbl idx at             | tbl key at        |
+| Remove          | tbl idx remove         | tbl key nil put   |
+| Remove & Return | tbl idx table.remove/2 |                   |
+| Size            | tbl size               |                   |
 
 ![{master}](https://github.com/zeroflag/equinox/actions/workflows/makefile.yml/badge.svg) 
