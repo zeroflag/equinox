@@ -452,7 +452,7 @@ function interop.resolve_lua_method_call(signature)
   local name, arity, void = interop.parse_signature(signature)
   local obj, method = string.match(name, "(.+):(.+)")
   if obj and method then
-    return { name = name, arity = arity, void = void, vararg = false }
+    return { name = name, arity = arity or 0, void = void, vararg = false }
   else
     return obj
   end

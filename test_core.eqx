@@ -232,8 +232,7 @@ str:reverse/0 "cba" =assert
 "4" =assert
 "2" =assert
 
-\ TODO default to \0
-\ str:len 3 =assert
+str:len 5 =assert
 
 adepth 0 =assert
 depth 0 =assert
