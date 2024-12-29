@@ -15,7 +15,7 @@ Lua table operations
 
 | Operation       | Array                  | Table             |
 |-----------------|------------------------|-------------------|
-| Create          | [ 1 2 3 ]              | #[ :key1 :val1 ]# |
+| Create          | [ 1 2 3 ]              | { :key1 :val1 }   |
 | Append          | tbl item append        |                   |
 | Insert          | tbl idx item insert    | tbl key value put |
 | Lookup          | tbl idx at             | tbl key at        |

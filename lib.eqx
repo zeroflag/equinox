@@ -22,8 +22,8 @@ lua-alias: table.remove!2 remove
     a>
   loop ;
 
-: #[ ( -- ) depth >a ;
-: ]#
+: { depth >a ;
+: }
     <table>
     depth a> - 1 -
     dup 2 % 0 != if

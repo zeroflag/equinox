@@ -47,10 +47,10 @@ adepth 0 =assert
 
 ( key value tables )
 
-#[ ]# size 0 =assert
+{ } size 0 =assert
 
-#[ "k1" "val1"
-   "k2" "val2" ]# -> tbl
+{ "k1" "val1"
+  "k2" "val2" } -> tbl
 
 tbl "k1" at "val1" =assert
 tbl "k2" at "val2" =assert
