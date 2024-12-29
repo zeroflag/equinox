@@ -83,7 +83,7 @@ end
 function macros.var(compiler)
   local alias = compiler:word()
   local name = "v_" .. alias
-  compiler:defvar(alias, name)
+  compiler:def_var(alias, name)
   compiler:emit_line("local " .. name)
 end
 

@@ -19,7 +19,7 @@ function dict.def_lua_alias(lua_name, forth_name)
   table.insert(words, entry(forth_name, lua_name, immediate, false, true))
 end
 
-function dict.defvar(forth_name, lua_name)
+function dict.def_var(forth_name, lua_name)
   table.insert(words, entry(forth_name, lua_name, immediate, false, false))
 end
 

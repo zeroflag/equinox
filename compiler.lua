@@ -133,8 +133,8 @@ function compiler.def_word(self, alias, name, immediate)
   dict.def_word(alias, name, immediate)
 end
 
-function compiler.defvar(self, alias, name)
-  dict.defvar(alias, name)
+function compiler.def_var(self, alias, name)
+  dict.def_var(alias, name)
 end
 
 function compiler.exec(self, word)
@@ -148,9 +148,9 @@ function compiler.init(self, text)
   self:emit_line("local ops = require(\"ops\")")
   self:emit_line("local stack = require(\"stack\")")
   self:emit_line("local aux = require(\"aux\")")
-  dict.defvar("true", "true")
-  dict.defvar("false", "false")
-  dict.defvar("nil", "NIL")
+  dict.def_var("true", "true")
+  dict.def_var("false", "false")
+  dict.def_var("nil", "NIL")
 end
 
 function compiler.compile(self, text)
