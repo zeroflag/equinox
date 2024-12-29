@@ -36,3 +36,20 @@ stack:push(nil)
 assert(stack:depth() == 1)
 assert(nil == stack:pop())
 assert(stack:depth() == 0)
+
+stack:push_many(1, 2, 3)
+assert(stack:depth() == 3)
+assert(stack:pop() == 3)
+assert(stack:pop() == 2)
+assert(stack:pop() == 1)
+
+function multi_return()
+  return 4, 5
+end
+
+stack:push_many(multi_return())
+assert(stack:depth() == 2)
+assert(stack:pop() == 5)
+assert(stack:pop() == 4)
+
+assert(stack:depth() == 0)

@@ -21,9 +21,8 @@ package.preload[ "compiler" ] = function( ... ) local arg = _G.arg;
 -- benchmarks
 -- fix Lua's accidental global
 -- tab auto complete repl
--- aliases
--- alias lua table operationokre
 -- ncurses REPL with stack (main/aux) visualization
+-- lua constant lookup, math.pi, etc
 -- : p.x 123 ;
 local stack = require("stack")
 local macros = require("macros")
@@ -99,7 +98,7 @@ function compiler.emit_lua_call(self, name, arity, vararg, void)
   if void then
     self:emit(name .. "(")
   else
-    self:emit("stack:push(" .. name .. "(")
+    self:emit("stack:push_many(" .. name .. "(")
   end
   for i = 1, arity do
     self:emit("__p" .. i)
@@ -136,11 +135,16 @@ function compiler.compile_token(self, token, kind)
         self:emit_lit(num)
       else
         -- Unknown lua call
-        local res = interop.resolve_lua_func_with_arity(token)
+        local res = interop.resolve_lua_method_call(token)
         if res then
-          self:emit_lua_call(res.name, res.arity, res.vararg, res.void)
+          self:emit_lua_call("v_".. res.name, res.arity, res.vararg, res.void)
         else
-          err.abort("Word not found: '" .. token .. "'")
+          local res = interop.resolve_lua_func_with_arity(token)
+          if res then
+            self:emit_lua_call(res.name, res.arity, res.vararg, res.void)
+          else
+            err.abort("Word not found: '" .. token .. "'")
+          end
         end
       end
     end
@@ -442,6 +446,16 @@ function interop.resolve_lua_func_with_arity(signature)
     if not arity then vararg = true end
   end
   return { name = name, arity = arity, vararg = vararg, void = void }
+end
+
+function interop.resolve_lua_method_call(signature)
+  local name, arity, void = interop.parse_signature(signature)
+  local obj, method = string.match(name, "(.+):(.+)")
+  if obj and method then
+    return { name = name, arity = arity, void = void, vararg = false }
+  else
+    return obj
+  end
 end
 
 return interop
@@ -881,6 +895,12 @@ end
 
 function Stack.push(self, e)
   table.insert(self.stack, e ~= nil and e or NIL)
+end
+
+function Stack.push_many(self, ...)
+  for i, item in ipairs({...}) do
+    self:push(item)
+  end
 end
 
 function Stack.pop_safe(self)

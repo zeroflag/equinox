@@ -8,9 +8,8 @@
 -- benchmarks
 -- fix Lua's accidental global
 -- tab auto complete repl
--- aliases
--- alias lua table operationokre
 -- ncurses REPL with stack (main/aux) visualization
+-- lua constant lookup, math.pi, etc
 -- : p.x 123 ;
 local stack = require("stack")
 local macros = require("macros")
@@ -86,7 +85,7 @@ function compiler.emit_lua_call(self, name, arity, vararg, void)
   if void then
     self:emit(name .. "(")
   else
-    self:emit("stack:push(" .. name .. "(")
+    self:emit("stack:push_many(" .. name .. "(")
   end
   for i = 1, arity do
     self:emit("__p" .. i)
@@ -123,11 +122,16 @@ function compiler.compile_token(self, token, kind)
         self:emit_lit(num)
       else
         -- Unknown lua call
-        local res = interop.resolve_lua_func_with_arity(token)
+        local res = interop.resolve_lua_method_call(token)
         if res then
-          self:emit_lua_call(res.name, res.arity, res.vararg, res.void)
+          self:emit_lua_call("v_".. res.name, res.arity, res.vararg, res.void)
         else
-          err.abort("Word not found: '" .. token .. "'")
+          local res = interop.resolve_lua_func_with_arity(token)
+          if res then
+            self:emit_lua_call(res.name, res.arity, res.vararg, res.void)
+          else
+            err.abort("Word not found: '" .. token .. "'")
+          end
         end
       end
     end

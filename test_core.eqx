@@ -215,5 +215,25 @@ loop
 10004 =assert 10003 =assert 10002 =assert 10001 =assert 10000 =assert
 42424242 =assert
 
+var str
+"abc" -> str
+str:upper/0 "ABC" =assert
+str:len/0 3 =assert
+str:reverse/0 "cba" =assert
+
+"2@4" -> str
+"(%d)@%d" str:match/1
+"2" =assert
+
+"2@4@8" -> str
+"(%d)@(%d)@(%d)" str:match/1
+
+"8" =assert
+"4" =assert
+"2" =assert
+
+\ TODO default to \0
+\ str:len 3 =assert
+
 adepth 0 =assert
 depth 0 =assert

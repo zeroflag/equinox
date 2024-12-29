@@ -13,6 +13,12 @@ function Stack.push(self, e)
   table.insert(self.stack, e ~= nil and e or NIL)
 end
 
+function Stack.push_many(self, ...)
+  for i, item in ipairs({...}) do
+    self:push(item)
+  end
+end
+
 function Stack.pop_safe(self)
   local item = table.remove(self.stack)
   if item == nil then
