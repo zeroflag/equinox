@@ -3,19 +3,19 @@ local stack = require("stack")
 
 local repl = {}
 
-function repl.welcome()
+function repl.welcome(version)
   print("Welcome to the Delta Quadrant on Equinox (" .. _VERSION .. ")")
   print("Engage warp speed and may your stack never overflow.")
 
-  print([[
+  print(string.format([[
  ___________________          _-_
  \__(==========/_=_/ ____.---'---`---.____
              \_ \    \----._________.----/
                \ \   /  /    `-_-'
            __,--`.`-'..'-_
          /____          ||
-               `--.____,-'
-  ]])
+               `--.____,-'   v%s
+  ]], version))
   print("Type words to see wordlist or bye to exit.")
 end
 

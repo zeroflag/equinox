@@ -441,6 +441,7 @@ function interop.resolve_lua_func_with_arity(signature)
   local vararg = false
   if not func then return nil end
   if not arity then
+    -- TODO remove ?
     local info = debug.getinfo(func, "u") -- Doesn't work with C funcs or older than Lua5.2
     arity, vararg = info.nparams, info.isvararg
     if not arity then vararg = true end
@@ -823,19 +824,19 @@ local stack = require("stack")
 
 local repl = {}
 
-function repl.welcome()
+function repl.welcome(version)
   print("Welcome to the Delta Quadrant on Equinox (" .. _VERSION .. ")")
   print("Engage warp speed and may your stack never overflow.")
 
-  print([[
+  print(string.format([[
  ___________________          _-_
  \__(==========/_=_/ ____.---'---`---.____
              \_ \    \----._________.----/
                \ \   /  /    `-_-'
            __,--`.`-'..'-_
          /____          ||
-               `--.____,-'
-  ]])
+               `--.____,-'   v%s
+  ]], version))
   print("Type words to see wordlist or bye to exit.")
 end
 
@@ -940,14 +941,16 @@ end
 end
 
 compiler = require("compiler")
+version = require("version/version")
 repl = require("repl")
 
 local equinox = {}
 
 function equinox.main()
+  version.load()
   compiler:eval_file("lib.eqx")
   if #arg < 1 then
-    repl.welcome()
+    repl.welcome(version.current)
     repl.start()
   else
     local log_result = false

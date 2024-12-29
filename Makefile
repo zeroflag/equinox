@@ -7,12 +7,11 @@ EQUINOX = equinox.lua
 BUNDLE = equinox_bundle.lua
 AMALG = amalg.lua
 
-# Define color variables
 GREEN := \033[0;32m
 RED := \033[0;31m
-NC := \033[0m # No color
+NC := \033[0m
 
-all: clean test bundle
+all: clean test version bundle
 
 test:
 	@for luaver in $(LUA_VERSIONS); do \
@@ -34,6 +33,10 @@ test:
 	done
 	@echo "$(GREEN)All tests passed!$(NC)"
 
+version:
+	@echo "Increase patch version"
+	lua version/version.lua
+
 bundle:
 	@echo "Creating $(BUNDLE)"
 	$(AMALG) -s $(EQUINOX) compiler aux dict err interop input macros ops output stack_def repl stack -o $(BUNDLE)
@@ -46,4 +49,4 @@ clean:
 	rm -f $(BUNDLE)
 
 # Add a phony directive to prevent file conflicts
-.PHONY: all test clean
+.PHONY: all test clean bundle repl version
