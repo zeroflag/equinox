@@ -1,8 +1,9 @@
 LUA54 = lua5.4
 LUA51 = lua5.1
 LUA_VERSIONS := $(LUA54) $(LUA51) lua
-TEST_LUA_FILES = $(wildcard test_*.lua)
-TEST_EQX_FILES = $(wildcard test_*.eqx)
+TEST_DIR = tests
+TEST_LUA_FILES = $(wildcard $(TEST_DIR)/test_*.lua)
+TEST_EQX_FILES = $(wildcard $(TEST_DIR)/test_*.eqx)
 EQUINOX = equinox.lua
 BUNDLE = equinox_bundle.lua
 AMALG = amalg.lua
