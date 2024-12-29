@@ -121,17 +121,22 @@ function compiler.compile_token(self, token, kind)
     self:emit_symbol(token)
   else
     local word = dict.find(token)
-    if word and not word.is_lua_alias then
-      self:emit_word(word)
+    if word then
+      if word.is_lua_alias then
+        -- Known lua alias
+        local res = interop.resolve_lua_func_with_arity(word.lua_name)
+        self:emit_lua_call(res.name, res.arity, res.vararg, res.void)
+      else
+        -- Forth word
+        self:emit_word(word)
+      end
     else
       local num = tonumber(token)
       if num then
         self:emit_lit(num)
       else
+        -- Unknown lua call
         local res = interop.resolve_lua_func_with_arity(token)
-        if word and word.is_lua_alias then
-          res = interop.resolve_lua_func_with_arity(word.lua_name)
-        end
         if res then
           self:emit_lua_call(res.name, res.arity, res.vararg, res.void)
         else
