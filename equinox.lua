@@ -15,12 +15,12 @@ function equinox.main()
   end
 end
 
-function equinox.eval(str)
-  return compiler:eval(str)
+function equinox.eval(str, log_result)
+  return compiler:eval(str, log_result)
 end
 
-function equinox.eval_file(str)
-  return compiler:eval_file(str)
+function equinox.eval_file(str, log_result)
+  return compiler:eval_file(str, log_result)
 end
 
 if arg and arg[0] == "equinox.lua" then

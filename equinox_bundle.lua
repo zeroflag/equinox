@@ -186,24 +186,27 @@ function compiler.compile(self, text)
     end
     token, kind = self:word()
   end
-  print(self.output:text())
   return self.output
 end
 
-function compiler.eval(self, text)
+function compiler.eval(self, text, log_result)
   local out = self:compile(text)
+  if log_result then
+    print("-- Generated Lua Code:")
+    print(self.output:text())
+  end
   out:load()
   return stack
 end
 
-function compiler.eval_file(self, path)
+function compiler.eval_file(self, path, log_result)
   local file = io.open(path, "r")
   if not file then
     err.abort("Could not open file: " .. path)
   end
   local content = file:read("*a")
   file:close()
-  return self:eval(content)
+  return self:eval(content, log_result)
 end
 
 function compiler.emit_line(self, token)
@@ -936,12 +939,12 @@ function equinox.main()
   end
 end
 
-function equinox.eval(str)
-  return compiler:eval(str)
+function equinox.eval(str, log_result)
+  return compiler:eval(str, log_result)
 end
 
-function equinox.eval_file(str)
-  return compiler:eval_file(str)
+function equinox.eval_file(str, log_result)
+  return compiler:eval_file(str, log_result)
 end
 
 if arg and arg[0] == "equinox.lua" then
