@@ -16,8 +16,6 @@ package.preload[ "compiler" ] = function( ... ) local arg = _G.arg;
 -- var/local scopes
 -- case
 -- for
--- begin again
--- exit
 -- hyperstatic glob
 -- benchmarks
 -- Stack as Macro
@@ -330,6 +328,7 @@ dict.def_macro("begin", "macros._begin")
 dict.def_macro("until", "macros._until")
 dict.def_macro("while", "macros._while")
 dict.def_macro("repeat", "macros._repeat")
+dict.def_macro("again", "macros._repeat") -- same as repeat
 dict.def_macro("do", "macros._do")
 dict.def_macro("loop", "macros._loop")
 dict.def_macro("i", "macros._i")

@@ -3,8 +3,6 @@
 -- var/local scopes
 -- case
 -- for
--- begin again
--- exit
 -- hyperstatic glob
 -- benchmarks
 -- Stack as Macro

@@ -253,5 +253,13 @@ depth 0 =assert
 : exit-test 5 exit 6 ;
 exit-test 5 =assert
 
+: begin-again-test
+  0
+  begin
+    dup 5 < if 1 + else dup * exit then
+  again ;
+
+begin-again-test 25 =assert
+
 adepth 0 =assert
 depth 0 =assert
