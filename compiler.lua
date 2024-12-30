@@ -134,7 +134,7 @@ function compiler.compile_token(self, token, kind)
           if res then
             self:emit_lua_call(res.name, res.arity, res.vararg, res.void)
           elseif interop.is_lua_prop_lookup(token) then
-            -- TODO check lhs is a defined var or in _G
+            -- TODO check lhs(s) is a defined var or in _G
             -- Table lookup
             self:emit_lua_prop_lookup(token)
           else

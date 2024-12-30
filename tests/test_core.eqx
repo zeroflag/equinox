@@ -236,3 +236,19 @@ str:len 5 =assert
 
 adepth 0 =assert
 depth 0 =assert
+
+: factorial ( n -- n! )
+  1 2 rot
+  begin2
+    2dup <=
+  while
+    -rot tuck
+    * swap
+    1 + rot
+  repeat
+  drop drop ;
+
+8 factorial 40320 =assert
+
+adepth 0 =assert
+depth 0 =assert

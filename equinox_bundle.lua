@@ -147,7 +147,7 @@ function compiler.compile_token(self, token, kind)
           if res then
             self:emit_lua_call(res.name, res.arity, res.vararg, res.void)
           elseif interop.is_lua_prop_lookup(token) then
-            -- TODO check lhs is a defined var or in _G
+            -- TODO check lhs(s) is a defined var or in _G
             -- Table lookup
             self:emit_lua_prop_lookup(token)
           else
@@ -318,6 +318,9 @@ dict.def_macro("then", "macros._then")
 dict.def_macro("else", "macros._else")
 dict.def_macro("begin", "macros._begin")
 dict.def_macro("until", "macros._until")
+dict.def_macro("begin2", "macros._begin2")
+dict.def_macro("while", "macros._while")
+dict.def_macro("repeat", "macros._repeat")
 dict.def_macro("do", "macros._do")
 dict.def_macro("loop", "macros._loop")
 dict.def_macro("i", "macros._i")
@@ -733,10 +736,23 @@ end
 
 function macros._begin(compiler)
   compiler:emit_line("repeat")
+  -- TODO store line number let until fill in
 end
 
 function macros._until(compiler)
   compiler:emit_line("until(stack:pop())")
+end
+
+function macros._begin2(compiler) -- TODO use begin2
+  compiler:emit_line("while(true) do")
+end
+
+function macros._while(compiler)
+  compiler:emit_line("if not stack:pop() then break end")
+end
+
+function macros._repeat(compiler)
+  compiler:emit_line("end")
 end
 
 -- TODO this might overwrite user defined i/j ?

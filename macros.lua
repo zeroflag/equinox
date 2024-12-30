@@ -256,10 +256,23 @@ end
 
 function macros._begin(compiler)
   compiler:emit_line("repeat")
+  -- TODO store line number let until fill in
 end
 
 function macros._until(compiler)
   compiler:emit_line("until(stack:pop())")
+end
+
+function macros._begin2(compiler) -- TODO use begin2
+  compiler:emit_line("while(true) do")
+end
+
+function macros._while(compiler)
+  compiler:emit_line("if not stack:pop() then break end")
+end
+
+function macros._repeat(compiler)
+  compiler:emit_line("end")
 end
 
 -- TODO this might overwrite user defined i/j ?
