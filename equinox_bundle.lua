@@ -51,6 +51,14 @@ function compiler.word_list(self)
   return dict.word_list()
 end
 
+function compiler.line_number(self)
+  return self.output:size() -1
+end
+
+function compiler.update_line(self, line, line_number)
+  return self.output:update_line(line, line_number)
+end
+
 function compiler.alias(self, lua_name, forth_alias)
   return dict.def_lua_alias(lua_name, forth_alias)
 end
@@ -222,7 +230,7 @@ end
 
 function compiler.emit_line(self, token)
   self:emit(token)
-  self.output:cr()
+  self.output:new_line()
 end
 
 function compiler.emit(self, token)
@@ -318,7 +326,6 @@ dict.def_macro("then", "macros._then")
 dict.def_macro("else", "macros._else")
 dict.def_macro("begin", "macros._begin")
 dict.def_macro("until", "macros._until")
-dict.def_macro("begin2", "macros._begin2")
 dict.def_macro("while", "macros._while")
 dict.def_macro("repeat", "macros._repeat")
 dict.def_macro("do", "macros._do")
@@ -735,16 +742,14 @@ function macros._then(compiler)
 end
 
 function macros._begin(compiler)
-  compiler:emit_line("repeat")
-  -- TODO store line number let until fill in
+  compiler:emit_line("-- placeholder begin")
+  stack:push(compiler:line_number())
 end
 
 function macros._until(compiler)
-  compiler:emit_line("until(stack:pop())")
-end
-
-function macros._begin2(compiler) -- TODO use begin2
-  compiler:emit_line("while(true) do")
+  local line_number = stack:pop()
+  compiler:update_line("repeat", line_number)
+  compiler:emit_line("until(stack:pop())", line_number)
 end
 
 function macros._while(compiler)
@@ -752,6 +757,8 @@ function macros._while(compiler)
 end
 
 function macros._repeat(compiler)
+  local line_number = stack:pop()
+  compiler:update_line("while(true) do", line_number)
   compiler:emit_line("end")
 end
 
@@ -797,29 +804,34 @@ package.preload[ "output" ] = function( ... ) local arg = _G.arg;
 local Output = {}
 
 function Output.new()
-  local obj = {buffer = {}}
+  local obj = {lines = {""}}
   setmetatable(obj, {__index = Output})
   return obj
 end
 
 function Output.append(self, str)
-  table.insert(self.buffer, str)
+  self.lines[self:size()] = self.lines[self:size()] .. str
 end
 
-function Output.cr(self)
-  self:append("\n")
+function Output.update_line(self, str, line_number)
+  self.lines[line_number] = str
+end
+
+function Output.new_line(self)
+  table.insert(self.lines, "")
 end
 
 function Output.size(self)
-  return #self.buffer
+  return #self.lines
 end
 
 function Output.text(self, from)
-  return table.concat(self.buffer, nil, from)
+  return table.concat(self.lines, "\n", from)
 end
 
 function Output.load(self)
   local text = self:text()
+  print(text)
   if loadstring then
     loadstring(text)()
   else -- Since Lua 5.2, loadstring has been replaced by load.

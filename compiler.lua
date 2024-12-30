@@ -38,6 +38,14 @@ function compiler.word_list(self)
   return dict.word_list()
 end
 
+function compiler.line_number(self)
+  return self.output:size() -1
+end
+
+function compiler.update_line(self, line, line_number)
+  return self.output:update_line(line, line_number)
+end
+
 function compiler.alias(self, lua_name, forth_alias)
   return dict.def_lua_alias(lua_name, forth_alias)
 end
@@ -209,7 +217,7 @@ end
 
 function compiler.emit_line(self, token)
   self:emit(token)
-  self.output:cr()
+  self.output:new_line()
 end
 
 function compiler.emit(self, token)

@@ -255,16 +255,14 @@ function macros._then(compiler)
 end
 
 function macros._begin(compiler)
-  compiler:emit_line("repeat")
-  -- TODO store line number let until fill in
+  compiler:emit_line("-- placeholder begin")
+  stack:push(compiler:line_number())
 end
 
 function macros._until(compiler)
-  compiler:emit_line("until(stack:pop())")
-end
-
-function macros._begin2(compiler) -- TODO use begin2
-  compiler:emit_line("while(true) do")
+  local line_number = stack:pop()
+  compiler:update_line("repeat", line_number)
+  compiler:emit_line("until(stack:pop())", line_number)
 end
 
 function macros._while(compiler)
@@ -272,6 +270,8 @@ function macros._while(compiler)
 end
 
 function macros._repeat(compiler)
+  local line_number = stack:pop()
+  compiler:update_line("while(true) do", line_number)
   compiler:emit_line("end")
 end
 

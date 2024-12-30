@@ -239,7 +239,7 @@ depth 0 =assert
 
 : factorial ( n -- n! )
   1 2 rot
-  begin2
+  begin
     2dup <=
   while
     -rot tuck
