@@ -2,8 +2,9 @@
 -- user defined control structues
 -- var/local scopes
 -- case
--- begin while repeat
 -- for
+-- begin again
+-- exit
 -- hyperstatic glob
 -- benchmarks
 -- Stack as Macro

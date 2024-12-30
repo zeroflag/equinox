@@ -250,5 +250,8 @@ depth 0 =assert
 
 8 factorial 40320 =assert
 
+: exit-test 5 exit 6 ;
+exit-test 5 =assert
+
 adepth 0 =assert
 depth 0 =assert

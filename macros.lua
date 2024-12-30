@@ -276,6 +276,10 @@ function macros._repeat(compiler)
   compiler:emit_line("end")
 end
 
+function macros._exit(compiler)
+  compiler:emit_line("do return end")
+end
+
 -- TODO this might overwrite user defined i/j ?
 function macros._i(compiler)
   compiler:emit_line("stack:push(aux:tos())")

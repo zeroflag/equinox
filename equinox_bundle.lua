@@ -15,8 +15,9 @@ package.preload[ "compiler" ] = function( ... ) local arg = _G.arg;
 -- user defined control structues
 -- var/local scopes
 -- case
--- begin while repeat
 -- for
+-- begin again
+-- exit
 -- hyperstatic glob
 -- benchmarks
 -- Stack as Macro
@@ -321,6 +322,7 @@ dict.def_macro("size", "macros.table_size")
 dict.def_macro("at", "macros.table_at")
 dict.def_macro("put", "macros.table_put")
 dict.def_macro("words", "macros.words")
+dict.def_macro("exit", "macros._exit")
 dict.def_macro("if", "macros._if")
 dict.def_macro("then", "macros._then")
 dict.def_macro("else", "macros._else")
@@ -761,6 +763,10 @@ function macros._repeat(compiler)
   local line_number = stack:pop()
   compiler:update_line("while(true) do", line_number)
   compiler:emit_line("end")
+end
+
+function macros._exit(compiler)
+  compiler:emit_line("do return end")
 end
 
 -- TODO this might overwrite user defined i/j ?
