@@ -6,6 +6,7 @@
 -- for
 -- hyperstatic glob
 -- benchmarks
+-- Stack as Macro
 -- fix Lua's accidental global
 -- tab auto complete repl
 -- line numbers + errors

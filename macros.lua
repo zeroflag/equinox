@@ -55,24 +55,21 @@ function macros.sub(compiler)
   compiler:emit_line([[
 local _a = stack:pop()
 local _b = stack:pop()
-stack:push(_b - _a)
-]])
+stack:push(_b - _a)]])
 end
 
 function macros.div(compiler)
   compiler:emit_line([[
 local _a = stack:pop()
 local _b = stack:pop()
-stack:push(_b / _a)
-]])
+stack:push(_b / _a)]])
 end
 
 function macros.mod(compiler)
   compiler:emit_line([[
 local _a = stack:pop()
 local _b = stack:pop()
-stack:push(_b % _a)
-]])
+stack:push(_b % _a)]])
 end
 
 function macros.eq(compiler)
@@ -105,26 +102,23 @@ end
 
 function macros._and(compiler)
   compiler:emit_line([[
-  local _a = stack:pop()
-  local _b = stack:pop()
-  stack:push(_a and _b)
-]])
+local _a = stack:pop()
+local _b = stack:pop()
+stack:push(_a and _b)]])
 end
 
 function macros._or(compiler)
   compiler:emit_line([[
-  local _a = stack:pop()
-  local _b = stack:pop()
-  stack:push(_a or _b)
-]])
+local _a = stack:pop()
+local _b = stack:pop()
+stack:push(_a or _b)]])
 end
 
 function macros.concat(compiler)
   compiler:emit_line([[
-  local _a = stack:pop()
-  local _b = stack:pop()
-  stack:push(_b .. _a)
-]])
+local _a = stack:pop()
+local _b = stack:pop()
+stack:push(_b .. _a)]])
 end
 
 function macros.new_table(compiler)
@@ -137,19 +131,17 @@ end
 
 function macros.table_at(compiler)
   compiler:emit_line([[
-  local _n = stack:pop()
-  local _t = stack:pop()
-  stack:push(_t[_n])
-]])
+local _n = stack:pop()
+local _t = stack:pop()
+stack:push(_t[_n])]])
 end
 
 function macros.table_put(compiler)
   compiler:emit_line([[
-  local _val = stack:pop()
-  local _key = stack:pop()
-  local _tbl = stack:pop()
-  _tbl[_key] = _val
-]])
+local _val = stack:pop()
+local _key = stack:pop()
+local _tbl = stack:pop()
+_tbl[_key] = _val]])
 end
 
 function macros.depth(compiler)
@@ -179,8 +171,7 @@ local _b = stack:pop()
 local _a = stack:pop()
 stack:push(_b)
 stack:push(_c)
-stack:push(_a)
-]])
+stack:push(_a)]])
 end
 
 function macros.swap(compiler)
@@ -188,8 +179,7 @@ function macros.swap(compiler)
 local _a = stack:pop()
 local _b = stack:pop()
 stack:push(_a)
-stack:push(_b)
-]])
+stack:push(_b)]])
 end
 
 function macros.to_aux(compiler)
@@ -203,8 +193,7 @@ end
 function macros.dot(compiler)
   compiler:emit_line([[
 io.write(tostring(stack:pop()))
-io.write(" ")
-]])
+io.write(" ")]])
 end
 
 function macros.def_lua_alias(compiler)
