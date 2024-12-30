@@ -1,10 +1,10 @@
 compiler = require("compiler")
-version = require("version/version")
 repl = require("repl")
 
 local equinox = {}
 
 function equinox.main()
+  version = require("version/version")
   version.load()
   compiler:eval_file("lib.eqx")
   if #arg < 1 then

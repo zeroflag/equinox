@@ -40,7 +40,7 @@ version:
 
 bundle:
 	@echo "Creating $(BUNDLE)"
-	$(AMALG) -s $(EQUINOX) compiler aux dict err interop input macros ops output stack_def repl stack version/version -o $(BUNDLE)
+	$(AMALG) -s $(EQUINOX) compiler aux dict err interop input macros ops output stack_def repl stack -o $(BUNDLE)
 
 repl:
 	lua $(EQUINOX)
