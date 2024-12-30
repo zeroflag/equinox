@@ -42,6 +42,19 @@ tbl 1 at "b" =assert
 tbl 2 at "a" =assert
 tbl size 2 =assert
 
+\ overwrite at index
+
+[ "a" "b" ] -> tbl
+tbl 1 at "a" =assert
+tbl 2 at "b" =assert
+
+tbl 1 "x" put
+tbl 2 "y" put
+
+tbl 1 at "x" =assert
+tbl 2 at "y" =assert
+tbl size 2 =assert
+
 depth 0 =assert
 adepth 0 =assert
 

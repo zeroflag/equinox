@@ -10,8 +10,8 @@
 -- tab auto complete repl
 -- line numbers + errors
 -- ncurses REPL with stack (main/aux) visualization
--- 1 -> p.x
--- table.prop syntax
+-- table.prop syntax (check)
+
 local stack = require("stack")
 local macros = require("macros")
 local ops = require("ops")

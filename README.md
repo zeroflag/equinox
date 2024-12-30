@@ -17,7 +17,8 @@ Lua table operations
 |-----------------|------------------------|-------------------|
 | Create          | [ 1 2 3 ]              | { :key1 :val1 }   |
 | Append          | tbl item append        |                   |
-| Insert          | tbl idx item insert    | tbl key value put |
+| Insert new      | tbl idx item insert    | tbl key value put |
+| Overwrite       | tbl idx item put       | tbl key value put |
 | Lookup          | tbl idx at             | tbl key at        |
 | Remove          | tbl idx remove         | tbl key nil put   |
 | Remove & Return | tbl idx table.remove/2 |                   |
