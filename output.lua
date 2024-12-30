@@ -14,8 +14,12 @@ function Output.cr(self)
   self:append("\n")
 end
 
-function Output.text(self)
-  return table.concat(self.buffer)
+function Output.size(self)
+  return #self.buffer
+end
+
+function Output.text(self, from)
+  return table.concat(self.buffer, nil, from)
 end
 
 function Output.load(self)

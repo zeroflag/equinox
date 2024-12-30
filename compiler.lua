@@ -25,7 +25,7 @@ local err  = require("err")
 -- TODO XXX
 _G["macros"] = macros
 
-local compiler = { input = nil, output = nil }
+local compiler = { input = nil, output = nil, code_start = 1 }
 
 function compiler.word(self)
   return self.input:parse()
@@ -162,6 +162,7 @@ function compiler.init(self, text)
   self:emit_line("local ops = require(\"ops\")")
   self:emit_line("local stack = require(\"stack\")")
   self:emit_line("local aux = require(\"aux\")")
+  self.code_start = self.output:size() + 1
   dict.def_var("true", "true")
   dict.def_var("false", "false")
   dict.def_var("nil", "NIL")
@@ -188,8 +189,7 @@ end
 function compiler.eval(self, text, log_result)
   local out = self:compile(text)
   if log_result then
-    print("-- Generated Lua Code:")
-    print(self.output:text())
+    print(self.output:text(self.code_start))
   end
   out:load()
   return stack

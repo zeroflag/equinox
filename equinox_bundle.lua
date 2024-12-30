@@ -38,7 +38,7 @@ local err  = require("err")
 -- TODO XXX
 _G["macros"] = macros
 
-local compiler = { input = nil, output = nil }
+local compiler = { input = nil, output = nil, code_start = 1 }
 
 function compiler.word(self)
   return self.input:parse()
@@ -175,6 +175,7 @@ function compiler.init(self, text)
   self:emit_line("local ops = require(\"ops\")")
   self:emit_line("local stack = require(\"stack\")")
   self:emit_line("local aux = require(\"aux\")")
+  self.code_start = self.output:size() + 1
   dict.def_var("true", "true")
   dict.def_var("false", "false")
   dict.def_var("nil", "NIL")
@@ -201,8 +202,7 @@ end
 function compiler.eval(self, text, log_result)
   local out = self:compile(text)
   if log_result then
-    print("-- Generated Lua Code:")
-    print(self.output:text())
+    print(self.output:text(self.code_start))
   end
   out:load()
   return stack
@@ -800,8 +800,12 @@ function Output.cr(self)
   self:append("\n")
 end
 
-function Output.text(self)
-  return table.concat(self.buffer)
+function Output.size(self)
+  return #self.buffer
+end
+
+function Output.text(self, from)
+  return table.concat(self.buffer, nil, from)
 end
 
 function Output.load(self)
@@ -838,28 +842,47 @@ function repl.welcome(version)
          /____          ||
                `--.____,-'   v%s
   ]], version))
-  print("Type words to see wordlist or bye to exit.")
+  print("Type 'words' for wordlist, 'bye' to exit or 'help'.")
+end
+
+function show_help()
+  print([[
+- log-on: turn on logging
+- log-off: turn off logging
+- bye: exit repl
+- help: show this help
+  ]])
 end
 
 function repl.start()
+  local log_result = false
   while true do
     io.write("# ")
     local input = io.read()
     if input == "bye" then
       break
-    end
-    local status, result = pcall(
-      function()
-        return compiler:eval(input)
-      end)
-    if status then
-      if stack:depth() > 0 then
-        print("ok (" .. stack:depth() .. ")")
-      else
-        print("ok")
-      end
+    elseif input == "help" then
+      show_help()
+    elseif input == "log-on" then
+      log_result = true
+      print("Log turned on")
+    elseif input == "log-off" then
+      log_result = false
+      print("Log turned off")
     else
-      print(result)
+      local status, result = pcall(
+        function()
+          return compiler:eval(input, log_result)
+        end)
+      if status then
+        if stack:depth() > 0 then
+          print("ok (" .. stack:depth() .. ")")
+        else
+          print("ok")
+        end
+      else
+        print(result)
+      end
     end
   end
 end
