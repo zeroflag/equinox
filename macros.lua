@@ -43,6 +43,170 @@ function sanitize(str)
   return str
 end
 
+function macros.add(compiler)
+  compiler:emit_line("stack:push(stack:pop() + stack:pop())")
+end
+
+function macros.mul(compiler)
+  compiler:emit_line("stack:push(stack:pop() * stack:pop())")
+end
+
+function macros.sub(compiler)
+  compiler:emit_line([[
+local _a = stack:pop()
+local _b = stack:pop()
+stack:push(_b - _a)
+]])
+end
+
+function macros.div(compiler)
+  compiler:emit_line([[
+local _a = stack:pop()
+local _b = stack:pop()
+stack:push(_b / _a)
+]])
+end
+
+function macros.mod(compiler)
+  compiler:emit_line([[
+local _a = stack:pop()
+local _b = stack:pop()
+stack:push(_b % _a)
+]])
+end
+
+function macros.eq(compiler)
+  compiler:emit_line("stack:push(stack:pop() == stack:pop())")
+end
+
+function macros.neq(compiler)
+  compiler:emit_line("stack:push(stack:pop() ~= stack:pop())")
+end
+
+function macros.lt(compiler)
+  compiler:emit_line("stack:push(stack:pop() > stack:pop())")
+end
+
+function macros.lte(compiler)
+  compiler:emit_line("stack:push(stack:pop() >= stack:pop())")
+end
+
+function macros.gt(compiler)
+  compiler:emit_line("stack:push(stack:pop() < stack:pop())")
+end
+
+function macros.gte(compiler)
+  compiler:emit_line("stack:push(stack:pop() <= stack:pop())")
+end
+
+function macros._not(compiler)
+  compiler:emit_line("stack:push(not stack:pop())")
+end
+
+function macros._and(compiler)
+  compiler:emit_line([[
+  local _a = stack:pop()
+  local _b = stack:pop()
+  stack:push(_a and _b)
+]])
+end
+
+function macros._or(compiler)
+  compiler:emit_line([[
+  local _a = stack:pop()
+  local _b = stack:pop()
+  stack:push(_a or _b)
+]])
+end
+
+function macros.concat(compiler)
+  compiler:emit_line([[
+  local _a = stack:pop()
+  local _b = stack:pop()
+  stack:push(_b .. _a)
+]])
+end
+
+function macros.new_table(compiler)
+  compiler:emit_line("stack:push({})")
+end
+
+function macros.table_size(compiler)
+  compiler:emit_line("stack:push(#stack:pop())")
+end
+
+function macros.table_at(compiler)
+  compiler:emit_line([[
+  local _n = stack:pop()
+  local _t = stack:pop()
+  stack:push(_t[_n])
+]])
+end
+
+function macros.table_put(compiler)
+  compiler:emit_line([[
+  local _val = stack:pop()
+  local _key = stack:pop()
+  local _tbl = stack:pop()
+  _tbl[_key] = _val
+]])
+end
+
+function macros.depth(compiler)
+  compiler:emit_line("stack:push(stack:depth())")
+end
+
+function macros.adepth(compiler)
+  compiler:emit_line("stack:push(aux:depth())")
+end
+
+function macros.dup(compiler)
+  compiler:emit_line("stack:push(stack:tos())")
+end
+
+function macros.drop(compiler)
+  compiler:emit_line("stack:pop()")
+end
+
+function macros.over(compiler)
+  compiler:emit_line("stack:push(stack:tos2())")
+end
+
+function macros.rot(compiler)
+  compiler:emit_line([[
+local _c = stack:pop()
+local _b = stack:pop()
+local _a = stack:pop()
+stack:push(_b)
+stack:push(_c)
+stack:push(_a)
+]])
+end
+
+function macros.swap(compiler)
+  compiler:emit_line([[
+local _a = stack:pop()
+local _b = stack:pop()
+stack:push(_a)
+stack:push(_b)
+]])
+end
+
+function macros.to_aux(compiler)
+  compiler:emit_line("aux:push(stack:pop())")
+end
+
+function macros.from_aux(compiler)
+  compiler:emit_line("stack:push(aux:pop())")
+end
+
+function macros.dot(compiler)
+  compiler:emit_line([[
+io.write(tostring(stack:pop()))
+io.write(" ")
+]])
+end
+
 function macros.def_lua_alias(compiler)
   local lua_name = compiler:word()
   forth_alias = compiler:word()

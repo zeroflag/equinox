@@ -50,9 +50,9 @@ function repl.start()
         end)
       if status then
         if stack:depth() > 0 then
-          print("ok (" .. stack:depth() .. ")")
+          print("\27[32m" .. "OK(".. stack:depth()  .. ")" .. "\27[0m")
         else
-          print("ok")
+          print("\27[32mOK\27[0m")
         end
       else
         print(result)

@@ -9,12 +9,10 @@
 -- fix Lua's accidental global
 -- tab auto complete repl
 -- line numbers + errors
--- ncurses REPL with stack (main/aux) visualization
 -- table.prop syntax (check)
 
 local stack = require("stack")
 local macros = require("macros")
-local ops = require("ops")
 local Stack = require("stack_def")
 local dict = require("dict")
 local Input = require("input")
@@ -44,7 +42,7 @@ function compiler.alias(self, lua_name, forth_alias)
 end
 
 function compiler.emit_lit(self, token)
-  self:emit_line("ops.lit(" .. token .. ")")
+  self:emit_line("stack:push(" .. token .. ")")
 end
 
 function compiler.emit_symbol(self, token)
@@ -55,7 +53,7 @@ function compiler.emit_word(self, word)
   if word.callable then
     self:emit_line(word.lua_name .. "()")
   else
-    self:emit_line("ops.lit(" .. word.lua_name .. ")")
+    self:emit_line("stack:push(" .. word.lua_name .. ")")
   end
 end
 
@@ -159,7 +157,6 @@ end
 function compiler.init(self, text)
   self.input = Input.new(text)
   self.output = Output.new()
-  self:emit_line("local ops = require(\"ops\")")
   self:emit_line("local stack = require(\"stack\")")
   self:emit_line("local aux = require(\"aux\")")
   self.code_start = self.output:size() + 1

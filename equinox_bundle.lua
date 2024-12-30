@@ -22,12 +22,10 @@ package.preload[ "compiler" ] = function( ... ) local arg = _G.arg;
 -- fix Lua's accidental global
 -- tab auto complete repl
 -- line numbers + errors
--- ncurses REPL with stack (main/aux) visualization
 -- table.prop syntax (check)
 
 local stack = require("stack")
 local macros = require("macros")
-local ops = require("ops")
 local Stack = require("stack_def")
 local dict = require("dict")
 local Input = require("input")
@@ -57,7 +55,7 @@ function compiler.alias(self, lua_name, forth_alias)
 end
 
 function compiler.emit_lit(self, token)
-  self:emit_line("ops.lit(" .. token .. ")")
+  self:emit_line("stack:push(" .. token .. ")")
 end
 
 function compiler.emit_symbol(self, token)
@@ -68,7 +66,7 @@ function compiler.emit_word(self, word)
   if word.callable then
     self:emit_line(word.lua_name .. "()")
   else
-    self:emit_line("ops.lit(" .. word.lua_name .. ")")
+    self:emit_line("stack:push(" .. word.lua_name .. ")")
   end
 end
 
@@ -172,7 +170,6 @@ end
 function compiler.init(self, text)
   self.input = Input.new(text)
   self.output = Output.new()
-  self:emit_line("local ops = require(\"ops\")")
   self:emit_line("local stack = require(\"stack\")")
   self:emit_line("local aux = require(\"aux\")")
   self.code_start = self.output:size() + 1
@@ -251,6 +248,10 @@ function dict.def_word(forth_name, lua_name, immediate)
   table.insert(words, entry(forth_name, lua_name, immediate, true, false))
 end
 
+function dict.def_macro(forth_name, lua_name)
+  dict.def_word(forth_name, lua_name, true)
+end
+
 function dict.def_lua_alias(lua_name, forth_name)
   table.insert(words, entry(forth_name, lua_name, immediate, false, true))
 end
@@ -277,55 +278,52 @@ function dict.word_list()
   return result
 end
 
-dict.def_word("+", "ops.add", false)
-dict.def_word("-", "ops.sub", false)
-dict.def_word("*", "ops.mul", false)
-dict.def_word("/", "ops.div", false)
-dict.def_word("%", "ops.mod", false)
-dict.def_word(".", "ops.dot", false)
-dict.def_word("=", "ops.eq", false)
-dict.def_word("!=", "ops.neq", false)
-dict.def_word("<", "ops.lt", false)
-dict.def_word("<=", "ops.lte", false)
-dict.def_word(">", "ops.gt", false)
-dict.def_word(">=", "ops.gte", false)
-dict.def_word("swap", "ops.swap", false)
-dict.def_word("over", "ops.over", false)
-dict.def_word("rot", "ops.rot", false)
-dict.def_word("drop", "ops.drop", false)
-dict.def_word("dup", "ops.dup", false)
-dict.def_word("depth", "ops.depth", false)
-dict.def_word("adepth", "ops.adepth", false)
-dict.def_word("not", "ops._not", false)
-dict.def_word("and", "ops._and", false)
-dict.def_word("or", "ops._or", false)
-dict.def_word("..", "ops.concat", false)
-dict.def_word(">a", "ops.to_aux", false)
-dict.def_word("a>", "ops.from_aux", false)
-dict.def_word("assert", "ops.assert", false)
-dict.def_word("shields-up", "ops.shields_up", false)
-dict.def_word("shields-down", "ops.shields_down", false)
-dict.def_word("<table>", "ops.new_table", false)
-dict.def_word("size", "ops.table_size", false)
-dict.def_word("at", "ops.table_at", false)
-dict.def_word("put", "ops.table_put", false)
-dict.def_word("words", "macros.words", true)
-dict.def_word("if", "macros._if", true)
-dict.def_word("then", "macros._then", true)
-dict.def_word("else", "macros._else", true)
-dict.def_word("begin", "macros._begin", true)
-dict.def_word("until", "macros._until", true)
-dict.def_word("do", "macros._do", true)
-dict.def_word("loop", "macros._loop", true)
-dict.def_word("i", "macros._i", true)
-dict.def_word("j", "macros._j", true)
-dict.def_word("->", "macros.assignment", true)
-dict.def_word("var", "macros.var", true)
-dict.def_word("(", "macros.comment", true)
-dict.def_word("\\", "macros.single_line_comment", true)
-dict.def_word("lua-alias:", "macros.def_lua_alias", true)
-dict.def_word(":", "macros.colon", true)
-dict.def_word(";", "macros._end", true)
+dict.def_macro("+", "macros.add")
+dict.def_macro("-", "macros.sub")
+dict.def_macro("*", "macros.mul")
+dict.def_macro("/", "macros.div")
+dict.def_macro("%", "macros.mod")
+dict.def_macro(".", "macros.dot")
+dict.def_macro("=", "macros.eq")
+dict.def_macro("!=", "macros.neq")
+dict.def_macro("<", "macros.lt")
+dict.def_macro("<=", "macros.lte")
+dict.def_macro(">", "macros.gt")
+dict.def_macro(">=", "macros.gte")
+dict.def_macro("swap", "macros.swap")
+dict.def_macro("over", "macros.over")
+dict.def_macro("rot", "macros.rot")
+dict.def_macro("drop", "macros.drop")
+dict.def_macro("dup", "macros.dup")
+dict.def_macro("depth", "macros.depth")
+dict.def_macro("adepth", "macros.adepth")
+dict.def_macro("not", "macros._not")
+dict.def_macro("and", "macros._and")
+dict.def_macro("or", "macros._or")
+dict.def_macro("..", "macros.concat")
+dict.def_macro(">a", "macros.to_aux")
+dict.def_macro("a>", "macros.from_aux")
+dict.def_macro("<table>", "macros.new_table")
+dict.def_macro("size", "macros.table_size")
+dict.def_macro("at", "macros.table_at")
+dict.def_macro("put", "macros.table_put")
+dict.def_macro("words", "macros.words")
+dict.def_macro("if", "macros._if")
+dict.def_macro("then", "macros._then")
+dict.def_macro("else", "macros._else")
+dict.def_macro("begin", "macros._begin")
+dict.def_macro("until", "macros._until")
+dict.def_macro("do", "macros._do")
+dict.def_macro("loop", "macros._loop")
+dict.def_macro("i", "macros._i")
+dict.def_macro("j", "macros._j")
+dict.def_macro("->", "macros.assignment")
+dict.def_macro("var", "macros.var")
+dict.def_macro("(", "macros.comment")
+dict.def_macro("\\", "macros.single_line_comment")
+dict.def_macro("lua-alias:", "macros.def_lua_alias")
+dict.def_macro(":", "macros.colon")
+dict.def_macro(";", "macros._end")
 
 return dict
 end
@@ -513,6 +511,170 @@ function sanitize(str)
   return str
 end
 
+function macros.add(compiler)
+  compiler:emit_line("stack:push(stack:pop() + stack:pop())")
+end
+
+function macros.mul(compiler)
+  compiler:emit_line("stack:push(stack:pop() * stack:pop())")
+end
+
+function macros.sub(compiler)
+  compiler:emit_line([[
+local _a = stack:pop()
+local _b = stack:pop()
+stack:push(_b - _a)
+]])
+end
+
+function macros.div(compiler)
+  compiler:emit_line([[
+local _a = stack:pop()
+local _b = stack:pop()
+stack:push(_b / _a)
+]])
+end
+
+function macros.mod(compiler)
+  compiler:emit_line([[
+local _a = stack:pop()
+local _b = stack:pop()
+stack:push(_b % _a)
+]])
+end
+
+function macros.eq(compiler)
+  compiler:emit_line("stack:push(stack:pop() == stack:pop())")
+end
+
+function macros.neq(compiler)
+  compiler:emit_line("stack:push(stack:pop() ~= stack:pop())")
+end
+
+function macros.lt(compiler)
+  compiler:emit_line("stack:push(stack:pop() > stack:pop())")
+end
+
+function macros.lte(compiler)
+  compiler:emit_line("stack:push(stack:pop() >= stack:pop())")
+end
+
+function macros.gt(compiler)
+  compiler:emit_line("stack:push(stack:pop() < stack:pop())")
+end
+
+function macros.gte(compiler)
+  compiler:emit_line("stack:push(stack:pop() <= stack:pop())")
+end
+
+function macros._not(compiler)
+  compiler:emit_line("stack:push(not stack:pop())")
+end
+
+function macros._and(compiler)
+  compiler:emit_line([[
+  local _a = stack:pop()
+  local _b = stack:pop()
+  stack:push(_a and _b)
+]])
+end
+
+function macros._or(compiler)
+  compiler:emit_line([[
+  local _a = stack:pop()
+  local _b = stack:pop()
+  stack:push(_a or _b)
+]])
+end
+
+function macros.concat(compiler)
+  compiler:emit_line([[
+  local _a = stack:pop()
+  local _b = stack:pop()
+  stack:push(_b .. _a)
+]])
+end
+
+function macros.new_table(compiler)
+  compiler:emit_line("stack:push({})")
+end
+
+function macros.table_size(compiler)
+  compiler:emit_line("stack:push(#stack:pop())")
+end
+
+function macros.table_at(compiler)
+  compiler:emit_line([[
+  local _n = stack:pop()
+  local _t = stack:pop()
+  stack:push(_t[_n])
+]])
+end
+
+function macros.table_put(compiler)
+  compiler:emit_line([[
+  local _val = stack:pop()
+  local _key = stack:pop()
+  local _tbl = stack:pop()
+  _tbl[_key] = _val
+]])
+end
+
+function macros.depth(compiler)
+  compiler:emit_line("stack:push(stack:depth())")
+end
+
+function macros.adepth(compiler)
+  compiler:emit_line("stack:push(aux:depth())")
+end
+
+function macros.dup(compiler)
+  compiler:emit_line("stack:push(stack:tos())")
+end
+
+function macros.drop(compiler)
+  compiler:emit_line("stack:pop()")
+end
+
+function macros.over(compiler)
+  compiler:emit_line("stack:push(stack:tos2())")
+end
+
+function macros.rot(compiler)
+  compiler:emit_line([[
+local _c = stack:pop()
+local _b = stack:pop()
+local _a = stack:pop()
+stack:push(_b)
+stack:push(_c)
+stack:push(_a)
+]])
+end
+
+function macros.swap(compiler)
+  compiler:emit_line([[
+local _a = stack:pop()
+local _b = stack:pop()
+stack:push(_a)
+stack:push(_b)
+]])
+end
+
+function macros.to_aux(compiler)
+  compiler:emit_line("aux:push(stack:pop())")
+end
+
+function macros.from_aux(compiler)
+  compiler:emit_line("stack:push(aux:pop())")
+end
+
+function macros.dot(compiler)
+  compiler:emit_line([[
+io.write(tostring(stack:pop()))
+io.write(" ")
+]])
+end
+
 function macros.def_lua_alias(compiler)
   local lua_name = compiler:word()
   forth_alias = compiler:word()
@@ -617,172 +779,6 @@ end
 
 do
 local _ENV = _ENV
-package.preload[ "ops" ] = function( ... ) local arg = _G.arg;
-local Stack = require("stack_def")
-local stack = require("stack")
-local aux = require("aux")
-local ops = {}
-
-function ops.dup()
-  stack:push(stack:tos())
-end
-
-function ops.add()
-  stack:push(stack:pop() + stack:pop())
-end
-
-function ops.mul()
-  stack:push(stack:pop() * stack:pop())
-end
-
-function ops.div()
-  local a = stack:pop()
-  local b = stack:pop()
-  stack:push(b / a)
-end
-
-function ops.mod()
-  local a = stack:pop()
-  local b = stack:pop()
-  stack:push(b % a)
-end
-
-function ops.sub()
-  local a = stack:pop()
-  local b = stack:pop()
-  stack:push(b - a)
-end
-
-function ops.depth()
-  stack:push(stack:depth())
-end
-
-function ops.adepth()
-  stack:push(aux:depth())
-end
-
-function ops.swap()
-  local a = stack:pop()
-  local b = stack:pop()
-  stack:push(a)
-  stack:push(b)
-end
-
-function ops.over()
-  stack:push(stack:tos2())
-end
-
-function ops.rot()
-  local c = stack:pop()
-  local b = stack:pop()
-  local a = stack:pop()
-  stack:push(b)
-  stack:push(c)
-  stack:push(a)
-end
-
-function ops.drop()
-  stack:pop()
-end
-
-function ops.eq()
-  stack:push(stack:pop() == stack:pop())
-end
-
-function ops.neq()
-  stack:push(stack:pop() ~= stack:pop())
-end
-
-function ops.lt()
-  stack:push(stack:pop() > stack:pop())
-end
-
-function ops.lte()
-  stack:push(stack:pop() >= stack:pop())
-end
-
-function ops.gt()
-  stack:push(stack:pop() < stack:pop())
-end
-
-function ops.gte()
-  stack:push(stack:pop() <= stack:pop())
-end
-
-function ops._not()
-  stack:push(not stack:pop())
-end
-
-function ops._and()
-  local a = stack:pop()
-  local b = stack:pop()
-  stack:push(a and b)
-end
-
-function ops._or()
-  local a = stack:pop()
-  local b = stack:pop()
-  stack:push(a or b)
-end
-
-function ops.concat()
-  local a = stack:pop()
-  local b = stack:pop()
-  stack:push(b .. a)
-end
-
-function ops.dot()
-  io.write(tostring(stack:pop()))
-  io.write(" ")
-end
-
-function ops.lit(literal)
-  stack:push(literal)
-end
-
-function ops.to_aux()
-  aux:push(stack:pop())
-end
-
-function ops.from_aux()
-  stack:push(aux:pop())
-end
-
-function ops.new_table()
-  stack:push({})
-end
-
-function ops.table_size()
-  stack:push(#stack:pop())
-end
-
-function ops.table_at()
-  local n = stack:pop()
-  local t = stack:pop()
-  stack:push(t[n])
-end
-
-function ops:table_put()
-  local value = stack:pop()
-  local key = stack:pop()
-  local tbl = stack:pop()
-  tbl[key] = value
-end
-
-function ops:shields_up()
-  Stack.safety(true)
-end
-
-function ops:shields_down()
-  Stack.safety(false)
-end
-
-return ops
-end
-end
-
-do
-local _ENV = _ENV
 package.preload[ "output" ] = function( ... ) local arg = _G.arg;
 local Output = {}
 
@@ -876,9 +872,9 @@ function repl.start()
         end)
       if status then
         if stack:depth() > 0 then
-          print("ok (" .. stack:depth() .. ")")
+          print("\27[32m" .. "OK(".. stack:depth()  .. ")" .. "\27[0m")
         else
-          print("ok")
+          print("\27[32mOK\27[0m")
         end
       else
         print(result)
