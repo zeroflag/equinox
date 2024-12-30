@@ -80,8 +80,8 @@ function compiler.emit_lua_call(self, name, arity, vararg, void)
         self:emit(",")
       end
     end
+    self:emit_line("")
   end
-  self:emit_line("")
   if void then
     self:emit(name .. "(")
   else
