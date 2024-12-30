@@ -93,3 +93,13 @@ tbl size 1 =assert
 { :k1 42 :k2 "apple" } -> tbl
 tbl.k1 42 =assert
 tbl.k2 "apple" =assert
+
+\ assigment
+15 -> tbl.k1
+tbl.k1 15 =assert
+
+"orange" -> tbl.k2
+tbl.k2 "orange" =assert
+
+depth 0 =assert
+adepth 0 =assert

@@ -10,7 +10,7 @@
 -- tab auto complete repl
 -- line numbers + errors
 -- ncurses REPL with stack (main/aux) visualization
--- lua constant lookup, math.pi, etc
+-- 1 -> p.x
 -- table.prop syntax
 local stack = require("stack")
 local macros = require("macros")
