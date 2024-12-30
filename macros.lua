@@ -44,7 +44,6 @@ function sanitize(str)
 end
 
 function macros.def_lua_alias(compiler)
-  -- local lua_name, _, _ = interop.parse_signature(compiler:word())
   local lua_name = compiler:word()
   forth_alias = compiler:word()
   compiler:alias(lua_name, forth_alias)
