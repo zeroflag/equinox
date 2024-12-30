@@ -46,4 +46,8 @@ function interop.resolve_lua_method_call(signature)
   end
 end
 
+function interop.is_lua_prop_lookup(token)
+  return string.match(token, ".+%..+")
+end
+
 return interop

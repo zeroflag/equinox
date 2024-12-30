@@ -113,6 +113,10 @@ function compiler.emit_lua_call(self, name, arity, vararg, void)
   end
 end
 
+function compiler.emit_lua_prop_lookup(self, token)
+  self:emit_line("stack:push(" .. token .. ")")
+end
+
 function compiler.compile_token(self, token, kind)
   if kind == "string" then
     self:emit_lit(token)
@@ -142,10 +146,10 @@ function compiler.compile_token(self, token, kind)
           local res = interop.resolve_lua_func_with_arity(token)
           if res then
             self:emit_lua_call(res.name, res.arity, res.vararg, res.void)
-          elseif token:match(".+%..+") then -- TODO check lhs is a defined var or in _G
+          elseif interop.is_lua_prop_lookup(token) then
+            -- TODO check lhs is a defined var or in _G
             -- Table lookup
-            -- TODO extract
-            self:emit_line("stack:push(" .. token .. ")")
+            self:emit_lua_prop_lookup(token)
           else
             err.abort("Word not found: '" .. token .. "'")
           end
@@ -458,6 +462,10 @@ function interop.resolve_lua_method_call(signature)
   else
     return obj
   end
+end
+
+function interop.is_lua_prop_lookup(token)
+  return string.match(token, ".+%..+")
 end
 
 return interop
