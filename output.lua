@@ -28,7 +28,6 @@ end
 
 function Output.load(self)
   local text = self:text()
-  print(text)
   if loadstring then
     loadstring(text)()
   else -- Since Lua 5.2, loadstring has been replaced by load.

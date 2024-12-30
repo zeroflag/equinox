@@ -255,8 +255,9 @@ function macros._then(compiler)
 end
 
 function macros._begin(compiler)
+  local line_number = compiler:line_number()
   compiler:emit_line("-- placeholder begin")
-  stack:push(compiler:line_number())
+  stack:push(line_number)
 end
 
 function macros._until(compiler)

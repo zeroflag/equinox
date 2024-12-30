@@ -39,7 +39,7 @@ function compiler.word_list(self)
 end
 
 function compiler.line_number(self)
-  return self.output:size() -1
+  return self.output:size()
 end
 
 function compiler.update_line(self, line, line_number)

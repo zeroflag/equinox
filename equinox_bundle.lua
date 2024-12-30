@@ -52,7 +52,7 @@ function compiler.word_list(self)
 end
 
 function compiler.line_number(self)
-  return self.output:size() -1
+  return self.output:size()
 end
 
 function compiler.update_line(self, line, line_number)
@@ -742,8 +742,9 @@ function macros._then(compiler)
 end
 
 function macros._begin(compiler)
+  local line_number = compiler:line_number()
   compiler:emit_line("-- placeholder begin")
-  stack:push(compiler:line_number())
+  stack:push(line_number)
 end
 
 function macros._until(compiler)
@@ -831,7 +832,6 @@ end
 
 function Output.load(self)
   local text = self:text()
-  print(text)
   if loadstring then
     loadstring(text)()
   else -- Since Lua 5.2, loadstring has been replaced by load.
