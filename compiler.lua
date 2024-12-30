@@ -8,9 +8,9 @@
 -- benchmarks
 -- fix Lua's accidental global
 -- tab auto complete repl
+-- line numbers + errors
 -- ncurses REPL with stack (main/aux) visualization
 -- lua constant lookup, math.pi, etc
--- : p.x 123 ;
 local stack = require("stack")
 local macros = require("macros")
 local ops = require("ops")
