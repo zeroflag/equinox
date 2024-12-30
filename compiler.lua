@@ -11,6 +11,7 @@
 -- line numbers + errors
 -- ncurses REPL with stack (main/aux) visualization
 -- lua constant lookup, math.pi, etc
+-- table.prop syntax
 local stack = require("stack")
 local macros = require("macros")
 local ops = require("ops")
@@ -129,6 +130,10 @@ function compiler.compile_token(self, token, kind)
           local res = interop.resolve_lua_func_with_arity(token)
           if res then
             self:emit_lua_call(res.name, res.arity, res.vararg, res.void)
+          elseif token:match(".+%..+") then -- TODO check lhs is a defined var or in _G
+            -- Table lookup
+            -- TODO extract
+            self:emit_line("stack:push(" .. token .. ")")
           else
             err.abort("Word not found: '" .. token .. "'")
           end

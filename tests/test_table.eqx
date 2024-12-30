@@ -88,3 +88,8 @@ tbl size 3 =assert
 tbl 1 remove
 tbl 1 at "y" =assert
 tbl size 1 =assert
+
+\ key lookup with dot syntax
+{ :k1 42 :k2 "apple" } -> tbl
+tbl.k1 42 =assert
+tbl.k2 "apple" =assert
