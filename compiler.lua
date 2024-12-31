@@ -7,7 +7,6 @@
 -- Stack as Macro
 -- fix Lua's accidental global
 -- tab auto complete repl
--- multi line REPL support
 -- repl command load file
 -- line numbers + errors
 -- unloop
@@ -198,12 +197,16 @@ function compiler.compile(self, text)
 end
 
 function compiler.eval(self, text, log_result)
+  self:compile_and_load(text, log_result)()
+  return stack
+end
+
+function compiler.compile_and_load(self, text, log_result)
   local out = self:compile(text)
   if log_result then
     print(self.output:text(self.code_start))
   end
-  out:load()()
-  return stack
+  return out:load()
 end
 
 function compiler.eval_file(self, path, log_result)
