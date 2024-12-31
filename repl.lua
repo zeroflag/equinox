@@ -9,7 +9,6 @@ local repl = { mode = SINGLE_LINE, input = "", log_result = false }
 function repl.welcome(version)
   print("Welcome to the Delta Quadrant on Equinox (" .. _VERSION .. ")")
   print("Engage warp speed and may your stack never overflow.")
-
   print("\27[1;96m")
   print(string.format([[
  ___________________          _-_
@@ -37,8 +36,12 @@ function repl.prompt()
   if repl.mode == SINGLE_LINE then
     return "#"
   else
-    return ".."
+    return "..."
   end
+end
+
+function repl.show_prompt()
+  io.write(string.format("\27[1;95m%s \27[0m", repl.prompt()))
 end
 
 function repl.read()
@@ -73,7 +76,7 @@ end
 function repl.start()
   local prompt = "#"
   while true do
-    io.write(string.format("\27[1;95m%s \27[0m", repl.prompt()))
+    repl.show_prompt()
     repl.read()
     if not repl.process_commands() then
       local result = compiler:compile_and_load(repl.input, repl.log_result)
@@ -81,10 +84,7 @@ function repl.start()
         repl.mode = MULTI_LINE
       else
         repl.mode = SINGLE_LINE
-        local status, result = pcall(
-          function()
-            result()
-          end)
+        local status, result = pcall(function() result() end)
         if status then
           if stack:depth() > 0 then
             print("\27[92m" .. "OK(".. stack:depth()  .. ")" .. "\27[0m")
