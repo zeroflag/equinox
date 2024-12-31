@@ -186,7 +186,7 @@ function compiler.init(self, text)
   self.output = Output.new()
   self:emit_line("local stack = require(\"stack\")")
   self:emit_line("local aux = require(\"aux\")")
-  self.code_start = self.output:size() + 1
+  self.code_start = self.output:size()
   dict.def_var("true", "true")
   dict.def_var("false", "false")
   dict.def_var("nil", "NIL")
@@ -218,7 +218,7 @@ end
 function compiler.compile_and_load(self, text, log_result)
   local out = self:compile(text)
   if log_result then
-    print(self.output:text(self.code_start))
+    io.write(self.output:text(self.code_start))
   end
   return out:load()
 end
