@@ -8,7 +8,9 @@
 -- fix Lua's accidental global
 -- tab auto complete repl
 -- multi line REPL support
+-- repl command load file
 -- line numbers + errors
+-- unloop
 -- table.prop syntax (check)
 
 local stack = require("stack")
@@ -200,7 +202,7 @@ function compiler.eval(self, text, log_result)
   if log_result then
     print(self.output:text(self.code_start))
   end
-  out:load()
+  out:load()()
   return stack
 end
 

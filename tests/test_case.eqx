@@ -1,0 +1,35 @@
+adepth 0 =assert
+depth 0 =assert
+
+: test-case ( n -- strr )
+  case
+    1 of "monday" endof
+    2 of "tuesday" endof
+    3 of 3 5 + endof
+    4 of "thursday" endof
+    5 of 0 11 1 do i + loop endof
+    6 of "saturday" endof
+    7 of "sun" "day" .. endof
+    "unknown day " swap ..
+  endcase ;
+
+0 test-case "unknown day 0" =assert
+1 test-case "monday" =assert
+2 test-case "tuesday" =assert
+3 test-case 8 =assert
+4 test-case "thursday" =assert
+5 test-case 55 =assert
+6 test-case "saturday" =assert
+7 test-case "sunday" =assert
+8 test-case "unknown day 8" =assert
+
+2 4 +
+case
+  0 of "no" endof
+  3 dup + of "ok" endof
+endcase
+
+"ok" =assert
+
+adepth 0 =assert
+depth 0 =assert

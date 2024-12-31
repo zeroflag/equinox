@@ -1,0 +1,19 @@
+depth 0 =assert
+adepth 0 =assert
+
+var v1
+var v2
+10 -> v1
+12 -> v2
+v1 v2 +
+22 =assert
+
+var v1
+var v2
+10 -> v1 v1 -> v2
+3 v2 + -> v2 ( 13 = v2 )
+v1 v2 - ( 10 13 - )
+-3 =assert
+
+depth 0 =assert
+adepth 0 =assert

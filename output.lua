@@ -29,9 +29,9 @@ end
 function Output.load(self)
   local text = self:text()
   if loadstring then
-    loadstring(text)()
+    return loadstring(text)
   else -- Since Lua 5.2, loadstring has been replaced by load.
-    load(text)()
+    return load(text)
   end
 end
 

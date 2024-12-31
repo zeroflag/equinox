@@ -1,0 +1,38 @@
+adepth 0 =assert
+depth 0 =assert
+
+:xyz string.len/1 3 =assert
+
+"asdf" string.len/1 4 =assert
+"asdf jkle" string.len/1 9 =assert
+"asdf jkle " string.len/1 10 =assert
+" asdf jkle" string.len/1 10 =assert
+" asdf jkle " string.len/1 11 =assert
+"" string.len/1 0 =assert
+" " string.len/1 1 =assert
+"  " string.len/1 2 =assert
+"  asdf  jkle  " string.len/1 14 =assert
+
+" abc " " xyz " .. " abc  xyz " =assert
+
+var str
+"abc" -> str
+str:upper/0 "ABC" =assert
+str:len/0 3 =assert
+str:reverse/0 "cba" =assert
+
+"2@4" -> str
+"(%d)@%d" str:match/1
+"2" =assert
+
+"2@4@8" -> str
+"(%d)@(%d)@(%d)" str:match/1
+
+"8" =assert
+"4" =assert
+"2" =assert
+
+str:len 5 =assert
+
+adepth 0 =assert
+depth 0 =assert

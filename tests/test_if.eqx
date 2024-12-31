@@ -1,0 +1,19 @@
+depth 0 =assert
+adepth 0 =assert
+
+1 2 < if 8 then 8 =assert
+1 2 > if 8 else 4 then 4 =assert
+
+: abso dup 0 < if -1 * then ;
+
+0 abso 0 =assert
+-1 abso 1 =assert
+-42.24 abso 42.24 =assert
+1 abso 1 =assert
+123.64 abso 123.64 =assert
+
+: tst 3 4 < if 21 dup + -1 * abso else 40 -1 * then ;
+tst 42 =assert
+
+depth 0 =assert
+adepth 0 =assert

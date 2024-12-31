@@ -21,7 +21,9 @@ package.preload[ "compiler" ] = function( ... ) local arg = _G.arg;
 -- fix Lua's accidental global
 -- tab auto complete repl
 -- multi line REPL support
+-- repl command load file
 -- line numbers + errors
+-- unloop
 -- table.prop syntax (check)
 
 local stack = require("stack")
@@ -213,7 +215,7 @@ function compiler.eval(self, text, log_result)
   if log_result then
     print(self.output:text(self.code_start))
   end
-  out:load()
+  out:load()()
   return stack
 end
 
@@ -861,9 +863,9 @@ end
 function Output.load(self)
   local text = self:text()
   if loadstring then
-    loadstring(text)()
+    return loadstring(text)
   else -- Since Lua 5.2, loadstring has been replaced by load.
-    load(text)()
+    return load(text)
   end
 end
 
@@ -908,8 +910,9 @@ end
 
 function repl.start()
   local log_result = false
+  local prompt = "#"
   while true do
-    io.write("\27[1;95m# \27[0m")
+    io.write(string.format("\27[1;95m%s \27[0m", prompt))
     local input = io.read()
     if input == "bye" then
       break
@@ -1039,7 +1042,9 @@ function equinox.main()
       end
     end
     for i, filename in ipairs(files) do
-      print("Loading " .. filename)
+      if log_result then
+        print("Loading " .. filename)
+      end
       equinox.eval_file(filename, log_result)
     end
   end

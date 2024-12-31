@@ -1,0 +1,15 @@
+adepth 0 =assert
+depth 0 =assert
+
+2 10 begin 1 - swap 2 * swap dup 0 = until drop 2048 =assert
+
+: tst
+  2 10
+  begin
+    1 - swap 2 * swap dup
+  0 = until drop ;
+
+tst 2048 =assert
+
+adepth 0 =assert
+depth 0 =assert

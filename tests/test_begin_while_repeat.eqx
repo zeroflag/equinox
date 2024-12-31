@@ -1,0 +1,21 @@
+depth 0 =assert
+adepth 0 =assert
+
+: factorial ( n -- n! )
+  1 2 rot
+  begin
+    2dup <=
+  while
+    -rot tuck
+    * swap
+    1 + rot
+  repeat
+  drop drop ;
+
+8 factorial 40320 =assert
+
+0 begin dup 5 < while 1 + repeat 5 =assert
+
+
+depth 0 =assert
+adepth 0 =assert

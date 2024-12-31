@@ -1,0 +1,20 @@
+depth 0 =assert
+adepth 0 =assert
+
+0 5 1 do i + loop 10 =assert
+0 11 1 do i + loop 55 =assert
+
+0
+8 2 do
+  9 3 do
+    i j + +
+  loop
+loop
+360 =assert
+
+42424242 10005 10000 do i loop
+10004 =assert 10003 =assert 10002 =assert 10001 =assert 10000 =assert
+42424242 =assert
+
+depth 0 =assert
+adepth 0 =assert

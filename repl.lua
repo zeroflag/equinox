@@ -32,8 +32,9 @@ end
 
 function repl.start()
   local log_result = false
+  local prompt = "#"
   while true do
-    io.write("\27[1;95m# \27[0m")
+    io.write(string.format("\27[1;95m%s \27[0m", prompt))
     local input = io.read()
     if input == "bye" then
       break

@@ -21,7 +21,9 @@ function equinox.main()
       end
     end
     for i, filename in ipairs(files) do
-      print("Loading " .. filename)
+      if log_result then
+        print("Loading " .. filename)
+      end
       equinox.eval_file(filename, log_result)
     end
   end

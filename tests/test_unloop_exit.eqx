@@ -1,0 +1,8 @@
+depth 0 =assert
+adepth 0 =assert
+
+: exit-test 5 exit 6 ;
+exit-test 5 =assert
+
+depth 0 =assert
+adepth 0 =assert

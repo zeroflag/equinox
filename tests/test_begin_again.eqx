@@ -1,0 +1,16 @@
+depth 0 =assert
+adepth 0 =assert
+
+: begin-again-test
+  0
+  begin
+    dup 5 < if 1 + else dup * exit then
+  again ;
+
+begin-again-test 25 =assert
+
+0 begin dup 6 < if 1 + else dup * exit then again
+36 =assert
+
+depth 0 =assert
+adepth 0 =assert
