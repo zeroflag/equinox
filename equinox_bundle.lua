@@ -300,6 +300,7 @@ dict.def_macro("*", "macros.mul")
 dict.def_macro("/", "macros.div")
 dict.def_macro("%", "macros.mod")
 dict.def_macro(".", "macros.dot")
+dict.def_macro("cr", "macros.cr")
 dict.def_macro("=", "macros.eq")
 dict.def_macro("!=", "macros.neq")
 dict.def_macro("<", "macros.lt")
@@ -691,6 +692,10 @@ function macros.dot(compiler)
   compiler:emit_line([[
 io.write(tostring(stack:pop()))
 io.write(" ")]])
+end
+
+function macros.cr(compiler)
+  compiler:emit_line("print()")
 end
 
 function macros.def_lua_alias(compiler)

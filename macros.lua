@@ -196,6 +196,10 @@ io.write(tostring(stack:pop()))
 io.write(" ")]])
 end
 
+function macros.cr(compiler)
+  compiler:emit_line("print()")
+end
+
 function macros.def_lua_alias(compiler)
   local lua_name = compiler:word()
   forth_alias = compiler:word()
