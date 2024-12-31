@@ -1,0 +1,43 @@
+depth 0 =assert
+adepth 0 =assert
+
+var sum
+0 -> sum
+
+1 10 to: k
+  sum k + -> sum
+end
+
+55 sum =assert
+
+42
+10 1 to: k
+ 9999
+end
+42 =assert
+
+100 100 to: k k end
+100 =assert
+
+( 1 3 5 7 9 )
+0 -> sum
+1 10 2 step: k k sum + -> sum end
+sum 25 =assert
+
+0
+10 1 -1 step: i
+  i +
+end
+55 =assert
+
+42
+10 20 -1 step: j
+  9999
+end
+42 =assert
+
+10 10 -1 step: j j end
+10 =assert
+
+depth 0 =assert
+adepth 0 =assert

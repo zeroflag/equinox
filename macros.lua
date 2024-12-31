@@ -348,6 +348,30 @@ function macros.for_pairs(compiler)
     "for %s,%s in pairs(stack:pop()) do", var_name1, var_name2))
 end
 
+function macros._to(compiler)
+  local loop_var = compiler:word()
+  -- TODO should be removed or we should maintain proper scope
+  compiler:def_var(loop_var, loop_var)
+  local var_start = gen_id("start")
+  local var_stop = gen_id("stop")
+  compiler:emit_line(string.format("local %s=stack:pop()", var_stop))
+  compiler:emit_line(string.format("local %s=stack:pop()", var_start))
+  compiler:emit_line(string.format("for %s=%s,%s do", loop_var, var_start, var_stop))
+end
+
+function macros._step(compiler)
+  local loop_var = compiler:word()
+  -- TODO should be removed or we should maintain proper scope
+  compiler:def_var(loop_var, loop_var)
+  local var_start = gen_id("start")
+  local var_stop = gen_id("stop")
+  local var_step = gen_id("stop")
+  compiler:emit_line(string.format("local %s=stack:pop()", var_step))
+  compiler:emit_line(string.format("local %s=stack:pop()", var_stop))
+  compiler:emit_line(string.format("local %s=stack:pop()", var_start))
+  compiler:emit_line(string.format("for %s=%s,%s,%s do", loop_var, var_start, var_stop, var_step))
+end
+
 function macros._end(compiler)
   compiler:emit_line("end")
 end

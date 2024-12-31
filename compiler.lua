@@ -1,15 +1,17 @@
 -- TODO:
 -- user defined control structues
 -- var/local scopes
--- for
 -- hyperstatic glob
 -- benchmarks
+-- i shadows user defined i in pairs:/ipairs:
 -- Stack as Macro
 -- fix Lua's accidental global
 -- tab auto complete repl
 -- repl command load file
+-- var with dash generates error
 -- line numbers + errors
 -- table.prop syntax (check)
+--
 
 local stack = require("stack")
 local macros = require("macros")

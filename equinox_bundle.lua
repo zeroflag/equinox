@@ -14,15 +14,17 @@ package.preload[ "compiler" ] = function( ... ) local arg = _G.arg;
 -- TODO:
 -- user defined control structues
 -- var/local scopes
--- for
 -- hyperstatic glob
 -- benchmarks
+-- i shadows user defined i in pairs:/ipairs:
 -- Stack as Macro
 -- fix Lua's accidental global
 -- tab auto complete repl
 -- repl command load file
+-- var with dash generates error
 -- line numbers + errors
 -- table.prop syntax (check)
+--
 
 local stack = require("stack")
 local macros = require("macros")
@@ -345,6 +347,8 @@ dict.def_macro("i", "macros._i")
 dict.def_macro("j", "macros._j")
 dict.def_macro("ipairs:", "macros.for_ipairs")
 dict.def_macro("pairs:", "macros.for_pairs")
+dict.def_macro("to:", "macros._to")
+dict.def_macro("step:", "macros._step")
 dict.def_macro("->", "macros.assignment")
 dict.def_macro("var", "macros.var")
 dict.def_macro("(", "macros.comment")
@@ -848,6 +852,30 @@ function macros.for_pairs(compiler)
   compiler:def_var(var_name2, var_name2)
   compiler:emit_line(string.format(
     "for %s,%s in pairs(stack:pop()) do", var_name1, var_name2))
+end
+
+function macros._to(compiler)
+  local loop_var = compiler:word()
+  -- TODO should be removed or we should maintain proper scope
+  compiler:def_var(loop_var, loop_var)
+  local var_start = gen_id("start")
+  local var_stop = gen_id("stop")
+  compiler:emit_line(string.format("local %s=stack:pop()", var_stop))
+  compiler:emit_line(string.format("local %s=stack:pop()", var_start))
+  compiler:emit_line(string.format("for %s=%s,%s do", loop_var, var_start, var_stop))
+end
+
+function macros._step(compiler)
+  local loop_var = compiler:word()
+  -- TODO should be removed or we should maintain proper scope
+  compiler:def_var(loop_var, loop_var)
+  local var_start = gen_id("start")
+  local var_stop = gen_id("stop")
+  local var_step = gen_id("stop")
+  compiler:emit_line(string.format("local %s=stack:pop()", var_step))
+  compiler:emit_line(string.format("local %s=stack:pop()", var_stop))
+  compiler:emit_line(string.format("local %s=stack:pop()", var_start))
+  compiler:emit_line(string.format("for %s=%s,%s,%s do", loop_var, var_start, var_stop, var_step))
 end
 
 function macros._end(compiler)
