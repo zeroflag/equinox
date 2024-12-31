@@ -9,7 +9,6 @@
 -- tab auto complete repl
 -- repl command load file
 -- line numbers + errors
--- unloop
 -- table.prop syntax (check)
 
 local stack = require("stack")

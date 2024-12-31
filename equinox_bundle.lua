@@ -22,7 +22,6 @@ package.preload[ "compiler" ] = function( ... ) local arg = _G.arg;
 -- tab auto complete repl
 -- repl command load file
 -- line numbers + errors
--- unloop
 -- table.prop syntax (check)
 
 local stack = require("stack")
@@ -340,6 +339,7 @@ dict.def_macro("endof", "macros._endof")
 dict.def_macro("endcase", "macros._endcase")
 dict.def_macro("do", "macros._do")
 dict.def_macro("loop", "macros._loop")
+dict.def_macro("unloop", "macros.unloop")
 dict.def_macro("i", "macros._i")
 dict.def_macro("j", "macros._j")
 dict.def_macro("->", "macros.assignment")
@@ -804,6 +804,10 @@ end
 -- TODO this might overwrite user defined i/j ?
 function macros._j(compiler)
   compiler:emit_line("stack:push(aux:tos2())")
+end
+
+function macros.unloop(compiler)
+  compiler:emit_line("aux:pop()")
 end
 
 function macros._do(compiler)

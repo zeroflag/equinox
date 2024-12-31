@@ -309,6 +309,10 @@ function macros._j(compiler)
   compiler:emit_line("stack:push(aux:tos2())")
 end
 
+function macros.unloop(compiler)
+  compiler:emit_line("aux:pop()")
+end
+
 function macros._do(compiler)
   local var = gen_id("loop_var")
   compiler:emit_line("for ".. var .."=stack:pop(), stack:pop() -1 do")
