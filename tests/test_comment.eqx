@@ -18,7 +18,7 @@ depth 0 =assert
 
 \
 1
-\ 1 =assert TODO bug
+1 =assert
 
 depth 0 =assert
 adepth 0 =assert

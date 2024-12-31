@@ -23,6 +23,7 @@ function Input.parse(self)
     end
     if self:is_whitespace(chr) and not begin_str then
       if #token > 0 then
+        self.index = self.index -1 -- don't consume next WS as it breaks single line comment
         stop = true
       end
     else
