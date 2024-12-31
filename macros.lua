@@ -276,6 +276,25 @@ function macros._repeat(compiler)
   compiler:emit_line("end")
 end
 
+function macros._case(compiler)
+  -- simulate goto with break, in pre lua5.2 since GOTO was not yet supported
+  compiler:emit_line("repeat")
+end
+
+function macros._of(compiler)
+  compiler:emit_line("stack:push(stack:tos2())") -- OVER
+  compiler:emit_line("if stack:pop() == stack:pop() then")
+  compiler:emit_line("stack:pop()") -- DROP selector value
+end
+
+function macros._endof(compiler)
+  compiler:emit_line("break end") -- GOTO endcase
+end
+
+function macros._endcase(compiler)
+  compiler:emit_line("until true")
+end
+
 function macros._exit(compiler)
   compiler:emit_line("do return end")
 end

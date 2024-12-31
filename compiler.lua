@@ -1,7 +1,6 @@
 -- TODO:
 -- user defined control structues
 -- var/local scopes
--- case
 -- for
 -- hyperstatic glob
 -- benchmarks

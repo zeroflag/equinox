@@ -14,7 +14,6 @@ package.preload[ "compiler" ] = function( ... ) local arg = _G.arg;
 -- TODO:
 -- user defined control structues
 -- var/local scopes
--- case
 -- for
 -- hyperstatic glob
 -- benchmarks
@@ -329,6 +328,10 @@ dict.def_macro("until", "macros._until")
 dict.def_macro("while", "macros._while")
 dict.def_macro("repeat", "macros._repeat")
 dict.def_macro("again", "macros._repeat") -- same as repeat
+dict.def_macro("case", "macros._case")
+dict.def_macro("of", "macros._of")
+dict.def_macro("endof", "macros._endof")
+dict.def_macro("endcase", "macros._endcase")
 dict.def_macro("do", "macros._do")
 dict.def_macro("loop", "macros._loop")
 dict.def_macro("i", "macros._i")
@@ -762,6 +765,25 @@ function macros._repeat(compiler)
   local line_number = stack:pop()
   compiler:update_line("while(true) do", line_number)
   compiler:emit_line("end")
+end
+
+function macros._case(compiler)
+  -- simulate goto with break, in pre lua5.2 since GOTO was not yet supported
+  compiler:emit_line("repeat")
+end
+
+function macros._of(compiler)
+  compiler:emit_line("stack:push(stack:tos2())") -- OVER
+  compiler:emit_line("if stack:pop() == stack:pop() then")
+  compiler:emit_line("stack:pop()") -- DROP selector value
+end
+
+function macros._endof(compiler)
+  compiler:emit_line("break end") -- GOTO endcase
+end
+
+function macros._endcase(compiler)
+  compiler:emit_line("until true")
 end
 
 function macros._exit(compiler)
