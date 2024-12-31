@@ -19,7 +19,6 @@ local dict = require("dict")
 local Input = require("input")
 local Output = require("output")
 local interop = require("interop")
-local err  = require("err")
 
 -- TODO XXX
 _G["macros"] = macros
@@ -68,7 +67,7 @@ end
 
 function compiler.emit_lua_call(self, name, arity, vararg, void)
   if vararg then
-    err.abort(name .. " has variable/unknown number of arguments. " ..
+    error(name .. " has variable/unknown number of arguments. " ..
           "Use " .. name .. "/n" .. " to specify arity. " ..
           "For example " .. name .. "/1")
   end
@@ -146,7 +145,7 @@ function compiler.compile_token(self, token, kind)
             -- Table lookup
             self:emit_lua_prop_lookup(token)
           else
-            err.abort("Word not found: '" .. token .. "'")
+            error("Word not found: '" .. token .. "'")
           end
         end
       end
@@ -212,7 +211,7 @@ end
 function compiler.eval_file(self, path, log_result)
   local file = io.open(path, "r")
   if not file then
-    err.abort("Could not open file: " .. path)
+    error("Could not open file: " .. path)
   end
   local content = file:read("*a")
   file:close()

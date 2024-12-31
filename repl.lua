@@ -85,7 +85,7 @@ function repl.process_commands()
 end
 
 function repl.print_err(result)
-  print("\27[91m" ..result .. "\27[0m")
+  print("\27[91m" .. "Red Alert: " .. "\27[0m" .. result)
 end
 
 function repl.print_ok()

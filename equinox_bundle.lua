@@ -32,7 +32,6 @@ local dict = require("dict")
 local Input = require("input")
 local Output = require("output")
 local interop = require("interop")
-local err  = require("err")
 
 -- TODO XXX
 _G["macros"] = macros
@@ -81,7 +80,7 @@ end
 
 function compiler.emit_lua_call(self, name, arity, vararg, void)
   if vararg then
-    err.abort(name .. " has variable/unknown number of arguments. " ..
+    error(name .. " has variable/unknown number of arguments. " ..
           "Use " .. name .. "/n" .. " to specify arity. " ..
           "For example " .. name .. "/1")
   end
@@ -159,7 +158,7 @@ function compiler.compile_token(self, token, kind)
             -- Table lookup
             self:emit_lua_prop_lookup(token)
           else
-            err.abort("Word not found: '" .. token .. "'")
+            error("Word not found: '" .. token .. "'")
           end
         end
       end
@@ -225,7 +224,7 @@ end
 function compiler.eval_file(self, path, log_result)
   local file = io.open(path, "r")
   if not file then
-    err.abort("Could not open file: " .. path)
+    error("Could not open file: " .. path)
   end
   local content = file:read("*a")
   file:close()
@@ -358,23 +357,6 @@ dict.def_macro(";", "macros._end")
 dict.def_macro("end", "macros._end")
 
 return dict
-end
-end
-
-do
-local _ENV = _ENV
-package.preload[ "err" ] = function( ... ) local arg = _G.arg;
-local err = {}
-
-function err.abort(str)
-  error("Red Alert: " .. str)
-end
-
-function err.warn(str)
-  print("Yellow Alert: " .. str)
-end
-
-return err
 end
 end
 
@@ -1013,7 +995,7 @@ function repl.process_commands()
 end
 
 function repl.print_err(result)
-  print("\27[91m" ..result .. "\27[0m")
+  print("\27[91m" .. "Red Alert: " .. "\27[0m" .. result)
 end
 
 function repl.print_ok()
@@ -1071,8 +1053,6 @@ end
 do
 local _ENV = _ENV
 package.preload[ "stack_def" ] = function( ... ) local arg = _G.arg;
-local err = require("err")
-
 local Stack = {}
 local NIL = "__NIL__"
 
@@ -1095,7 +1075,7 @@ end
 function Stack.pop_safe(self)
   local item = table.remove(self.stack)
   if item == nil then
-    err.abort("Stack underflow: " .. self.name)
+    error("Stack underflow: " .. self.name)
   end
   return item ~= NIL and item or nil
 end

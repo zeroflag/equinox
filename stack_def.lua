@@ -1,5 +1,3 @@
-local err = require("err")
-
 local Stack = {}
 local NIL = "__NIL__"
 
@@ -22,7 +20,7 @@ end
 function Stack.pop_safe(self)
   local item = table.remove(self.stack)
   if item == nil then
-    err.abort("Stack underflow: " .. self.name)
+    error("Stack underflow: " .. self.name)
   end
   return item ~= NIL and item or nil
 end
