@@ -7,6 +7,7 @@
 -- Stack as Macro
 -- fix Lua's accidental global
 -- tab auto complete repl
+-- multi line REPL support
 -- line numbers + errors
 -- table.prop syntax (check)
 

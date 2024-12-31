@@ -293,3 +293,10 @@ endcase
 
 adepth 0 =assert
 depth 0 =assert
+
+
+\ [ 1 2 3 ] ipairs each: i item
+\ end
+
+\ { :k1 :v1 :k2 :v2 } pairs each: key value
+\ end
