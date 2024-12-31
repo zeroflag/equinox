@@ -7,7 +7,6 @@
 -- Stack as Macro
 -- fix Lua's accidental global
 -- tab auto complete repl
--- repl command load file
 -- var with dash generates error
 -- line numbers + errors
 -- table.prop syntax (check)

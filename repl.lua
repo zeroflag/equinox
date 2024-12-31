@@ -25,10 +25,11 @@ end
 
 function show_help()
   print([[
-- log-on: turn on logging
-- log-off: turn off logging
-- bye: exit repl
-- help: show this help
+- log-on "turn on logging"
+- log-off "turn off logging"
+- load-file <path> "load an eqx file"
+- bye "exit repl"
+- help "show this help"
   ]])
 end
 
@@ -52,22 +53,32 @@ function repl.read()
   end
 end
 
+function trim(str)
+  return str:match("^%s*(.-)%s*$")
+end
+
 function repl.process_commands()
-  if repl.input == "bye" then
+  local command = trim(repl.input)
+  if command == "bye" then
     os.exit(0)
   end
-  if repl.input == "help" then
+  if command == "help" then
     show_help()
     return true
   end
-  if repl.input == "log-on" then
+  if command == "log-on" then
     repl.log_result = true
     print("Log turned on")
     return true
   end
-  if repl.input == "log-off" then
+  if command == "log-off" then
     repl.log_result = false
     print("Log turned off")
+    return true
+  end
+  local path = command:match("load%-file%s+(.+)")
+  if path then
+    safe_call(function() compiler:eval_file(path) end)
     return true
   end
   return false
@@ -82,6 +93,15 @@ function repl.print_ok()
     print("\27[92m" .. "OK(".. stack:depth()  .. ")" .. "\27[0m")
   else
     print("\27[92mOK\27[0m")
+  end
+end
+
+function safe_call(func)
+  local success, result = pcall(func)
+  if success then
+    repl.print_ok()
+  else
+    repl.print_err(result)
   end
 end
 
@@ -100,12 +120,7 @@ function repl.start()
         repl.mode = MULTI_LINE
       else
         repl.mode = SINGLE_LINE
-        local success, result = pcall(function() result() end)
-        if success then
-          repl.print_ok()
-        else
-          repl.print_err(result)
-        end
+        safe_call(function() result() end)
       end
     end
   end
