@@ -73,26 +73,38 @@ function repl.process_commands()
   return false
 end
 
+function repl.print_err(result)
+  print("\27[91m" ..result .. "\27[0m")
+end
+
+function repl.print_ok()
+  if stack:depth() > 0 then
+    print("\27[92m" .. "OK(".. stack:depth()  .. ")" .. "\27[0m")
+  else
+    print("\27[92mOK\27[0m")
+  end
+end
+
 function repl.start()
   local prompt = "#"
   while true do
     repl.show_prompt()
     repl.read()
     if not repl.process_commands() then
-      local result = compiler:compile_and_load(repl.input, repl.log_result)
-      if not result then
+      local success, result = pcall(function ()
+          return compiler:compile_and_load(repl.input, repl.log_result)
+      end)
+      if not success then
+        repl.print_err(result)
+      elseif not result then
         repl.mode = MULTI_LINE
       else
         repl.mode = SINGLE_LINE
-        local status, result = pcall(function() result() end)
-        if status then
-          if stack:depth() > 0 then
-            print("\27[92m" .. "OK(".. stack:depth()  .. ")" .. "\27[0m")
-          else
-            print("\27[92mOK\27[0m")
-          end
+        local success, result = pcall(function() result() end)
+        if success then
+          repl.print_ok()
         else
-          print("\27[91m" ..result .. "\27[0m")
+          repl.print_err(result)
         end
       end
     end
