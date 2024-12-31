@@ -343,6 +343,8 @@ dict.def_macro("loop", "macros._loop")
 dict.def_macro("unloop", "macros.unloop")
 dict.def_macro("i", "macros._i")
 dict.def_macro("j", "macros._j")
+dict.def_macro("ipairs:", "macros.for_ipairs")
+dict.def_macro("pairs:", "macros.for_pairs")
 dict.def_macro("->", "macros.assignment")
 dict.def_macro("var", "macros.var")
 dict.def_macro("(", "macros.comment")
@@ -350,6 +352,7 @@ dict.def_macro("\\", "macros.single_line_comment")
 dict.def_macro("lua-alias:", "macros.def_lua_alias")
 dict.def_macro(":", "macros.colon")
 dict.def_macro(";", "macros._end")
+dict.def_macro("end", "macros._end")
 
 return dict
 end
@@ -824,6 +827,26 @@ end
 function macros._loop(compiler)
   compiler:emit_line("aux:pop()") -- unloop i/j
   compiler:emit_line("end")
+end
+
+function macros.for_ipairs(compiler)
+  local var_name1 = compiler:word()
+  local var_name2 = compiler:word()
+  -- TODO should be removed or we should maintain proper scope
+  compiler:def_var(var_name1, var_name1)
+  compiler:def_var(var_name2, var_name2)
+  compiler:emit_line(string.format(
+    "for %s,%s in ipairs(stack:pop()) do", var_name1, var_name2))
+end
+
+function macros.for_pairs(compiler)
+  local var_name1 = compiler:word()
+  local var_name2 = compiler:word()
+  -- TODO should be removed or we should maintain proper scope
+  compiler:def_var(var_name1, var_name1)
+  compiler:def_var(var_name2, var_name2)
+  compiler:emit_line(string.format(
+    "for %s,%s in pairs(stack:pop()) do", var_name1, var_name2))
 end
 
 function macros._end(compiler)

@@ -328,6 +328,26 @@ function macros._loop(compiler)
   compiler:emit_line("end")
 end
 
+function macros.for_ipairs(compiler)
+  local var_name1 = compiler:word()
+  local var_name2 = compiler:word()
+  -- TODO should be removed or we should maintain proper scope
+  compiler:def_var(var_name1, var_name1)
+  compiler:def_var(var_name2, var_name2)
+  compiler:emit_line(string.format(
+    "for %s,%s in ipairs(stack:pop()) do", var_name1, var_name2))
+end
+
+function macros.for_pairs(compiler)
+  local var_name1 = compiler:word()
+  local var_name2 = compiler:word()
+  -- TODO should be removed or we should maintain proper scope
+  compiler:def_var(var_name1, var_name1)
+  compiler:def_var(var_name2, var_name2)
+  compiler:emit_line(string.format(
+    "for %s,%s in pairs(stack:pop()) do", var_name1, var_name2))
+end
+
 function macros._end(compiler)
   compiler:emit_line("end")
 end

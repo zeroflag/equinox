@@ -16,5 +16,9 @@ depth 0 =assert
 ( this is a comment)
 5 =assert
 
+\
+1
+\ 1 =assert TODO bug
+
 depth 0 =assert
 adepth 0 =assert

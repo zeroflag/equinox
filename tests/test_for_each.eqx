@@ -3,11 +3,33 @@ adepth 0 =assert
 
 \ TODO
 
-\ [ 1 2 3 ] ipairs each: i item
-\ end
+var sum1
+var sum2
 
-\ { :k1 :v1 :k2 :v2 } pairs each: key value
-\ end
-\
+0 -> sum1
+0 -> sum2
+
+[ 4 2 3 ] ipairs: index item
+  sum1 item + -> sum1
+  sum2 index + -> sum2
+end
+
+sum1 9 =assert
+sum2 6 =assert
+
+depth 0 =assert
+adepth 0 =assert
+
+0 -> sum1
+0 -> sum2
+
+{ 2 -2 3 -3 5 -5 } pairs: key val
+  sum1 key + -> sum1
+  sum2 val + -> sum2
+end
+
+sum1 10 =assert
+sum2 -10 =assert
+
 depth 0 =assert
 adepth 0 =assert
