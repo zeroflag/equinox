@@ -328,13 +328,13 @@ dict.def_macro("put", "macros.table_put")
 dict.def_macro("words", "macros.words")
 dict.def_macro("exit", "macros._exit")
 dict.def_macro("if", "macros._if")
-dict.def_macro("then", "macros._then")
+dict.def_macro("then", "macros._end")
 dict.def_macro("else", "macros._else")
 dict.def_macro("begin", "macros._begin")
 dict.def_macro("until", "macros._until")
 dict.def_macro("while", "macros._while")
-dict.def_macro("repeat", "macros._repeat")
-dict.def_macro("again", "macros._repeat") -- same as repeat
+dict.def_macro("repeat", "macros._end")
+dict.def_macro("again", "macros._end")
 dict.def_macro("case", "macros._case")
 dict.def_macro("of", "macros._of")
 dict.def_macro("endof", "macros._endof")
@@ -759,30 +759,17 @@ function macros._else(compiler)
   compiler:emit_line("else")
 end
 
-function macros._then(compiler)
-  compiler:emit_line("end")
-end
-
 function macros._begin(compiler)
-  local line_number = compiler:line_number()
-  compiler:emit_line("-- placeholder begin")
-  stack:push(line_number)
+  compiler:emit_line("while(true) do")
 end
 
 function macros._until(compiler)
-  local line_number = stack:pop()
-  compiler:update_line("repeat", line_number)
-  compiler:emit_line("until(stack:pop())", line_number)
+  compiler:emit_line("if stack:pop() then break end")
+  compiler:emit_line("end")
 end
 
 function macros._while(compiler)
   compiler:emit_line("if not stack:pop() then break end")
-end
-
-function macros._repeat(compiler)
-  local line_number = stack:pop()
-  compiler:update_line("while(true) do", line_number)
-  compiler:emit_line("end")
 end
 
 function macros._case(compiler)

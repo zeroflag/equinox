@@ -254,30 +254,17 @@ function macros._else(compiler)
   compiler:emit_line("else")
 end
 
-function macros._then(compiler)
-  compiler:emit_line("end")
-end
-
 function macros._begin(compiler)
-  local line_number = compiler:line_number()
-  compiler:emit_line("-- placeholder begin")
-  stack:push(line_number)
+  compiler:emit_line("while(true) do")
 end
 
 function macros._until(compiler)
-  local line_number = stack:pop()
-  compiler:update_line("repeat", line_number)
-  compiler:emit_line("until(stack:pop())", line_number)
+  compiler:emit_line("if stack:pop() then break end")
+  compiler:emit_line("end")
 end
 
 function macros._while(compiler)
   compiler:emit_line("if not stack:pop() then break end")
-end
-
-function macros._repeat(compiler)
-  local line_number = stack:pop()
-  compiler:update_line("while(true) do", line_number)
-  compiler:emit_line("end")
 end
 
 function macros._case(compiler)
