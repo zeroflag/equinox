@@ -5,7 +5,7 @@ local Parser = require("parser")
 
 function parse(text)
   local parser = Parser.new(Input.new(text), dict)
-  return parser:parse()
+  return parser:parse_all()
 end
 
 function assert_table(t1, t2)
@@ -26,12 +26,6 @@ assert_table(
 assert_table(
   {{token = ":sym", kind = "literal", subtype = "symbol"}},
   parse(':sym'))
-
-assert_table({
-    { token = "1", kind = "literal", subtype = "number" },
-    { token = "2", kind = "literal", subtype = "number" },
-    { token = "+", kind = "macro" }
-  }, parse("1 2 +"))
 
 assert_table(
   {{token = "math.min/2", kind = "lua_func_call", name = "math.min", arity = 2, vararg = false, void = false}},
@@ -57,16 +51,35 @@ assert_table(
   {{token = "obj:method", kind = "lua_method_call", name = "obj:method", arity = 0, vararg = false, void = false}},
   parse("obj:method"))
 
-dict.def_var("tbl1", "tbl1")
 assert_table(
-  {{token = "tbl1.key1", kind = "lua_table_lookup"}},
+  {{token = "tbl1.key1", kind = "lua_table_lookup", resolved = false}},
+  parse("tbl1.key1"))
+
+dict.def_var("tbl1", "tbl1")
+
+assert_table(
+  {{token = "tbl1.key1", kind = "lua_table_lookup", resolved = true}},
   parse("tbl1.key1"))
 
 assert_table(
-  {{token = "math.pi", kind = "lua_table_lookup"}},
+  {{token = "math.pi", kind = "lua_table_lookup", resolved = true}},
   parse("math.pi"))
 
 dict.def_word("myword", "myword")
 assert_table(
   {{token = "myword", kind = "word"}},
   parse("myword"))
+
+assert_table({
+    { token = "1", kind = "literal", subtype = "number" },
+    { token = "2", kind = "literal", subtype = "number" },
+    { token = "+", kind = "macro" }
+  }, parse("1 2 +"))
+
+assert_table({
+    { token = ":", kind = "macro" },
+    { token = "double", kind = "unknown" },
+    { token = "dup", kind = "macro" },
+    { token = "+", kind = "macro" },
+    { token = ";", kind = "macro" }
+  }, parse(": double dup + ;"))

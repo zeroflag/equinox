@@ -11,7 +11,7 @@ end
 do
 local _ENV = _ENV
 package.preload[ "compiler" ] = function( ... ) local arg = _G.arg;
--- TODO:
+-- TODOnp:
 -- user defined control structues
 -- var/local scopes
 -- hyperstatic glob
@@ -28,6 +28,7 @@ local stack = require("stack")
 local macros = require("macros")
 local Stack = require("stack_def")
 local dict = require("dict")
+local Parser = require("parser")
 local Input = require("input")
 local Output = require("output")
 local interop = require("interop")
@@ -120,50 +121,29 @@ function compiler.emit_lua_prop_lookup(self, token)
   self:emit_line("stack:push(" .. token .. ")")
 end
 
-function compiler.compile_token(self, token, kind)
-  if kind == "string" then
-    self:emit_lit(token)
-  elseif kind == "symbol" then
-    self:emit_symbol(token)
-  else
-    local word = dict.find(token)
-    if word then
-      if word.is_lua_alias then
-        -- Known lua alias
-        local res = interop.resolve_lua_func_with_arity(word.lua_name)
-        self:emit_lua_call(res.name, res.arity, res.vararg, res.void)
-      else
-        -- Forth word
-        self:emit_word(word)
-      end
+function compiler.compile_token(self, tok)
+  local kind = tok.kind
+  local token = tok.token
+  if kind == "word" then
+    self:emit_word(dict.find(token))
+  elseif kind == "literal" then
+    if tok.subtype == "string" then
+      self:emit_lit(token)
+    elseif tok.subtype == "symbol" then
+      self:emit_symbol(token)
     else
-      local num = tonumber(token)
-      if num then
-        self:emit_lit(num)
-      else
-        -- Unknown lua call
-        local res = interop.resolve_lua_method_call(token)
-        if res then
-          self:emit_lua_call(res.name, res.arity, res.vararg, res.void)
-        else
-          local res = interop.resolve_lua_func_with_arity(token)
-          if res then
-            self:emit_lua_call(res.name, res.arity, res.vararg, res.void)
-          elseif interop.is_lua_prop_lookup(token) then
-            -- Table lookup
-            local lua_obj = interop.resolve_lua_obj(token)
-            -- best effort to check if it's valid lookup
-            if lua_obj or dict.find(token:match("^[^.]+")) then
-              self:emit_lua_prop_lookup(token)
-            else
-              error("Unknown table lookup: " .. token)
-            end
-          else
-            error("Word not found: '" .. token .. "'")
-          end
-        end
-      end
+      self:emit_lit(tonumber(token))
     end
+  elseif kind == "lua_table_lookup" then
+    if tok.resolved then
+      self:emit_lua_prop_lookup(token)
+    else
+      error("Unknown table lookup: " .. token)
+    end
+  elseif kind == "lua_func_call" or kind == "lua_method_call" then
+    self:emit_lua_call(tok.name, tok.arity, tok.vararg, tok.void)
+  else
+    error("Word not found: '" .. token .. "'")
   end
 end
 
@@ -186,6 +166,7 @@ end
 
 function compiler.init(self, text)
   self.input = Input.new(text)
+  self.parser = Parser.new(self.input, dict)
   self.output = Output.new()
   self:emit_line("local stack = require(\"stack\")")
   self:emit_line("local aux = require(\"aux\")")
@@ -197,18 +178,14 @@ end
 
 function compiler.compile(self, text)
   self:init(text)
-  local token, kind = self:word()
-  while token ~= "" do
-    local word_def = dict.find(token)
-    if kind == "word"
-      and word_def
-      and word_def.immediate
-    then
-      self:exec(token)
+  local tok = self.parser:next_token()
+  while tok do
+    if tok.kind == "macro" then
+      self:exec(tok.token)
     else
-      self:compile_token(token, kind)
+      self:compile_token(tok)
     end
-    token, kind = self:word()
+    tok = self.parser:next_token()
   end
   return self.output
 end

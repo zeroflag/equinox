@@ -8,20 +8,20 @@ function Parser.new(input, dict)
   return obj
 end
 
-function Parser.parse(self)
-  local result = {}
+function Parser.next_token(self)
   local token, kind = self.input:parse()
-  while token ~= "" do
-    local word_def = self.dict.find(token)
-    if kind == "word"
-      and word_def
-      and word_def.immediate
-    then
-      table.insert(result, {token = token, kind = "macro"})
-    else
-      table.insert(result, self:parse_token(token, kind))
-    end
-    token, kind = self.input:parse()
+  if token == "" then
+    return nil
+  end
+  return self:parse_token(token, kind)
+end
+
+function Parser.parse_all(self)
+  local result = {}
+  local tok = self:next_token()
+  while tok do
+    table.insert(result, tok)
+    tok = self:next_token()
   end
   return result
 end
@@ -48,15 +48,26 @@ function lua_method_call(token, res)
   }
 end
 
-function lua_table_lookup(token)
-  return {token = token, kind = "lua_table_lookup"}
+function lua_table_lookup(token, resolved)
+  return {token = token, kind = "lua_table_lookup", resolved = resolved}
 end
 
 function literal(token, subtype)
   return {token = token, kind = "literal", subtype = subtype}
 end
 
+function unknown(token)
+  return {token = token, kind = "unknown"}
+end
+
 function Parser.parse_token(self, token, kind)
+  local word_def = self.dict.find(token)
+  if kind == "word"
+    and word_def
+    and word_def.immediate
+  then
+    return {token = token, kind = "macro"}
+  end
   if kind == "string" then
     return literal(token, "string")
   end
@@ -93,12 +104,12 @@ function Parser.parse_token(self, token, kind)
       local lua_obj = interop.resolve_lua_obj(token)
       -- best effort to check if it's valid lookup
       if lua_obj or self.dict.find(token:match("^[^.]+")) then
-        return lua_table_lookup(token)
+        return lua_table_lookup(token, true)
       else
-        error("Unknown table lookup: " .. token)
+        return lua_table_lookup(token, false)
       end
     else
-      error("Word not found: '" .. token .. "'")
+      return unknown(token)
     end
   end
 end
