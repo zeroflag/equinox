@@ -4,6 +4,7 @@
 -- hyperstatic glob
 -- optize output
 -- i shadows user defined i in pairs:/ipairs:
+-- symbol & instead of :
 -- Stack as Macro
 -- fix Lua's accidental global
 -- tab auto complete repl

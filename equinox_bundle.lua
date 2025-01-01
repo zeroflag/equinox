@@ -17,6 +17,7 @@ package.preload[ "compiler" ] = function( ... ) local arg = _G.arg;
 -- hyperstatic glob
 -- optize output
 -- i shadows user defined i in pairs:/ipairs:
+-- symbol & instead of :
 -- Stack as Macro
 -- fix Lua's accidental global
 -- tab auto complete repl
@@ -903,12 +904,10 @@ function Parser.next_item(self)
       token = token .. chr
     end
   end
-  if token:match("^:.+") then
-    kind = "symbol"
-  end
   if token == "" then
     return nil
   end
+  if token:match("^:.+") then kind = "symbol" end
   return self:parse_word(token, kind)
 end
 
@@ -919,10 +918,8 @@ function Parser.next_chr(self)
 end
 
 function Parser.parse_word(self, token, kind)
-  local word_def = self.dict.find(token)
-  if kind == "word"
-    and word_def
-    and word_def.immediate
+  local word = self.dict.find(token)
+  if kind == "word" and word and word.immediate
   then
     return {token = token, kind = "macro"}
   end
@@ -932,43 +929,41 @@ function Parser.parse_word(self, token, kind)
   if kind == "symbol" then
     return literal(token, "symbol")
   end
-  local word = self.dict.find(token)
   if word then
     if word.is_lua_alias then
       -- Known lua alias
       local res = interop.resolve_lua_func_with_arity(word.lua_name)
       return lua_func_call(token, res)
     else
-      -- Forth word
+      -- Known Forth word
       return {token = token, kind = "word"}
     end
-  else
-    local num = tonumber(token)
-    if num then
-      return literal(token, "number")
-    end
-    local res = interop.resolve_lua_method_call(token)
-    if res then
-      -- Lua method call such as obj:method/3
-      return lua_method_call(token, res)
-    end
-    local res = interop.resolve_lua_func_with_arity(token)
-    if res then
-      -- Lua call such as math.max/2
-      return lua_func_call(token, res)
-    end
-    if interop.is_lua_prop_lookup(token) then
-      -- Table lookup
-      local lua_obj = interop.resolve_lua_obj(token)
-      -- best effort to check if it's valid lookup
-      if lua_obj or self.dict.find(token:match("^[^.]+")) then
-        return lua_table_lookup(token, true)
-      else
-        return lua_table_lookup(token, false)
-      end
+  end
+  local num = tonumber(token)
+  if num then
+    return literal(token, "number")
+  end
+  local res = interop.resolve_lua_method_call(token)
+  if res then
+    -- Lua method call such as obj:method/3
+    return lua_method_call(token, res)
+  end
+  local res = interop.resolve_lua_func_with_arity(token)
+  if res then
+    -- Lua function call such as math.max/2
+    return lua_func_call(token, res)
+  end
+  if interop.is_lua_prop_lookup(token) then
+    -- Table lookup
+    local lua_obj = interop.resolve_lua_obj(token)
+    -- best effort to check if it's valid lookup
+    if lua_obj or self.dict.find(token:match("^[^.]+")) then
+      return lua_table_lookup(token, true)
     else
-      return unknown(token)
+      return lua_table_lookup(token, false)
     end
+  else
+    return unknown(token)
   end
 end
 
