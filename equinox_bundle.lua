@@ -442,11 +442,11 @@ function sanitize(str)
 end
 
 function macros.add(compiler)
-  compiler:emit_line("stack:push(stack:pop() + stack:pop())")
+  compiler:emit_push("stack:pop() + stack:pop()")
 end
 
 function macros.mul(compiler)
-  compiler:emit_line("stack:push(stack:pop() * stack:pop())")
+  compiler:emit_push("stack:pop() * stack:pop()")
 end
 
 function macros.sub(compiler)
@@ -471,31 +471,31 @@ stack:push(_b % _a)]])
 end
 
 function macros.eq(compiler)
-  compiler:emit_line("stack:push(stack:pop() == stack:pop())")
+  compiler:emit_push("stack:pop() == stack:pop()")
 end
 
 function macros.neq(compiler)
-  compiler:emit_line("stack:push(stack:pop() ~= stack:pop())")
+  compiler:emit_push("stack:pop() ~= stack:pop()")
 end
 
 function macros.lt(compiler)
-  compiler:emit_line("stack:push(stack:pop() > stack:pop())")
+  compiler:emit_push("stack:pop() > stack:pop()")
 end
 
 function macros.lte(compiler)
-  compiler:emit_line("stack:push(stack:pop() >= stack:pop())")
+  compiler:emit_push("stack:pop() >= stack:pop()")
 end
 
 function macros.gt(compiler)
-  compiler:emit_line("stack:push(stack:pop() < stack:pop())")
+  compiler:emit_push("stack:pop() < stack:pop()")
 end
 
 function macros.gte(compiler)
-  compiler:emit_line("stack:push(stack:pop() <= stack:pop())")
+  compiler:emit_push("stack:pop() <= stack:pop()")
 end
 
 function macros._not(compiler)
-  compiler:emit_line("stack:push(not stack:pop())")
+  compiler:emit_push("not stack:pop()")
 end
 
 function macros._and(compiler)
@@ -520,11 +520,11 @@ stack:push(_b .. _a)]])
 end
 
 function macros.new_table(compiler)
-  compiler:emit_line("stack:push({})")
+  compiler:emit_push("{}")
 end
 
 function macros.table_size(compiler)
-  compiler:emit_line("stack:push(#stack:pop())")
+  compiler:emit_push("#stack:pop()")
 end
 
 function macros.table_at(compiler)
@@ -543,15 +543,15 @@ _tbl[_key] = _val]])
 end
 
 function macros.depth(compiler)
-  compiler:emit_line("stack:push(stack:depth())")
+  compiler:emit_push("stack:depth()")
 end
 
 function macros.adepth(compiler)
-  compiler:emit_line("stack:push(aux:depth())")
+  compiler:emit_push("aux:depth()")
 end
 
 function macros.dup(compiler)
-  compiler:emit_line("stack:push(stack:tos())")
+  compiler:emit_push("stack:tos()")
 end
 
 function macros.drop(compiler)
@@ -559,7 +559,7 @@ function macros.drop(compiler)
 end
 
 function macros.over(compiler)
-  compiler:emit_line("stack:push(stack:tos2())")
+  compiler:emit_push("stack:tos2()")
 end
 
 function macros.nip(compiler)
@@ -570,8 +570,8 @@ stack:push(_a)]])
 end
 
 function macros.dup2(compiler)
-  compiler:emit_line("stack:push(stack:tos2())")
-  compiler:emit_line("stack:push(stack:tos2())")
+  compiler:emit_push("stack:tos2()")
+  compiler:emit_push("stack:tos2()")
 end
 
 function macros.mrot(compiler)
@@ -617,7 +617,7 @@ function macros.to_aux(compiler)
 end
 
 function macros.from_aux(compiler)
-  compiler:emit_line("stack:push(aux:pop())")
+  compiler:emit_push("aux:pop()")
 end
 
 function macros.dot(compiler)
@@ -653,7 +653,7 @@ function macros.colon(compiler)
       end
     end
     for i = 1, arity do
-      compiler:emit_line("stack:push(__a" .. i ..")")
+      compiler:emit_push("__a" .. i)
     end
   end
 end
@@ -722,12 +722,12 @@ end
 
 -- TODO this might overwrite user defined i/j ?
 function macros._i(compiler)
-  compiler:emit_line("stack:push(aux:tos())")
+  compiler:emit_push("aux:tos()")
 end
 
 -- TODO this might overwrite user defined i/j ?
 function macros._j(compiler)
-  compiler:emit_line("stack:push(aux:tos2())")
+  compiler:emit_push("aux:tos2()")
 end
 
 function macros.unloop(compiler)
