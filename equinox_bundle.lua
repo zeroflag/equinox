@@ -15,7 +15,7 @@ package.preload[ "compiler" ] = function( ... ) local arg = _G.arg;
 -- user defined control structues
 -- var/local scopes
 -- hyperstatic glob
--- benchmarks
+-- optize output
 -- i shadows user defined i in pairs:/ipairs:
 -- Stack as Macro
 -- fix Lua's accidental global
