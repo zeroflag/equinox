@@ -20,9 +20,6 @@ local Input = require("input")
 local Output = require("output")
 local interop = require("interop")
 
--- TODO XXX
-_G["macros"] = macros
-
 local compiler = { input = nil, output = nil, code_start = 1 }
 
 function compiler.word(self)
@@ -163,7 +160,11 @@ end
 
 function compiler.exec(self, word)
   local mod, fun = dict.find(word).lua_name:match("^(.-)%.(.+)$")
-  _G[mod][fun](self)
+  if mod == "macros" and type(macros[fun]) == "function" then
+    macros[fun](self)
+  else
+    error("Unknown macro " .. word)
+  end
 end
 
 function compiler.init(self, text)

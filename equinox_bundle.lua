@@ -33,9 +33,6 @@ local Input = require("input")
 local Output = require("output")
 local interop = require("interop")
 
--- TODO XXX
-_G["macros"] = macros
-
 local compiler = { input = nil, output = nil, code_start = 1 }
 
 function compiler.word(self)
@@ -176,7 +173,11 @@ end
 
 function compiler.exec(self, word)
   local mod, fun = dict.find(word).lua_name:match("^(.-)%.(.+)$")
-  _G[mod][fun](self)
+  if mod == "macros" and type(macros[fun]) == "function" then
+    macros[fun](self)
+  else
+    error("Unknown macro " .. word)
+  end
 end
 
 function compiler.init(self, text)
@@ -310,8 +311,12 @@ dict.def_macro(">=", "macros.gte")
 dict.def_macro("swap", "macros.swap")
 dict.def_macro("over", "macros.over")
 dict.def_macro("rot", "macros.rot")
+dict.def_macro("-rot", "macros.mrot")
+dict.def_macro("nip", "macros.nip")
 dict.def_macro("drop", "macros.drop")
 dict.def_macro("dup", "macros.dup")
+dict.def_macro("2dup", "macros.dup2")
+dict.def_macro("tuck", "macros.tuck")
 dict.def_macro("depth", "macros.depth")
 dict.def_macro("adepth", "macros.adepth")
 dict.def_macro("not", "macros._not")
@@ -649,6 +654,40 @@ end
 
 function macros.over(compiler)
   compiler:emit_line("stack:push(stack:tos2())")
+end
+
+function macros.nip(compiler)
+  compiler:emit_line([[
+local _a = stack:pop()
+local _b = stack:pop()
+stack:push(_a)
+stack:push(_b)
+stack:pop()]])
+end
+
+function macros.dup2(compiler)
+  compiler:emit_line("stack:push(stack:tos2())")
+  compiler:emit_line("stack:push(stack:tos2())")
+end
+
+function macros.mrot(compiler)
+  compiler:emit_line([[
+local _c = stack:pop()
+local _b = stack:pop()
+local _a = stack:pop()
+stack:push(_c)
+stack:push(_a)
+stack:push(_b)]])
+end
+
+function macros.tuck(compiler)
+  compiler:emit_line([[
+local _a = stack:pop()
+local _b = stack:pop()
+stack:push(_a)
+stack:push(_b)
+stack:push(stack:tos2())
+]])
 end
 
 function macros.rot(compiler)

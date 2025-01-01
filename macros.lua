@@ -164,6 +164,40 @@ function macros.over(compiler)
   compiler:emit_line("stack:push(stack:tos2())")
 end
 
+function macros.nip(compiler)
+  compiler:emit_line([[
+local _a = stack:pop()
+local _b = stack:pop()
+stack:push(_a)
+stack:push(_b)
+stack:pop()]])
+end
+
+function macros.dup2(compiler)
+  compiler:emit_line("stack:push(stack:tos2())")
+  compiler:emit_line("stack:push(stack:tos2())")
+end
+
+function macros.mrot(compiler)
+  compiler:emit_line([[
+local _c = stack:pop()
+local _b = stack:pop()
+local _a = stack:pop()
+stack:push(_c)
+stack:push(_a)
+stack:push(_b)]])
+end
+
+function macros.tuck(compiler)
+  compiler:emit_line([[
+local _a = stack:pop()
+local _b = stack:pop()
+stack:push(_a)
+stack:push(_b)
+stack:push(stack:tos2())
+]])
+end
+
 function macros.rot(compiler)
   compiler:emit_line([[
 local _c = stack:pop()
