@@ -659,10 +659,8 @@ end
 function macros.nip(compiler)
   compiler:emit_line([[
 local _a = stack:pop()
-local _b = stack:pop()
-stack:push(_a)
-stack:push(_b)
-stack:pop()]])
+stack:pop()
+stack:push(_a)]])
 end
 
 function macros.dup2(compiler)
@@ -686,7 +684,7 @@ local _a = stack:pop()
 local _b = stack:pop()
 stack:push(_a)
 stack:push(_b)
-stack:push(stack:tos2())
+stack:push(_a)
 ]])
 end
 
