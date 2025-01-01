@@ -20,26 +20,18 @@ local Input = require("input")
 local Output = require("output")
 local interop = require("interop")
 
-local compiler = { input = nil, output = nil, code_start = 1 }
+local compiler = { parser = nil, output = nil, code_start = 1 }
 
 function compiler.word(self)
-  return self.input:parse()
+  return self.parser:next().token
 end
 
 function compiler.next(self)
-  return self.input:next()
+  return self.parser:next_chr()
 end
 
 function compiler.word_list(self)
   return dict.word_list()
-end
-
-function compiler.line_number(self)
-  return self.output:size()
-end
-
-function compiler.update_line(self, line, line_number)
-  return self.output:update_line(line, line_number)
 end
 
 function compiler.alias(self, lua_name, forth_alias)
@@ -116,8 +108,10 @@ function compiler.compile_token(self, item)
       self:emit_lit(item.token)
     elseif item.subtype == "symbol" then
       self:emit_symbol(item.token)
-    else
+    elseif item.subtype == "number" then
       self:emit_lit(tonumber(item.token))
+    else
+      error("Unkown literal type: " .. item.subtype)
     end
   elseif item.kind == "lua_table_lookup" then
     if item.resolved then
@@ -151,8 +145,7 @@ function compiler.exec_macro(self, word)
 end
 
 function compiler.init(self, text)
-  self.input = Input.new(text)
-  self.parser = Parser.new(self.input, dict)
+  self.parser = Parser.new(Input.new(text), dict)
   self.output = Output.new()
   self:emit_line("local stack = require(\"stack\")")
   self:emit_line("local aux = require(\"aux\")")

@@ -26,6 +26,10 @@ function Parser.next(self)
   return self:parse_token(token, kind)
 end
 
+function Parser.next_chr(self)
+  return self.input:next()
+end
+
 function Parser.parse_token(self, token, kind)
   local word_def = self.dict.find(token)
   if kind == "word"
