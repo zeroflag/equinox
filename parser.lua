@@ -8,56 +8,22 @@ function Parser.new(input, dict)
   return obj
 end
 
-function Parser.next_token(self)
+function Parser.parse(self)
+  local result = {}
+  local item = self:next()
+  while item do
+    table.insert(result, item)
+    item = self:next()
+  end
+  return result
+end
+
+function Parser.next(self)
   local token, kind = self.input:parse()
   if token == "" then
     return nil
   end
   return self:parse_token(token, kind)
-end
-
-function Parser.parse_all(self)
-  local result = {}
-  local tok = self:next_token()
-  while tok do
-    table.insert(result, tok)
-    tok = self:next_token()
-  end
-  return result
-end
-
-function lua_func_call(token, res)
-  return {
-    token = token,
-    kind = "lua_func_call",
-    name = res.name,
-    arity = res.arity,
-    vararg = res.vararg,
-    void = res.void
-  }
-end
-
-function lua_method_call(token, res)
-  return {
-    token = token,
-    kind = "lua_method_call",
-    name = res.name,
-    arity = res.arity,
-    vararg = res.vararg,
-    void = res.void
-  }
-end
-
-function lua_table_lookup(token, resolved)
-  return {token = token, kind = "lua_table_lookup", resolved = resolved}
-end
-
-function literal(token, subtype)
-  return {token = token, kind = "literal", subtype = subtype}
-end
-
-function unknown(token)
-  return {token = token, kind = "unknown"}
 end
 
 function Parser.parse_token(self, token, kind)
@@ -112,6 +78,40 @@ function Parser.parse_token(self, token, kind)
       return unknown(token)
     end
   end
+end
+
+function lua_func_call(token, res)
+  return {
+    token = token,
+    kind = "lua_func_call",
+    name = res.name,
+    arity = res.arity,
+    vararg = res.vararg,
+    void = res.void
+  }
+end
+
+function lua_method_call(token, res)
+  return {
+    token = token,
+    kind = "lua_method_call",
+    name = res.name,
+    arity = res.arity,
+    vararg = res.vararg,
+    void = res.void
+  }
+end
+
+function lua_table_lookup(token, resolved)
+  return {token = token, kind = "lua_table_lookup", resolved = resolved}
+end
+
+function literal(token, subtype)
+  return {token = token, kind = "literal", subtype = subtype}
+end
+
+function unknown(token)
+  return {token = token, kind = "unknown"}
 end
 
 return Parser

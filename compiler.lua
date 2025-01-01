@@ -108,29 +108,28 @@ function compiler.emit_lua_prop_lookup(self, token)
   self:emit_line("stack:push(" .. token .. ")")
 end
 
-function compiler.compile_token(self, tok)
-  local kind = tok.kind
-  local token = tok.token
-  if kind == "word" then
-    self:emit_word(dict.find(token))
-  elseif kind == "literal" then
-    if tok.subtype == "string" then
-      self:emit_lit(token)
-    elseif tok.subtype == "symbol" then
-      self:emit_symbol(token)
+function compiler.compile_token(self, item)
+  if item.kind == "word" then
+    self:emit_word(dict.find(item.token))
+  elseif item.kind == "literal" then
+    if item.subtype == "string" then
+      self:emit_lit(item.token)
+    elseif item.subtype == "symbol" then
+      self:emit_symbol(item.token)
     else
-      self:emit_lit(tonumber(token))
+      self:emit_lit(tonumber(item.token))
     end
-  elseif kind == "lua_table_lookup" then
-    if tok.resolved then
-      self:emit_lua_prop_lookup(token)
+  elseif item.kind == "lua_table_lookup" then
+    if item.resolved then
+      self:emit_lua_prop_lookup(item.token)
     else
-      error("Unknown table lookup: " .. token)
+      error("Unknown table lookup: " .. item.token)
     end
-  elseif kind == "lua_func_call" or kind == "lua_method_call" then
-    self:emit_lua_call(tok.name, tok.arity, tok.vararg, tok.void)
+  elseif item.kind == "lua_func_call" or
+         item.kind == "lua_method_call" then
+    self:emit_lua_call(item.name, item.arity, item.vararg, item.void)
   else
-    error("Word not found: '" .. token .. "'")
+    error("Word not found: '" .. item.token .. "'")
   end
 end
 
@@ -142,7 +141,7 @@ function compiler.def_var(self, alias, name)
   dict.def_var(alias, name)
 end
 
-function compiler.exec(self, word)
+function compiler.exec_macro(self, word)
   local mod, fun = dict.find(word).lua_name:match("^(.-)%.(.+)$")
   if mod == "macros" and type(macros[fun]) == "function" then
     macros[fun](self)
@@ -165,14 +164,14 @@ end
 
 function compiler.compile(self, text)
   self:init(text)
-  local tok = self.parser:next_token()
-  while tok do
-    if tok.kind == "macro" then
-      self:exec(tok.token)
+  local item = self.parser:next()
+  while item do
+    if item.kind == "macro" then
+      self:exec_macro(item.token)
     else
-      self:compile_token(tok)
+      self:compile_token(item)
     end
-    tok = self.parser:next_token()
+    item = self.parser:next()
   end
   return self.output
 end
