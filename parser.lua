@@ -2,35 +2,62 @@ local interop = require("interop")
 
 local Parser = {}
 
-function Parser.new(input, dict)
-  local obj = {input = input, dict = dict}
+function Parser.new(source, dict)
+  local obj = {index = 1, source = source, dict = dict}
   setmetatable(obj, {__index = Parser})
   return obj
 end
 
-function Parser.parse(self)
+function Parser.parse_all(self)
   local result = {}
-  local item = self:next()
+  local item = self:next_word()
   while item do
     table.insert(result, item)
-    item = self:next()
+    item = self:next_word()
   end
   return result
 end
 
-function Parser.next(self)
-  local token, kind = self.input:parse()
+function Parser.next_word(self)
+  local token = ""
+  local begin_str = false
+  local stop = false
+  local kind = "word"
+  while not self:ended() and not stop do
+    local chr = self:next_chr()
+    if is_quote(chr) then
+      if begin_str then
+        stop = true
+      else
+        kind = "string"
+        begin_str = true
+      end
+    end
+    if is_whitespace(chr) and not begin_str then
+      if #token > 0 then
+        self.index = self.index -1 -- don't consume next WS as it breaks single line comment
+        stop = true
+      end
+    else
+      token = token .. chr
+    end
+  end
+  if token:match("^:.+") then
+    kind = "symbol"
+  end
   if token == "" then
     return nil
   end
-  return self:parse_token(token, kind)
+  return self:parse_word(token, kind)
 end
 
 function Parser.next_chr(self)
-  return self.input:next()
+  local chr = self.source:sub(self.index, self.index)
+  self.index = self.index + 1
+  return chr
 end
 
-function Parser.parse_token(self, token, kind)
+function Parser.parse_word(self, token, kind)
   local word_def = self.dict.find(token)
   if kind == "word"
     and word_def
@@ -84,6 +111,10 @@ function Parser.parse_token(self, token, kind)
   end
 end
 
+function Parser.ended(self)
+  return self.index > #self.source
+end
+
 function lua_func_call(token, res)
   return {
     token = token,
@@ -116,6 +147,14 @@ end
 
 function unknown(token)
   return {token = token, kind = "unknown"}
+end
+
+function is_quote(chr)
+  return chr:match('"')
+end
+
+function is_whitespace(chr)
+  return chr:match("%s")
 end
 
 return Parser

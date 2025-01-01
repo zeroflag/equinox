@@ -16,14 +16,13 @@ local macros = require("macros")
 local Stack = require("stack_def")
 local dict = require("dict")
 local Parser = require("parser")
-local Input = require("input")
 local Output = require("output")
 local interop = require("interop")
 
 local compiler = { parser = nil, output = nil, code_start = 1 }
 
 function compiler.word(self)
-  return self.parser:next().token
+  return self.parser:next_word().token
 end
 
 function compiler.next(self)
@@ -145,7 +144,7 @@ function compiler.exec_macro(self, word)
 end
 
 function compiler.init(self, text)
-  self.parser = Parser.new(Input.new(text), dict)
+  self.parser = Parser.new(text, dict)
   self.output = Output.new()
   self:emit_line("local stack = require(\"stack\")")
   self:emit_line("local aux = require(\"aux\")")
@@ -157,14 +156,14 @@ end
 
 function compiler.compile(self, text)
   self:init(text)
-  local item = self.parser:next()
+  local item = self.parser:next_word()
   while item do
     if item.kind == "macro" then
       self:exec_macro(item.token)
     else
       self:compile_token(item)
     end
-    item = self.parser:next()
+    item = self.parser:next_word()
   end
   return self.output
 end

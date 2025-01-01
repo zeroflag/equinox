@@ -1,11 +1,10 @@
 local dict = require("dict")
 local json = require("tests/json")
-local Input = require("input")
 local Parser = require("parser")
 
 function parse(text)
-  local parser = Parser.new(Input.new(text), dict)
-  return parser:parse()
+  local parser = Parser.new(text, dict)
+  return parser:parse_all()
 end
 
 function assert_table(t1, t2)
