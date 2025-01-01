@@ -22,8 +22,7 @@ package.preload[ "compiler" ] = function( ... ) local arg = _G.arg;
 -- tab auto complete repl
 -- var with dash generates error
 -- line numbers + errors
--- table.prop syntax (check)
---
+-- 14 -> var x syntax ?
 
 local stack = require("stack")
 local macros = require("macros")

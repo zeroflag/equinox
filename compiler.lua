@@ -2,15 +2,14 @@
 -- user defined control structues
 -- var/local scopes
 -- hyperstatic glob
--- benchmarks
+-- optize output
 -- i shadows user defined i in pairs:/ipairs:
 -- Stack as Macro
 -- fix Lua's accidental global
 -- tab auto complete repl
 -- var with dash generates error
 -- line numbers + errors
--- table.prop syntax (check)
---
+-- 14 -> var x syntax ?
 
 local stack = require("stack")
 local macros = require("macros")
