@@ -10,6 +10,7 @@
 -- tab auto complete repl
 -- var with dash generates error
 -- line numbers + errors
+-- a[i] syntax test
 -- 14 -> var x syntax ?
 
 local stack = require("stack")
@@ -104,7 +105,8 @@ function compiler.compile_token(self, item)
     else
       error("Unkown literal type: " .. item.subtype)
     end
-  elseif item.kind == "lua_table_lookup" then
+  elseif item.kind == "lua_table_lookup" or
+         item.kind == "lua_array_lookup" then
     if item.resolved then
       self:emit_push(item.token)
     else
@@ -114,7 +116,7 @@ function compiler.compile_token(self, item)
          item.kind == "lua_method_call" then
     self:emit_lua_call(item.name, item.arity, item.vararg, item.void)
   else
-    error("Word not found: '" .. item.token .. "'")
+    error("Word not found: '" .. item.token .. "'" .. " kind: " .. item.kind)
   end
 end
 

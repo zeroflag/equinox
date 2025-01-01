@@ -2,24 +2,26 @@ local Stack = {}
 local NIL = "__NIL__"
 
 function Stack.new(name)
-  local obj = {stack = {}, name = name}
+  local obj = {stack = {nil,nil,nil,nil,nil,nil,nil,nil}, name = name}
   setmetatable(obj, {__index = Stack})
   return obj
 end
 
 function Stack.push(self, e)
-  table.insert(self.stack, e ~= nil and e or NIL)
+  self.stack[#self.stack + 1] = (e ~= nil and e or NIL)
 end
 
 function Stack.push_many(self, ...)
-  for i, item in ipairs({...}) do
-    self:push(item)
+  local args = {...}
+  local stack = self.stack
+  for i = 1, #args do
+    stack[#stack + 1] = (args[i] ~= nil and args[i] or NIL)
   end
 end
 
 function Stack.pop(self)
   local item = table.remove(self.stack)
-  if item == nil then
+  if not item then
     error("Stack underflow: " .. self.name)
   end
   return item ~= NIL and item or nil

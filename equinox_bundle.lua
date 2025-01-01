@@ -117,7 +117,8 @@ function compiler.compile_token(self, item)
     else
       error("Unkown literal type: " .. item.subtype)
     end
-  elseif item.kind == "lua_table_lookup" then
+  elseif item.kind == "lua_table_lookup" or
+         item.kind == "lua_array_lookup" then
     if item.resolved then
       self:emit_push(item.token)
     else
@@ -127,7 +128,7 @@ function compiler.compile_token(self, item)
          item.kind == "lua_method_call" then
     self:emit_lua_call(item.name, item.arity, item.vararg, item.void)
   else
-    error("Word not found: '" .. item.token .. "'")
+    error("Word not found: '" .. item.token .. "'" .. " kind: " .. item.kind)
   end
 end
 
@@ -387,6 +388,10 @@ end
 
 function interop.is_lua_prop_lookup(token)
   return string.match(token, ".+%..+")
+end
+
+function interop.is_lua_array_lookup(token)
+  return string.match(token, ".+%[.+%]")
 end
 
 return interop
@@ -703,7 +708,7 @@ function macros._case(compiler)
 end
 
 function macros._of(compiler)
-  compiler:emit_line("stack:push(stack:tos2())") -- OVER
+  compiler:emit_push("stack:tos2()") -- OVER
   compiler:emit_line("if stack:pop() == stack:pop() then")
   compiler:emit_line("stack:pop()") -- DROP selector value
 end
@@ -953,9 +958,12 @@ function Parser.parse_word(self, token, kind)
     else
       return lua_table_lookup(token, false)
     end
-  else
-    return unknown(token)
   end
+  if interop.is_lua_array_lookup(token) then
+    -- TODO try to resolve
+    return lua_array_lookup(token, true)
+  end
+  return unknown(token)
 end
 
 function Parser.ended(self)
@@ -986,6 +994,10 @@ end
 
 function lua_table_lookup(token, resolved)
   return {token = token, kind = "lua_table_lookup", resolved = resolved}
+end
+
+function lua_array_lookup(token, resolved)
+  return {token = token, kind = "lua_array_lookup", resolved = resolved}
 end
 
 function literal(token, subtype)
@@ -1166,18 +1178,20 @@ function Stack.new(name)
 end
 
 function Stack.push(self, e)
-  table.insert(self.stack, e ~= nil and e or NIL)
+  self.stack[#self.stack + 1] = (e ~= nil and e or NIL)
 end
 
 function Stack.push_many(self, ...)
-  for i, item in ipairs({...}) do
-    self:push(item)
+  local args = {...}
+  local stack = self.stack
+  for i = 1, #args do
+    stack[#stack + 1] = (args[i] ~= nil and args[i] or NIL)
   end
 end
 
 function Stack.pop(self)
   local item = table.remove(self.stack)
-  if item == nil then
+  if not item then
     error("Stack underflow: " .. self.name)
   end
   return item ~= NIL and item or nil

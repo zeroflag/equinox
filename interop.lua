@@ -55,4 +55,8 @@ function interop.is_lua_prop_lookup(token)
   return string.match(token, ".+%..+")
 end
 
+function interop.is_lua_array_lookup(token)
+  return string.match(token, ".+%[.+%]")
+end
+
 return interop

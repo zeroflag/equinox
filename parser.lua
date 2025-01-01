@@ -100,9 +100,12 @@ function Parser.parse_word(self, token, kind)
     else
       return lua_table_lookup(token, false)
     end
-  else
-    return unknown(token)
   end
+  if interop.is_lua_array_lookup(token) then
+    -- TODO try to resolve
+    return lua_array_lookup(token, true)
+  end
+  return unknown(token)
 end
 
 function Parser.ended(self)
@@ -133,6 +136,10 @@ end
 
 function lua_table_lookup(token, resolved)
   return {token = token, kind = "lua_table_lookup", resolved = resolved}
+end
+
+function lua_array_lookup(token, resolved)
+  return {token = token, kind = "lua_array_lookup", resolved = resolved}
 end
 
 function literal(token, subtype)

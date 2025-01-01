@@ -305,7 +305,7 @@ function macros._case(compiler)
 end
 
 function macros._of(compiler)
-  compiler:emit_line("stack:push(stack:tos2())") -- OVER
+  compiler:emit_push("stack:tos2()") -- OVER
   compiler:emit_line("if stack:pop() == stack:pop() then")
   compiler:emit_line("stack:pop()") -- DROP selector value
 end
