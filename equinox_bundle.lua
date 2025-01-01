@@ -35,7 +35,7 @@ local interop = require("interop")
 local compiler = { parser = nil, output = nil, code_start = 1 }
 
 function compiler.word(self)
-  return self.parser:next_word().token
+  return self.parser:next_item().token
 end
 
 function compiler.next(self)
@@ -169,14 +169,14 @@ end
 
 function compiler.compile(self, text)
   self:init(text)
-  local item = self.parser:next_word()
+  local item = self.parser:next_item()
   while item do
     if item.kind == "macro" then
       self:exec_macro(item.token)
     else
       self:compile_token(item)
     end
-    item = self.parser:next_word()
+    item = self.parser:next_item()
   end
   return self.output
 end
@@ -871,15 +871,15 @@ end
 
 function Parser.parse_all(self)
   local result = {}
-  local item = self:next_word()
+  local item = self:next_item()
   while item do
     table.insert(result, item)
-    item = self:next_word()
+    item = self:next_item()
   end
   return result
 end
 
-function Parser.next_word(self)
+function Parser.next_item(self)
   local token = ""
   local begin_str = false
   local stop = false

@@ -10,15 +10,15 @@ end
 
 function Parser.parse_all(self)
   local result = {}
-  local item = self:next_word()
+  local item = self:next_item()
   while item do
     table.insert(result, item)
-    item = self:next_word()
+    item = self:next_item()
   end
   return result
 end
 
-function Parser.next_word(self)
+function Parser.next_item(self)
   local token = ""
   local begin_str = false
   local stop = false
