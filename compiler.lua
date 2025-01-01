@@ -38,20 +38,8 @@ function compiler.alias(self, lua_name, forth_alias)
   return dict.def_lua_alias(lua_name, forth_alias)
 end
 
-function compiler.emit_lit(self, token)
+function compiler.emit_push(self, token)
   self:emit_line("stack:push(" .. token .. ")")
-end
-
-function compiler.emit_symbol(self, token)
-  self:emit_lit('"' .. token:sub(2) .. '"')
-end
-
-function compiler.emit_word(self, word)
-  if word.callable then
-    self:emit_line(word.lua_name .. "()")
-  else
-    self:emit_line("stack:push(" .. word.lua_name .. ")")
-  end
 end
 
 function compiler.emit_lua_call(self, name, arity, vararg, void)
@@ -96,26 +84,29 @@ function compiler.emit_lua_call(self, name, arity, vararg, void)
   end
 end
 
-function compiler.emit_lua_prop_lookup(self, token)
-  self:emit_line("stack:push(" .. token .. ")")
-end
-
 function compiler.compile_token(self, item)
   if item.kind == "word" then
-    self:emit_word(dict.find(item.token))
+    local word = dict.find(item.token)
+    if word.callable then
+      -- Forth word
+      self:emit_line(word.lua_name .. "()")
+    else
+      -- Forth variable
+      self:emit_push(word.lua_name)
+    end
   elseif item.kind == "literal" then
     if item.subtype == "string" then
-      self:emit_lit(item.token)
+      self:emit_push(item.token)
     elseif item.subtype == "symbol" then
-      self:emit_symbol(item.token)
+      self:emit_push('"' .. item.token:sub(2) .. '"')
     elseif item.subtype == "number" then
-      self:emit_lit(tonumber(item.token))
+      self:emit_push(tonumber(item.token))
     else
       error("Unkown literal type: " .. item.subtype)
     end
   elseif item.kind == "lua_table_lookup" then
     if item.resolved then
-      self:emit_lua_prop_lookup(item.token)
+      self:emit_push(item.token)
     else
       error("Unknown table lookup: " .. item.token)
     end
