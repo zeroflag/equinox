@@ -1,13 +1,18 @@
 local interop = {}
 
-function interop.resolve_lua_func(name)
-  local func = _G
+function interop.resolve_lua_obj(name)
+  local obj = _G
   for part in name:gmatch("[^%.]+") do
-    func = func[part]
-    if func == nil then return nil end
+    obj = obj[part]
+    if obj == nil then return nil end
   end
-  if type(func) == "function" then
-    return func
+  return obj
+end
+
+function interop.resolve_lua_func(name)
+  local obj = interop.resolve_lua_obj(name)
+  if obj and type(obj) == "function" then
+    return obj
   else
     return nil
   end

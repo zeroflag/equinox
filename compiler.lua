@@ -138,9 +138,14 @@ function compiler.compile_token(self, token, kind)
           if res then
             self:emit_lua_call(res.name, res.arity, res.vararg, res.void)
           elseif interop.is_lua_prop_lookup(token) then
-            -- TODO check lhs(s) is a defined var or in _G
             -- Table lookup
-            self:emit_lua_prop_lookup(token)
+            local lua_obj = interop.resolve_lua_obj(token)
+            -- best effort to check if it's valid lookup
+            if lua_obj or dict.find(token:match("^[^.]+")) then
+              self:emit_lua_prop_lookup(token)
+            else
+              error("Unknown table lookup: " .. token)
+            end
           else
             error("Word not found: '" .. token .. "'")
           end

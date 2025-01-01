@@ -114,5 +114,8 @@ tbl.k1 15 =assert
 "orange" -> tbl.k2
 tbl.k2 "orange" =assert
 
+{ :k1 { :k2 { :k3 { :k4 42 } } } } -> tbl
+tbl.k1.k2.k3.k4 42 =assert
+
 depth 0 =assert
 adepth 0 =assert

@@ -17,16 +17,11 @@ function Stack.push_many(self, ...)
   end
 end
 
-function Stack.pop_safe(self)
+function Stack.pop(self)
   local item = table.remove(self.stack)
   if item == nil then
     error("Stack underflow: " .. self.name)
   end
-  return item ~= NIL and item or nil
-end
-
-function Stack.pop_unsafe(self)
-  local item = table.remove(self.stack)
   return item ~= NIL and item or nil
 end
 
@@ -41,15 +36,5 @@ end
 function Stack.depth(self)
   return #self.stack
 end
-
-function Stack.safety(safe)
-  if safe then
-    Stack.pop = Stack.pop_safe
-  else
-    Stack.pop = Stack.pop_unsafe
-  end
-end
-
-Stack.safety(true)
 
 return Stack

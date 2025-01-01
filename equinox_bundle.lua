@@ -151,9 +151,14 @@ function compiler.compile_token(self, token, kind)
           if res then
             self:emit_lua_call(res.name, res.arity, res.vararg, res.void)
           elseif interop.is_lua_prop_lookup(token) then
-            -- TODO check lhs(s) is a defined var or in _G
             -- Table lookup
-            self:emit_lua_prop_lookup(token)
+            local lua_obj = interop.resolve_lua_obj(token)
+            -- best effort to check if it's valid lookup
+            if lua_obj or dict.find(token:match("^[^.]+")) then
+              self:emit_lua_prop_lookup(token)
+            else
+              error("Unknown table lookup: " .. token)
+            end
           else
             error("Word not found: '" .. token .. "'")
           end
@@ -433,14 +438,19 @@ local _ENV = _ENV
 package.preload[ "interop" ] = function( ... ) local arg = _G.arg;
 local interop = {}
 
-function interop.resolve_lua_func(name)
-  local func = _G
+function interop.resolve_lua_obj(name)
+  local obj = _G
   for part in name:gmatch("[^%.]+") do
-    func = func[part]
-    if func == nil then return nil end
+    obj = obj[part]
+    if obj == nil then return nil end
   end
-  if type(func) == "function" then
-    return func
+  return obj
+end
+
+function interop.resolve_lua_func(name)
+  local obj = interop.resolve_lua_obj(name)
+  if obj and type(obj) == "function" then
+    return obj
   else
     return nil
   end
@@ -1109,16 +1119,11 @@ function Stack.push_many(self, ...)
   end
 end
 
-function Stack.pop_safe(self)
+function Stack.pop(self)
   local item = table.remove(self.stack)
   if item == nil then
     error("Stack underflow: " .. self.name)
   end
-  return item ~= NIL and item or nil
-end
-
-function Stack.pop_unsafe(self)
-  local item = table.remove(self.stack)
   return item ~= NIL and item or nil
 end
 
@@ -1133,16 +1138,6 @@ end
 function Stack.depth(self)
   return #self.stack
 end
-
-function Stack.safety(safe)
-  if safe then
-    Stack.pop = Stack.pop_safe
-  else
-    Stack.pop = Stack.pop_unsafe
-  end
-end
-
-Stack.safety(true)
 
 return Stack
 end
