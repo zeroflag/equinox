@@ -541,7 +541,7 @@ local _t = stack:pop()
 stack:push(_t[_n])]])
 end
 
-function macros.table_put(compiler)
+function macros.table_put(compiler) -- TODO gen names
   compiler:emit_line([[
 local _val = stack:pop()
 local _key = stack:pop()
@@ -558,7 +558,7 @@ function macros.adepth(compiler)
 end
 
 function macros.dup(compiler)
-  compiler:emit_push("stack:tos()")
+  compiler:emit_line("stack:dup()")
 end
 
 function macros.drop(compiler)
@@ -566,57 +566,31 @@ function macros.drop(compiler)
 end
 
 function macros.over(compiler)
-  compiler:emit_push("stack:tos2()")
+  compiler:emit_line("stack:over()")
 end
 
 function macros.nip(compiler)
-  compiler:emit_line([[
-local _a = stack:pop()
-stack:pop()
-stack:push(_a)]])
+  compiler:emit_line("stack:nip()")
 end
 
 function macros.dup2(compiler)
-  compiler:emit_push("stack:tos2()")
-  compiler:emit_push("stack:tos2()")
+  compiler:emit_line("stack:dup2()")
 end
 
 function macros.mrot(compiler)
-  compiler:emit_line([[
-local _c = stack:pop()
-local _b = stack:pop()
-local _a = stack:pop()
-stack:push(_c)
-stack:push(_a)
-stack:push(_b)]])
+  compiler:emit_line("stack:mrot()")
 end
 
 function macros.tuck(compiler)
-  compiler:emit_line([[
-local _a = stack:pop()
-local _b = stack:pop()
-stack:push(_a)
-stack:push(_b)
-stack:push(_a)
-]])
+  compiler:emit_line("stack:tuck()")
 end
 
 function macros.rot(compiler)
-  compiler:emit_line([[
-local _c = stack:pop()
-local _b = stack:pop()
-local _a = stack:pop()
-stack:push(_b)
-stack:push(_c)
-stack:push(_a)]])
+  compiler:emit_line("stack:rot()")
 end
 
 function macros.swap(compiler)
-  compiler:emit_line([[
-local _a = stack:pop()
-local _b = stack:pop()
-stack:push(_a)
-stack:push(_b)]])
+  compiler:emit_line("stack:swap()")
 end
 
 function macros.to_aux(compiler)
@@ -1197,6 +1171,76 @@ function Stack.pop(self)
     error("Stack underflow: " .. self.name)
   end
   return item ~= NIL and item or nil
+end
+
+function Stack.swap(self)
+  local n = #self.stack
+  if n < 2 then
+    error("Stack underflow: " .. self.name)
+  end
+  self.stack[n], self.stack[n - 1] = self.stack[n - 1], self.stack[n]
+end
+
+function Stack.rot(self)
+  local n = #self.stack
+  if n < 3 then
+    error("Stack underflow: " .. self.name)
+  end
+  local new_top = self.stack[n-2]
+  table.remove(self.stack, n - 2)
+  self.stack[n] = new_top
+end
+
+function Stack.mrot(self)
+  local n = #self.stack
+  if n < 3 then
+    error("Stack underflow: " .. self.name)
+  end
+  local temp = table.remove(self.stack, n)
+  table.insert(self.stack, n - 2, temp)
+end
+
+function Stack.over(self)
+  local n = #self.stack
+  if n < 2 then
+    error("Stack underflow: " .. self.name)
+  end
+  self.stack[n + 1] = self.stack[n - 1]
+end
+
+function Stack.tuck(self)
+  local n = #self.stack
+  if n < 2 then
+    error("Stack underflow: " .. self.name)
+  end
+  table.insert(self.stack, n - 1, self.stack[n])
+end
+
+function Stack.nip(self)
+  local n = #self.stack
+  if n < 2 then
+    error("Stack underflow: " .. self.name)
+  end
+  table.remove(self.stack, n - 1)
+end
+
+function Stack.dup(self)
+  local n = #self.stack
+  if n < 1 then
+    error("Stack underflow: " .. self.name)
+  end
+  self.stack[n + 1] = self.stack[n]
+end
+
+function Stack.dup2(self)
+  local n = #self.stack
+  if n < 2 then
+    error("Stack underflow: " .. self.name)
+  end
+  local tos1 = self.stack[n]
+  local tos2 = self.stack[n - 1]
+  self.stack[n + 1] = tos2
+  self.stack[n + 2] = tos1
 end
 
 function Stack.tos(self)

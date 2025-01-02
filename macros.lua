@@ -136,7 +136,7 @@ local _t = stack:pop()
 stack:push(_t[_n])]])
 end
 
-function macros.table_put(compiler)
+function macros.table_put(compiler) -- TODO gen names
   compiler:emit_line([[
 local _val = stack:pop()
 local _key = stack:pop()
@@ -153,7 +153,7 @@ function macros.adepth(compiler)
 end
 
 function macros.dup(compiler)
-  compiler:emit_push("stack:tos()")
+  compiler:emit_line("stack:dup()")
 end
 
 function macros.drop(compiler)
@@ -161,57 +161,31 @@ function macros.drop(compiler)
 end
 
 function macros.over(compiler)
-  compiler:emit_push("stack:tos2()")
+  compiler:emit_line("stack:over()")
 end
 
 function macros.nip(compiler)
-  compiler:emit_line([[
-local _a = stack:pop()
-stack:pop()
-stack:push(_a)]])
+  compiler:emit_line("stack:nip()")
 end
 
 function macros.dup2(compiler)
-  compiler:emit_push("stack:tos2()")
-  compiler:emit_push("stack:tos2()")
+  compiler:emit_line("stack:dup2()")
 end
 
 function macros.mrot(compiler)
-  compiler:emit_line([[
-local _c = stack:pop()
-local _b = stack:pop()
-local _a = stack:pop()
-stack:push(_c)
-stack:push(_a)
-stack:push(_b)]])
+  compiler:emit_line("stack:mrot()")
 end
 
 function macros.tuck(compiler)
-  compiler:emit_line([[
-local _a = stack:pop()
-local _b = stack:pop()
-stack:push(_a)
-stack:push(_b)
-stack:push(_a)
-]])
+  compiler:emit_line("stack:tuck()")
 end
 
 function macros.rot(compiler)
-  compiler:emit_line([[
-local _c = stack:pop()
-local _b = stack:pop()
-local _a = stack:pop()
-stack:push(_b)
-stack:push(_c)
-stack:push(_a)]])
+  compiler:emit_line("stack:rot()")
 end
 
 function macros.swap(compiler)
-  compiler:emit_line([[
-local _a = stack:pop()
-local _b = stack:pop()
-stack:push(_a)
-stack:push(_b)]])
+  compiler:emit_line("stack:swap()")
 end
 
 function macros.to_aux(compiler)

@@ -11,7 +11,7 @@
   end
   [ ] ( result )
   2 rot ( limit  ) to: i
-    primes i at if
+    primes[i] if
       dup i append
     then
   end ;
