@@ -4,16 +4,18 @@ local stack = Stack.new("test")
 assert(stack:depth() == 0)
 
 stack:push("a")
+assert(stack:depth() == 1)
 stack:push("b")
+assert(stack:depth() == 2)
 
 assert(stack:tos() == "b")
 assert(stack:tos2() == "a")
 
-assert(stack:depth() == 2)
-
 assert(stack:pop() == "b")
-assert(stack:pop() == "a")
+assert(stack:depth() == 1)
+assert(stack:tos() == "a")
 
+assert(stack:pop() == "a")
 assert(stack:depth() == 0)
 
 stack:push("xx")

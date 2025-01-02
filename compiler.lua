@@ -11,6 +11,7 @@
 -- var with dash generates error
 -- line numbers + errors
 -- a[i] syntax test
+-- TOS optimiziation
 -- 14 -> var x syntax ?
 
 local stack = require("stack")

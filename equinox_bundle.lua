@@ -23,6 +23,8 @@ package.preload[ "compiler" ] = function( ... ) local arg = _G.arg;
 -- tab auto complete repl
 -- var with dash generates error
 -- line numbers + errors
+-- a[i] syntax test
+-- TOS optimiziation
 -- 14 -> var x syntax ?
 
 local stack = require("stack")
@@ -1172,7 +1174,7 @@ local Stack = {}
 local NIL = "__NIL__"
 
 function Stack.new(name)
-  local obj = {stack = {}, name = name}
+  local obj = {stack = {nil,nil,nil,nil,nil,nil,nil,nil}, name = name}
   setmetatable(obj, {__index = Stack})
   return obj
 end
