@@ -81,47 +81,23 @@ function ast.bin_op(operator, param1, param2)
 end
 
 function ast.unary_op(operator, operand)
-  return {
-    name = "unary_op",
-    op = operator,
-    p1 = operand
-  }
+  return {name = "unary_op", op = operator, p1 = operand}
 end
 
 function ast.assignment(var, exp)
-  return {
-    name = "assignment",
-    var  = var,
-    exp  = exp
-  }
+  return {name = "assignment", var  = var, exp  = exp}
 end
 
 function ast.def_local(variable)
-  return {
-    name = "local",
-    var = variable
-  }
-end
-
-function ast.var_ref(variable)
-  return {
-    name = "varref",
-    var_name = variable
-  }
+  return {name = "local", var = variable}
 end
 
 function ast.new_table()
-  return {
-    name = "table_new"
-  }
+  return {name = "table_new"}
 end
 
 function ast.table_at(tbl, key)
-  return {
-    name = "table_at",
-    key = key,
-    tbl = tbl
-  }
+  return {name = "table_at", key = key, tbl = tbl}
 end
 
 function ast.table_put(tbl, key, value)
@@ -134,11 +110,7 @@ function ast.table_put(tbl, key, value)
 end
 
 function ast._if(cond, body)
-  return {
-    name = "if",
-    cond = cond,
-    body = body
-  }
+  return {name = "if", cond = cond, body = body}
 end
 
 function ast.keyword(keyword)
