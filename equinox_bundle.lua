@@ -96,13 +96,12 @@ function ast.literal(kind, value)
   }
 end
 
-function ast.bin_op(operator, param1, param2, use_locals)
+function ast.bin_op(operator, param1, param2)
   return {
     name = "bin_op",
     op = operator,
     p1 = param1,
-    p2 = param2,
-    use_locals = use_locals
+    p2 = param2
   }
 end
 
@@ -428,17 +427,8 @@ function gen(ast)
     return string.format("%s %s", ast.op, gen(ast.p1))
   end
   if "bin_op" == ast.name then
-    if ast.use_locals then -- TODO
-      return string.format([[
-(function()
-local __a, __b = %s, %s
-return __a %s __b
-end)()
-]], gen(ast.p1), gen(ast.p2), ast.op)
-    else
-      return string.format(
-        "%s %s %s", gen(ast.p1), ast.op, gen(ast.p2))
-    end
+    return string.format(
+      "%s %s %s", gen(ast.p1), ast.op, gen(ast.p2))
   end
   if "local" == ast.name then
     return "local " .. ast.var
@@ -733,6 +723,8 @@ local aux = require("aux")
 local interop = require("interop")
 local ast = require("ast")
 
+-- TODO remove all compiler params
+
 local macros = {}
 
 local id_counter = 1
@@ -824,11 +816,11 @@ function macros._not()
 end
 
 function macros._and()
-  return ast.push(ast.bin_op("and", ast.pop(), ast.pop(), true))
+  return ast.stack_op("_and")
 end
 
 function macros._or()
-  return ast.push(ast.bin_op("or", ast.pop(), ast.pop(), true))
+  return ast.stack_op("_or")
 end
 
 function macros.concat()
@@ -1567,6 +1559,16 @@ end
 
 function Stack.tos2(self)
   return self.stack[#self.stack - 1]
+end
+
+function Stack._and(self)
+  local a, b = self:pop(), self:pop()
+  self:push(a and b)
+end
+
+function Stack._or(self)
+  local a, b = self:pop(), self:pop()
+  self:push(a or b)
 end
 
 function Stack.depth(self)

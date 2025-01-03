@@ -123,6 +123,16 @@ function Stack.tos2(self)
   return self.stack[#self.stack - 1]
 end
 
+function Stack._and(self)
+  local a, b = self:pop(), self:pop()
+  self:push(a and b)
+end
+
+function Stack._or(self)
+  local a, b = self:pop(), self:pop()
+  self:push(a or b)
+end
+
 function Stack.depth(self)
   return #self.stack
 end

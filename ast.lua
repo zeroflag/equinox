@@ -93,13 +93,12 @@ function ast.literal(kind, value)
   }
 end
 
-function ast.bin_op(operator, param1, param2, use_locals)
+function ast.bin_op(operator, param1, param2)
   return {
     name = "bin_op",
     op = operator,
     p1 = param1,
-    p2 = param2,
-    use_locals = use_locals
+    p2 = param2
   }
 end
 

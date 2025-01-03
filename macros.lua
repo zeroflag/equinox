@@ -3,6 +3,8 @@ local aux = require("aux")
 local interop = require("interop")
 local ast = require("ast")
 
+-- TODO remove all compiler params
+
 local macros = {}
 
 local id_counter = 1
@@ -94,11 +96,11 @@ function macros._not()
 end
 
 function macros._and()
-  return ast.push(ast.bin_op("and", ast.pop(), ast.pop(), true))
+  return ast.stack_op("_and")
 end
 
 function macros._or()
-  return ast.push(ast.bin_op("or", ast.pop(), ast.pop(), true))
+  return ast.stack_op("_or")
 end
 
 function macros.concat()

@@ -208,17 +208,8 @@ function gen(ast)
     return string.format("%s %s", ast.op, gen(ast.p1))
   end
   if "bin_op" == ast.name then
-    if ast.use_locals then -- TODO
-      return string.format([[
-(function()
-local __a, __b = %s, %s
-return __a %s __b
-end)()
-]], gen(ast.p1), gen(ast.p2), ast.op)
-    else
-      return string.format(
-        "%s %s %s", gen(ast.p1), ast.op, gen(ast.p2))
-    end
+    return string.format(
+      "%s %s %s", gen(ast.p1), ast.op, gen(ast.p2))
   end
   if "local" == ast.name then
     return "local " .. ast.var
