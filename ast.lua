@@ -144,6 +144,10 @@ function ast.keyword(keyword)
   return {name = "keyword", keyword = keyword}
 end
 
+function ast.identifier(id)
+  return {name = "identifier", id = id}
+end
+
 function ast._return()
   return {name = "return"}
 end

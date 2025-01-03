@@ -283,16 +283,12 @@ end
 
 function macros._do(compiler)
   local var = gen_id("loop_var")
-  compiler:emit_line("for ".. var .."=stack:pop(), stack:pop() -1 do")
-  compiler:emit_line("aux:push(".. var ..")")
---[[
-  return ast._for(
-                      var,
-                      ast.pop(),
-                      ast.bin_op("-", ast.literal("number", 1), ast.pop()),
-                      nil))
-  return ast.aux_push(ast.var_ref(var)))
---]]
+  return ast.code_seq(
+    ast._for(
+      var, ast.pop(),
+      ast.bin_op("-", ast.pop(), ast.literal("number", 1)),
+      nil),
+    ast.aux_push(ast.identifier(var)))
 end
 
 function macros._loop()

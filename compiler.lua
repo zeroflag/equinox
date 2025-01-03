@@ -229,6 +229,9 @@ function gen(ast)
   if "literal" == ast.name and "string" == ast.kind then
     return '"' .. ast.value .. '"'
   end
+  if "literal" == ast.name and "number" == ast.kind then
+    return ast.value
+  end
   if "while" == ast.name then
     return string.format("while(%s)do", gen(ast.cond))
   end
@@ -260,6 +263,7 @@ function gen(ast)
     return "if " .. gen(ast.cond) .. " then"
   end
   if "keyword" == ast.name then return ast.keyword end
+  if "identifier" == ast.name then return ast.id end
   if "return" == ast.name then return "do return end" end
   if "table_new" == ast.name then return "stack:push({})" end
   if "table_at" == ast.name then
