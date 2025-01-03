@@ -254,6 +254,15 @@ stack:push(__a %s __b)
   if "repeat" == ast.name then return "repeat" end
   if "return" == ast.name then return "do return end" end
   if "table_new" == ast.name then return "stack:push({})" end
+  if "table_at" == ast.name then
+    return string.format("stack:push(%s[%s])",
+                         gen(ast.tbl), gen(ast.key))
+  end
+  if "table_put" == ast.name then
+    return string.format(
+      "%s[%s]=%s",
+      gen(ast.tbl), gen(ast.key), gen(ast.value))
+  end
   return nil
 end
 

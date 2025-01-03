@@ -136,17 +136,20 @@ function ast.new_table()
   }
 end
 
-function ast.table_at(key, tbl)
+function ast.table_at(tbl, key)
   return {
     name = "table_at",
-    children = { tbl, key }
+    key = key,
+    tbl = tbl
   }
 end
 
-function ast.table_put(value, key, tbl)
+function ast.table_put(tbl, key, value)
   return {
     name = "table_put",
-    children = { tbl, key, value }
+    tbl = tbl,
+    key = key,
+    value = value
   }
 end
 

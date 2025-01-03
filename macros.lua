@@ -114,20 +114,11 @@ function macros.table_size(compiler)
 end
 
 function macros.table_at(compiler)
-  compiler:emit_line([[
-local _n = stack:pop()
-local _t = stack:pop()
-stack:push(_t[_n])]])
-  --return ast.table_at(ast.pop(), ast.pop())
+  return ast.table_at(ast.pop2nd(), ast.pop())
 end
 
-function macros.table_put(compiler) -- TODO gen names
-  compiler:emit_line([[
-local _val = stack:pop()
-local _key = stack:pop()
-local _tbl = stack:pop()
-_tbl[_key] = _val]])
-  --return ast.table_put(ast.pop(), ast.pop(), ast.pop())
+function macros.table_put(compiler)
+  return ast.table_put(ast.pop3rd(), ast.pop2nd(), ast.pop())
 end
 
 function macros.depth(compiler)

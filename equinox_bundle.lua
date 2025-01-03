@@ -267,6 +267,15 @@ stack:push(__a %s __b)
   if "repeat" == ast.name then return "repeat" end
   if "return" == ast.name then return "do return end" end
   if "table_new" == ast.name then return "stack:push({})" end
+  if "table_at" == ast.name then
+    return string.format("stack:push(%s[%s])",
+                         gen(ast.tbl), gen(ast.key))
+  end
+  if "table_put" == ast.name then
+    return string.format(
+      "%s[%s]=%s",
+      gen(ast.tbl), gen(ast.key), gen(ast.value))
+  end
   return nil
 end
 
@@ -581,20 +590,11 @@ function macros.table_size(compiler)
 end
 
 function macros.table_at(compiler)
-  compiler:emit_line([[
-local _n = stack:pop()
-local _t = stack:pop()
-stack:push(_t[_n])]])
-  --return ast.table_at(ast.pop(), ast.pop())
+  return ast.table_at(ast.pop2nd(), ast.pop())
 end
 
-function macros.table_put(compiler) -- TODO gen names
-  compiler:emit_line([[
-local _val = stack:pop()
-local _key = stack:pop()
-local _tbl = stack:pop()
-_tbl[_key] = _val]])
-  --return ast.table_put(ast.pop(), ast.pop(), ast.pop())
+function macros.table_put(compiler)
+  return ast.table_put(ast.pop3rd(), ast.pop2nd(), ast.pop())
 end
 
 function macros.depth(compiler)
