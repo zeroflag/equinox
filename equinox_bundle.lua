@@ -44,10 +44,7 @@ function ast.stack_op(operation)
 end
 
 function ast.push(item)
-  return {
-    name  = "push",
-    children = { item }
-  }
+  return {name  = "push", item = item}
 end
 
 function ast.aux_push(item)
@@ -221,9 +218,6 @@ end
 do
 local _ENV = _ENV
 package.preload[ "compiler" ] = function( ... ) local arg = _G.arg;
--- TODOnp:
--- user defined control structues
--- var/local scopes
 -- hyperstatic glob
 -- optize output
 -- i shadows user defined i in pairs:/ipairs:
@@ -427,19 +421,23 @@ function gen(ast)
   if "stack_op" == ast.name then
     return "stack:" .. ast.op .. "()"
   end
+  if "push" == ast.name then
+    return string.format("stack:push(%s)", gen(ast.item))
+  end
   if "unary_op" == ast.name then
-    return string.format(
-      "stack:push(%s %s)", ast.op, gen(ast.p1))
+    return string.format("%s %s", ast.op, gen(ast.p1))
   end
   if "bin_op" == ast.name then
-    if ast.use_locals then -- TODO gen local var names
+    if ast.use_locals then -- TODO
       return string.format([[
+(function()
 local __a, __b = %s, %s
-stack:push(__a %s __b)
+return __a %s __b
+end)()
 ]], gen(ast.p1), gen(ast.p2), ast.op)
     else
       return string.format(
-        "stack:push(%s %s %s)", gen(ast.p1), ast.op, gen(ast.p2))
+        "%s %s %s", gen(ast.p1), ast.op, gen(ast.p2))
     end
   end
   if "local" == ast.name then
@@ -778,63 +776,63 @@ function sanitize(str)
 end
 
 function macros.add()
-  return ast.bin_op("+", ast.pop(), ast.pop())
+  return ast.push(ast.bin_op("+", ast.pop(), ast.pop()))
 end
 
 function macros.mul()
-  return ast.bin_op("*", ast.pop(), ast.pop())
+  return ast.push(ast.bin_op("*", ast.pop(), ast.pop()))
 end
 
 function macros.sub()
-  return ast.bin_op("-", ast.pop2nd(), ast.pop())
+  return ast.push(ast.bin_op("-", ast.pop2nd(), ast.pop()))
 end
 
 function macros.div()
-  return ast.bin_op("/", ast.pop2nd(), ast.pop())
+  return ast.push(ast.bin_op("/", ast.pop2nd(), ast.pop()))
 end
 
 function macros.mod()
-  return ast.bin_op("%", ast.pop2nd(), ast.pop())
+  return ast.push(ast.bin_op("%", ast.pop2nd(), ast.pop()))
 end
 
 function macros.eq()
-  return ast.bin_op("==", ast.pop(), ast.pop())
+  return ast.push(ast.bin_op("==", ast.pop(), ast.pop()))
 end
 
 function macros.neq()
-  return ast.bin_op("~=", ast.pop(), ast.pop())
+  return ast.push(ast.bin_op("~=", ast.pop(), ast.pop()))
 end
 
 function macros.lt()
-  return ast.bin_op(">", ast.pop(), ast.pop())
+  return ast.push(ast.bin_op(">", ast.pop(), ast.pop()))
 end
 
 function macros.lte()
-  return ast.bin_op(">=", ast.pop(), ast.pop())
+  return ast.push(ast.bin_op(">=", ast.pop(), ast.pop()))
 end
 
 function macros.gt()
-  return ast.bin_op("<", ast.pop(), ast.pop())
+  return ast.push(ast.bin_op("<", ast.pop(), ast.pop()))
 end
 
 function macros.gte()
-  return ast.bin_op("<=", ast.pop(), ast.pop())
+  return ast.push(ast.bin_op("<=", ast.pop(), ast.pop()))
 end
 
 function macros._not()
-  return ast.unary_op("not", ast.pop())
+  return ast.push(ast.unary_op("not", ast.pop()))
 end
 
 function macros._and()
-  return ast.bin_op("and", ast.pop(), ast.pop(), true)
+  return ast.push(ast.bin_op("and", ast.pop(), ast.pop(), true))
 end
 
 function macros._or()
-  return ast.bin_op("or", ast.pop(), ast.pop(), true)
+  return ast.push(ast.bin_op("or", ast.pop(), ast.pop(), true))
 end
 
 function macros.concat()
-  return ast.bin_op("..", ast.pop2nd(), ast.pop())
+  return ast.push(ast.bin_op("..", ast.pop2nd(), ast.pop()))
 end
 
 function macros.new_table()
@@ -842,7 +840,7 @@ function macros.new_table()
 end
 
 function macros.table_size()
-  return ast.unary_op("#", ast.pop())
+  return ast.push(ast.unary_op("#", ast.pop()))
 end
 
 function macros.table_at()
@@ -981,15 +979,12 @@ function macros._case()
   return ast.keyword("repeat")
 end
 
-function macros._of(compiler)
-  compiler:emit_push("stack:tos2()") -- OVER
-  compiler:emit_line("if stack:pop() == stack:pop() then")
-  compiler:emit_line("stack:pop()") -- DROP selector value
---[[
-  return ast.stack_op("over"))
-  return ast._if(ast.bin_op("==", ast.pop(), ast.pop())))
-  return ast.pop())
---]]
+function macros._of()
+  return ast.code_seq(
+    ast.stack_op("over"),
+    ast._if(ast.bin_op("==", ast.pop(), ast.pop())),
+    ast.pop() -- drop selector
+  )
 end
 
 function macros._endof() -- GOTO endcase
@@ -1101,6 +1096,7 @@ function Output.new()
 end
 
 function Output.append(self, str)
+  print(str)
   self.lines[self:size()] = self.lines[self:size()] .. str
 end
 

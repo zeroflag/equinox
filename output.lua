@@ -7,6 +7,7 @@ function Output.new()
 end
 
 function Output.append(self, str)
+  print(str)
   self.lines[self:size()] = self.lines[self:size()] .. str
 end
 

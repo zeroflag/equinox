@@ -1,6 +1,3 @@
--- TODOnp:
--- user defined control structues
--- var/local scopes
 -- hyperstatic glob
 -- optize output
 -- i shadows user defined i in pairs:/ipairs:
@@ -204,19 +201,23 @@ function gen(ast)
   if "stack_op" == ast.name then
     return "stack:" .. ast.op .. "()"
   end
+  if "push" == ast.name then
+    return string.format("stack:push(%s)", gen(ast.item))
+  end
   if "unary_op" == ast.name then
-    return string.format(
-      "stack:push(%s %s)", ast.op, gen(ast.p1))
+    return string.format("%s %s", ast.op, gen(ast.p1))
   end
   if "bin_op" == ast.name then
-    if ast.use_locals then -- TODO gen local var names
+    if ast.use_locals then -- TODO
       return string.format([[
+(function()
 local __a, __b = %s, %s
-stack:push(__a %s __b)
+return __a %s __b
+end)()
 ]], gen(ast.p1), gen(ast.p2), ast.op)
     else
       return string.format(
-        "stack:push(%s %s %s)", gen(ast.p1), ast.op, gen(ast.p2))
+        "%s %s %s", gen(ast.p1), ast.op, gen(ast.p2))
     end
   end
   if "local" == ast.name then

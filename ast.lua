@@ -41,10 +41,7 @@ function ast.stack_op(operation)
 end
 
 function ast.push(item)
-  return {
-    name  = "push",
-    children = { item }
-  }
+  return {name  = "push", item = item}
 end
 
 function ast.aux_push(item)
