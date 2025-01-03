@@ -10,10 +10,6 @@ function Output.append(self, str)
   self.lines[self:size()] = self.lines[self:size()] .. str
 end
 
-function Output.update_line(self, str, line_number)
-  self.lines[line_number] = str
-end
-
 function Output.new_line(self)
   table.insert(self.lines, "")
 end

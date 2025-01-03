@@ -39,46 +39,31 @@ function compiler.alias(self, lua_name, forth_alias)
   return dict.def_lua_alias(lua_name, forth_alias)
 end
 
-function compiler.emit_lua_call(self, name, arity, vararg, void)
+function compiler.lua_call(self, name, arity, vararg, void)
   if vararg then
     error(name .. " has variable/unknown number of arguments. " ..
           "Use " .. name .. "/n" .. " to specify arity. " ..
           "For example " .. name .. "/1")
   end
+  local params = {}
+  local statements = {}
   if arity > 0 then
-    self:emit("local ")
-    for i = 1, arity do
-      self:emit("__p" .. (arity - i +1))
-      if i < arity then
-        self:emit(",")
-      else
-        self:emit("=")
-      end
+    for i = 1, arity do -- TODO gen name
+      table.insert(params, ast.identifier("__p" .. i))
+      table.insert(
+        statements,
+        ast.init_local("__p" .. (arity -i +1), ast.pop()))
     end
-    for i = 1, arity do
-      self:emit("stack:pop()")
-      if i < arity then
-        self:emit(",")
-      end
-    end
-    self:emit_line("")
   end
+  local unpack = table.unpack or unpack
   if void then
-    self:emit(name .. "(")
+    table.insert(statements, ast.func_call(name, unpack(params)))
   else
-    self:emit("stack:push_many(" .. name .. "(")
+    table.insert(statements,
+                 ast.push_many(
+                   ast.func_call(name, unpack(params))))
   end
-  for i = 1, arity do
-    self:emit("__p" .. i)
-    if i < arity then
-      self:emit(",")
-    end
-  end
-  if void then
-    self:emit_line(")")
-  else
-    self:emit_line("))")
-  end
+  return ast.code_seq(unpack(statements))
 end
 
 function compiler.compile_token(self, item)
@@ -110,7 +95,7 @@ function compiler.compile_token(self, item)
     end
   elseif item.kind == "lua_func_call" or
          item.kind == "lua_method_call" then
-    self:emit_lua_call(item.name, item.arity, item.vararg, item.void)
+    self.output:append(self.codegen:gen(self:lua_call(item.name, item.arity, item.vararg, item.void)))
   else
     error("Word not found: '" .. item.token .. "'" .. " kind: " .. item.kind)
   end
@@ -141,8 +126,10 @@ function compiler.init(self, text)
   self.parser = Parser.new(text, dict)
   self.output = Output.new()
   self.codegen = CodeGen.new()
-  self:emit_line("local stack = require(\"stack\")")
-  self:emit_line("local aux = require(\"aux\")")
+  self.output:append("local stack = require(\"stack\")")
+  self.output:new_line()
+  self.output:append("local aux = require(\"aux\")")
+  self.output:new_line()
   self.code_start = self.output:size()
   dict.def_var("true", "true")
   dict.def_var("false", "false")
@@ -184,15 +171,6 @@ function compiler.eval_file(self, path, log_result)
   local content = file:read("*a")
   file:close()
   return self:eval(content, log_result)
-end
-
-function compiler.emit_line(self, token)
-  self:emit(token)
-  self.output:new_line()
-end
-
-function compiler.emit(self, token)
-  self.output:append(token)
 end
 
 return compiler

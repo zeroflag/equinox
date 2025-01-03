@@ -48,6 +48,10 @@ function ast.push(item)
   return {name  = "push", item = item}
 end
 
+function ast.push_many(func_call)
+  return {name  = "push_many", func_call = func_call}
+end
+
 function ast.aux_push(item)
   return {name  = "push_aux", item = item}
 end
@@ -91,22 +95,20 @@ function ast.assignment(var, exp)
   return {name = "assignment", var  = var, exp  = exp}
 end
 
-function ast.def_local(variable)
-  return {name = "local", var = variable}
+function ast.def_local(var)
+  return {name = "local", var = var}
+end
+
+function ast.init_local(var, val)
+  return {name = "init_local", var = var, val = val}
 end
 
 function ast.new_table()
-  return {
-    name = "table_new"
-  }
+  return {name = "table_new"}
 end
 
 function ast.table_at(tbl, key)
-  return {
-    name = "table_at",
-    key = key,
-    tbl = tbl
-  }
+  return {name = "table_at", key = key, tbl = tbl}
 end
 
 function ast.table_put(tbl, key, value)
@@ -119,11 +121,7 @@ function ast.table_put(tbl, key, value)
 end
 
 function ast._if(cond, body)
-  return {
-    name = "if",
-    cond = cond,
-    body = body
-  }
+  return {name = "if", cond = cond, body = body}
 end
 
 function ast.keyword(keyword)
@@ -200,6 +198,9 @@ function CodeGen.gen(self, ast)
   if "push" == ast.name then
     return string.format("stack:push(%s)", self:gen(ast.item))
   end
+  if "push_many" == ast.name then
+    return string.format("stack:push_many(%s)", self:gen(ast.func_call))
+  end
   if "push_aux" == ast.name then
     return string.format("aux:push(%s)", self:gen(ast.item))
   end
@@ -212,6 +213,9 @@ function CodeGen.gen(self, ast)
   end
   if "local" == ast.name then
     return "local " .. ast.var
+  end
+  if "init_local" == ast.name then
+    return "local " .. ast.var .. "=" .. self:gen(ast.val)
   end
   if "assignment" == ast.name then
     return ast.var .. " = " .. self:gen(ast.exp)
@@ -311,7 +315,8 @@ function CodeGen.gen(self, ast)
       return result
     end
   end
-  error("Unknown AST: " .. ast.name)
+  error("Unknown AST: " .. tostring(ast) ..
+        " with name: " .. tostring(ast.name))
 end
 
 return CodeGen
@@ -362,46 +367,31 @@ function compiler.alias(self, lua_name, forth_alias)
   return dict.def_lua_alias(lua_name, forth_alias)
 end
 
-function compiler.emit_lua_call(self, name, arity, vararg, void)
+function compiler.lua_call(self, name, arity, vararg, void)
   if vararg then
     error(name .. " has variable/unknown number of arguments. " ..
           "Use " .. name .. "/n" .. " to specify arity. " ..
           "For example " .. name .. "/1")
   end
+  local params = {}
+  local statements = {}
   if arity > 0 then
-    self:emit("local ")
-    for i = 1, arity do
-      self:emit("__p" .. (arity - i +1))
-      if i < arity then
-        self:emit(",")
-      else
-        self:emit("=")
-      end
+    for i = 1, arity do -- TODO gen name
+      table.insert(params, ast.identifier("__p" .. i))
+      table.insert(
+        statements,
+        ast.init_local("__p" .. (arity -i +1), ast.pop()))
     end
-    for i = 1, arity do
-      self:emit("stack:pop()")
-      if i < arity then
-        self:emit(",")
-      end
-    end
-    self:emit_line("")
   end
+  local unpack = table.unpack or unpack
   if void then
-    self:emit(name .. "(")
+    table.insert(statements, ast.func_call(name, unpack(params)))
   else
-    self:emit("stack:push_many(" .. name .. "(")
+    table.insert(statements,
+                 ast.push_many(
+                   ast.func_call(name, unpack(params))))
   end
-  for i = 1, arity do
-    self:emit("__p" .. i)
-    if i < arity then
-      self:emit(",")
-    end
-  end
-  if void then
-    self:emit_line(")")
-  else
-    self:emit_line("))")
-  end
+  return ast.code_seq(unpack(statements))
 end
 
 function compiler.compile_token(self, item)
@@ -433,7 +423,7 @@ function compiler.compile_token(self, item)
     end
   elseif item.kind == "lua_func_call" or
          item.kind == "lua_method_call" then
-    self:emit_lua_call(item.name, item.arity, item.vararg, item.void)
+    self.output:append(self.codegen:gen(self:lua_call(item.name, item.arity, item.vararg, item.void)))
   else
     error("Word not found: '" .. item.token .. "'" .. " kind: " .. item.kind)
   end
@@ -464,8 +454,10 @@ function compiler.init(self, text)
   self.parser = Parser.new(text, dict)
   self.output = Output.new()
   self.codegen = CodeGen.new()
-  self:emit_line("local stack = require(\"stack\")")
-  self:emit_line("local aux = require(\"aux\")")
+  self.output:append("local stack = require(\"stack\")")
+  self.output:new_line()
+  self.output:append("local aux = require(\"aux\")")
+  self.output:new_line()
   self.code_start = self.output:size()
   dict.def_var("true", "true")
   dict.def_var("false", "false")
@@ -507,15 +499,6 @@ function compiler.eval_file(self, path, log_result)
   local content = file:read("*a")
   file:close()
   return self:eval(content, log_result)
-end
-
-function compiler.emit_line(self, token)
-  self:emit(token)
-  self.output:new_line()
-end
-
-function compiler.emit(self, token)
-  self.output:append(token)
 end
 
 return compiler
@@ -1068,10 +1051,6 @@ end
 
 function Output.append(self, str)
   self.lines[self:size()] = self.lines[self:size()] .. str
-end
-
-function Output.update_line(self, str, line_number)
-  self.lines[line_number] = str
 end
 
 function Output.new_line(self)

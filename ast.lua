@@ -45,6 +45,10 @@ function ast.push(item)
   return {name  = "push", item = item}
 end
 
+function ast.push_many(func_call)
+  return {name  = "push_many", func_call = func_call}
+end
+
 function ast.aux_push(item)
   return {name  = "push_aux", item = item}
 end
@@ -88,8 +92,12 @@ function ast.assignment(var, exp)
   return {name = "assignment", var  = var, exp  = exp}
 end
 
-function ast.def_local(variable)
-  return {name = "local", var = variable}
+function ast.def_local(var)
+  return {name = "local", var = var}
+end
+
+function ast.init_local(var, val)
+  return {name = "init_local", var = var, val = val}
 end
 
 function ast.new_table()
