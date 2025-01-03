@@ -224,7 +224,7 @@ function macros._if(compiler)
 end
 
 function macros._else(compiler)
-  return ast._else()
+  return ast.keyword("else")
 end
 
 function macros._begin(compiler)
@@ -246,7 +246,7 @@ end
 
 function macros._case(compiler)
   -- simulate goto with break, in pre lua5.2 since GOTO was not yet supported
-  return ast._repeat()
+  return ast.keyword("repeat")
 end
 
 function macros._of(compiler)
@@ -260,10 +260,8 @@ function macros._of(compiler)
 --]]
 end
 
-function macros._endof(compiler)
-  compiler:emit_line("break end") -- GOTO endcase
-  --ast._break()
-  --return ast._end()
+function macros._endof(compiler) -- GOTO endcase
+  return ast.code_seq(ast.keyword("break"), ast.keyword("end"))
 end
 
 function macros._endcase(compiler)
@@ -345,7 +343,7 @@ function macros._step(compiler)
 end
 
 function macros._end(compiler)
-  return ast._end()
+  return ast.keyword("end")
 end
 
 function macros.words(compiler)

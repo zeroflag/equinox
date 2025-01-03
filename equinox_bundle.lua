@@ -169,20 +169,8 @@ function ast._if(cond)
   }
 end
 
-function ast._else()
-  return {name = "else"}
-end
-
-function ast._end()
-  return {name = "end"}
-end
-
-function ast._break()
-  return {name = "break"}
-end
-
-function ast._repeat()
-  return {name = "repeat"}
+function ast.keyword(keyword)
+  return {name = "keyword", keyword = keyword}
 end
 
 function ast._return()
@@ -496,9 +484,7 @@ stack:push(__a %s __b)
   if "if" == ast.name then
     return "if " .. gen(ast.cond) .. " then"
   end
-  if "else" == ast.name then return "else" end
-  if "end" == ast.name then return "end" end
-  if "repeat" == ast.name then return "repeat" end
+  if "keyword" == ast.name then return ast.keyword end
   if "return" == ast.name then return "do return end" end
   if "table_new" == ast.name then return "stack:push({})" end
   if "table_at" == ast.name then
@@ -970,7 +956,7 @@ function macros._if(compiler)
 end
 
 function macros._else(compiler)
-  return ast._else()
+  return ast.keyword("else")
 end
 
 function macros._begin(compiler)
@@ -992,7 +978,7 @@ end
 
 function macros._case(compiler)
   -- simulate goto with break, in pre lua5.2 since GOTO was not yet supported
-  return ast._repeat()
+  return ast.keyword("repeat")
 end
 
 function macros._of(compiler)
@@ -1006,10 +992,8 @@ function macros._of(compiler)
 --]]
 end
 
-function macros._endof(compiler)
-  compiler:emit_line("break end") -- GOTO endcase
-  --ast._break()
-  --return ast._end()
+function macros._endof(compiler) -- GOTO endcase
+  return ast.code_seq(ast.keyword("break"), ast.keyword("end"))
 end
 
 function macros._endcase(compiler)
@@ -1091,7 +1075,7 @@ function macros._step(compiler)
 end
 
 function macros._end(compiler)
-  return ast._end()
+  return ast.keyword("end")
 end
 
 function macros.words(compiler)

@@ -261,9 +261,7 @@ stack:push(__a %s __b)
   if "if" == ast.name then
     return "if " .. gen(ast.cond) .. " then"
   end
-  if "else" == ast.name then return "else" end
-  if "end" == ast.name then return "end" end
-  if "repeat" == ast.name then return "repeat" end
+  if "keyword" == ast.name then return ast.keyword end
   if "return" == ast.name then return "do return end" end
   if "table_new" == ast.name then return "stack:push({})" end
   if "table_at" == ast.name then

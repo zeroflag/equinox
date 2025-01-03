@@ -166,20 +166,8 @@ function ast._if(cond)
   }
 end
 
-function ast._else()
-  return {name = "else"}
-end
-
-function ast._end()
-  return {name = "end"}
-end
-
-function ast._break()
-  return {name = "break"}
-end
-
-function ast._repeat()
-  return {name = "repeat"}
+function ast.keyword(keyword)
+  return {name = "keyword", keyword = keyword}
 end
 
 function ast._return()
