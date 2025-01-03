@@ -39,7 +39,6 @@ function compiler.alias(self, lua_name, forth_alias)
   return dict.def_lua_alias(lua_name, forth_alias)
 end
 
--- TODO move to codegen
 function compiler.lua_call(self, name, arity, vararg, void)
   if vararg then
     error(name .. " has variable/unknown number of arguments. " ..
@@ -70,31 +69,31 @@ function compiler.compile_token(self, item)
     local word = dict.find(item.token)
     if word.callable then
       -- Forth word
-      self.output:append(self.codegen:gen(ast.func_call(word.lua_name)))
+      return ast.func_call(word.lua_name)
     else
       -- Forth variable
-      self.output:append(self.codegen:gen(ast.push(ast.identifier(word.lua_name))))
+      return ast.push(ast.identifier(word.lua_name))
     end
   elseif item.kind == "literal" then
     if item.subtype == "symbol" then
-      self.output:append(self.codegen:gen(ast.push(ast.literal("string", item.token:sub(2)))))
+      return ast.push(ast.literal("string", item.token:sub(2)))
     elseif item.subtype == "number" then
-      self.output:append(self.codegen:gen(ast.push(ast.literal(item.subtype, tonumber(item.token)))))
+      return ast.push(ast.literal(item.subtype, tonumber(item.token)))
     elseif item.subtype == "string" then
-      self.output:append(self.codegen:gen(ast.push(ast.literal(item.subtype, item.token:sub(2, -2)))))
+      return ast.push(ast.literal(item.subtype, item.token:sub(2, -2)))
     else
       error("Unkown literal: " .. item.kind)
     end
   elseif item.kind == "lua_table_lookup" or
          item.kind == "lua_array_lookup" then
     if item.resolved then
-      self.output:append(self.codegen:gen(ast.push(ast.identifier(item.token))))
+      return ast.push(ast.identifier(item.token))
     else
       error("Unknown table lookup: " .. item.token)
     end
   elseif item.kind == "lua_func_call" or
          item.kind == "lua_method_call" then
-    self.output:append(self.codegen:gen(self:lua_call(item.name, item.arity, item.vararg, item.void)))
+    return self:lua_call(item.name, item.arity, item.vararg, item.void)
   else
     error("Word not found: '" .. item.token .. "'" .. " kind: " .. item.kind)
   end
@@ -142,7 +141,8 @@ function compiler.compile(self, text)
     if item.kind == "macro" then
       self:exec_macro(item.token)
     else
-      self:compile_token(item)
+      self.output:append(self.codegen:gen(self:compile_token(item)))
+      self.output:new_line()
     end
     item = self.parser:next_item()
   end
