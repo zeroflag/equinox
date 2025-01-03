@@ -225,6 +225,15 @@ stack:push(__a %s __b)
   if "assignment" == ast.name then
     return ast.var .. " = " .. gen(ast.exp)
   end
+  if "literal" == ast.name and "boolean" == ast.kind then
+    return ast.value
+  end
+  if "while" == ast.name then
+    return string.format("while(%s)do", gen(ast.cond))
+  end
+  if "until" == ast.name then
+    return string.format("until %s", gen(ast.cond))
+  end
   if "for" == ast.name and not ast.step then
       return string.format(
         "for %s=%s,%s do",

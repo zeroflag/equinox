@@ -65,25 +65,25 @@ function ast.from_aux()
   }
 end
 
-function ast._while(conditional)
+function ast._while(cond)
   return {
     name = "while",
-    conditional = conditional
+    cond = cond
   }
 end
 
-function ast._until(conditional)
+function ast._until(cond)
   return {
     name = "until",
-    conditional = conditional
+    cond = cond
   }
 end
 
-function ast.literal(subtype, value)
+function ast.literal(kind, value)
   return {
     name = "literal",
-    subtype = subtype,
-    value = value,
+    kind = kind,
+    value = value
   }
 end
 
@@ -454,6 +454,15 @@ stack:push(__a %s __b)
   end
   if "assignment" == ast.name then
     return ast.var .. " = " .. gen(ast.exp)
+  end
+  if "literal" == ast.name and "boolean" == ast.kind then
+    return ast.value
+  end
+  if "while" == ast.name then
+    return string.format("while(%s)do", gen(ast.cond))
+  end
+  if "until" == ast.name then
+    return string.format("until %s", gen(ast.cond))
   end
   if "for" == ast.name and not ast.step then
       return string.format(
@@ -940,8 +949,7 @@ function macros._else(compiler)
 end
 
 function macros._begin(compiler)
-  compiler:emit_line("while(true) do")
-  --return ast._while(ast.literal("boolean", "true"))
+  return ast._while(ast.literal("boolean", "true"))
 end
 
 function macros._until(compiler)
@@ -979,8 +987,7 @@ function macros._endof(compiler)
 end
 
 function macros._endcase(compiler)
-  compiler:emit_line("until true")
-  --return ast._until(ast.literal("boolean", "true"))
+  return ast._until(ast.literal("boolean", "true"))
 end
 
 function macros._exit(compiler)

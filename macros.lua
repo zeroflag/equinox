@@ -231,8 +231,7 @@ function macros._else(compiler)
 end
 
 function macros._begin(compiler)
-  compiler:emit_line("while(true) do")
-  --return ast._while(ast.literal("boolean", "true"))
+  return ast._while(ast.literal("boolean", "true"))
 end
 
 function macros._until(compiler)
@@ -270,8 +269,7 @@ function macros._endof(compiler)
 end
 
 function macros._endcase(compiler)
-  compiler:emit_line("until true")
-  --return ast._until(ast.literal("boolean", "true"))
+  return ast._until(ast.literal("boolean", "true"))
 end
 
 function macros._exit(compiler)

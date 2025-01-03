@@ -62,25 +62,25 @@ function ast.from_aux()
   }
 end
 
-function ast._while(conditional)
+function ast._while(cond)
   return {
     name = "while",
-    conditional = conditional
+    cond = cond
   }
 end
 
-function ast._until(conditional)
+function ast._until(cond)
   return {
     name = "until",
-    conditional = conditional
+    cond = cond
   }
 end
 
-function ast.literal(subtype, value)
+function ast.literal(kind, value)
   return {
     name = "literal",
-    subtype = subtype,
-    value = value,
+    kind = kind,
+    value = value
   }
 end
 
