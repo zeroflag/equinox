@@ -777,79 +777,79 @@ function sanitize(str)
   return str
 end
 
-function macros.add(compiler)
+function macros.add()
   return ast.bin_op("+", ast.pop(), ast.pop())
 end
 
-function macros.mul(compiler)
+function macros.mul()
   return ast.bin_op("*", ast.pop(), ast.pop())
 end
 
-function macros.sub(compiler)
+function macros.sub()
   return ast.bin_op("-", ast.pop2nd(), ast.pop())
 end
 
-function macros.div(compiler)
+function macros.div()
   return ast.bin_op("/", ast.pop2nd(), ast.pop())
 end
 
-function macros.mod(compiler)
+function macros.mod()
   return ast.bin_op("%", ast.pop2nd(), ast.pop())
 end
 
-function macros.eq(compiler)
+function macros.eq()
   return ast.bin_op("==", ast.pop(), ast.pop())
 end
 
-function macros.neq(compiler)
+function macros.neq()
   return ast.bin_op("~=", ast.pop(), ast.pop())
 end
 
-function macros.lt(compiler)
+function macros.lt()
   return ast.bin_op(">", ast.pop(), ast.pop())
 end
 
-function macros.lte(compiler)
+function macros.lte()
   return ast.bin_op(">=", ast.pop(), ast.pop())
 end
 
-function macros.gt(compiler)
+function macros.gt()
   return ast.bin_op("<", ast.pop(), ast.pop())
 end
 
-function macros.gte(compiler)
+function macros.gte()
   return ast.bin_op("<=", ast.pop(), ast.pop())
 end
 
-function macros._not(compiler)
+function macros._not()
   return ast.unary_op("not", ast.pop())
 end
 
-function macros._and(compiler)
+function macros._and()
   return ast.bin_op("and", ast.pop(), ast.pop(), true)
 end
 
-function macros._or(compiler)
+function macros._or()
   return ast.bin_op("or", ast.pop(), ast.pop(), true)
 end
 
-function macros.concat(compiler)
+function macros.concat()
   return ast.bin_op("..", ast.pop2nd(), ast.pop())
 end
 
-function macros.new_table(compiler)
+function macros.new_table()
   return ast.new_table()
 end
 
-function macros.table_size(compiler)
+function macros.table_size()
   return ast.unary_op("#", ast.pop())
 end
 
-function macros.table_at(compiler)
+function macros.table_at()
   return ast.table_at(ast.pop2nd(), ast.pop())
 end
 
-function macros.table_put(compiler)
+function macros.table_put()
   return ast.table_put(ast.pop3rd(), ast.pop2nd(), ast.pop())
 end
 
@@ -863,39 +863,39 @@ function macros.adepth(compiler)
   --return ast.aux_op("depth")
 end
 
-function macros.dup(compiler)
+function macros.dup()
   return ast.stack_op("dup")
 end
 
-function macros.drop(compiler)
+function macros.drop()
   return ast.pop()
 end
 
-function macros.over(compiler)
+function macros.over()
   return ast.stack_op("over")
 end
 
-function macros.nip(compiler)
+function macros.nip()
   return ast.stack_op("nip")
 end
 
-function macros.dup2(compiler)
+function macros.dup2()
   return ast.stack_op("dup2")
 end
 
-function macros.mrot(compiler)
+function macros.mrot()
   return ast.stack_op("mrot")
 end
 
-function macros.tuck(compiler)
+function macros.tuck()
   return ast.stack_op("tuck")
 end
 
-function macros.rot(compiler)
+function macros.rot()
   return ast.stack_op("rot")
 end
 
-function macros.swap(compiler)
+function macros.swap()
   return ast.stack_op("swap")
 end
 
@@ -909,13 +909,13 @@ function macros.from_aux(compiler)
   --return ast.from_aux()
 end
 
-function macros.dot(compiler)
+function macros.dot()
   return ast.code_seq(
     ast.func_call("io.write", ast.func_call("tostring", ast.pop())),
     ast.func_call("io.write", ast.literal("string", " ")))
 end
 
-function macros.cr(compiler)
+function macros.cr()
   return ast.func_call("print")
 end
 
@@ -951,15 +951,15 @@ function macros.assignment(compiler)
   return ast.assignment(variable, ast.pop())
 end
 
-function macros._if(compiler)
+function macros._if()
   return ast._if(ast.pop())
 end
 
-function macros._else(compiler)
+function macros._else()
   return ast.keyword("else")
 end
 
-function macros._begin(compiler)
+function macros._begin()
   return ast._while(ast.literal("boolean", "true"))
 end
 
@@ -976,7 +976,7 @@ function macros._while(compiler)
   -- teljes if-et le lehessen generani then-el egyutt
 end
 
-function macros._case(compiler)
+function macros._case()
   -- simulate goto with break, in pre lua5.2 since GOTO was not yet supported
   return ast.keyword("repeat")
 end
@@ -992,15 +992,15 @@ function macros._of(compiler)
 --]]
 end
 
-function macros._endof(compiler) -- GOTO endcase
+function macros._endof() -- GOTO endcase
   return ast.code_seq(ast.keyword("break"), ast.keyword("end"))
 end
 
-function macros._endcase(compiler)
+function macros._endcase()
   return ast._until(ast.literal("boolean", "true"))
 end
 
-function macros._exit(compiler)
+function macros._exit()
   return ast._return()
 end
 
@@ -1074,7 +1074,7 @@ function macros._step(compiler)
   return ast._for(loop_var, ast.pop3rd(), ast.pop2nd(), ast.pop(), nil)
 end
 
-function macros._end(compiler)
+function macros._end()
   return ast.keyword("end")
 end
 
