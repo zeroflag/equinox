@@ -36,6 +36,15 @@ function Stack.pop2nd(self)
   return item ~= NIL and item or nil
 end
 
+function Stack.pop3rd(self)
+  local n = #self.stack
+  if n < 3 then
+    error("Stack underflow: " .. self.name)
+  end
+  local item = table.remove(self.stack, n - 2)
+  return item ~= NIL and item or nil
+end
+
 function Stack.swap(self)
   local n = #self.stack
   if n < 2 then

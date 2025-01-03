@@ -47,8 +47,21 @@ assert(stack:pop2nd() == 2)
 assert(stack:depth() == 2)
 assert(stack:pop() == 3)
 assert(stack:pop() == 1)
+
 assert(stack:depth() == 0)
 
+stack:push(1)
+stack:push(2)
+stack:push(3)
+stack:push(4)
+assert(stack:depth() == 4)
+assert(stack:pop3rd() == 2)
+assert(stack:depth() == 3)
+assert(stack:pop() == 4)
+assert(stack:pop() == 3)
+assert(stack:pop() == 1)
+
+assert(stack:depth() == 0)
 
 stack:push_many(1, 2, 3)
 assert(stack:depth() == 3)

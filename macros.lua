@@ -94,12 +94,10 @@ function macros._not(compiler)
 end
 
 function macros._and(compiler)
-  -- use locals to prevent short circuit
   return ast.bin_op("and", ast.pop(), ast.pop(), true)
 end
 
 function macros._or(compiler)
-  -- use locals to prevent short circuit
   return ast.bin_op("or", ast.pop(), ast.pop(), true)
 end
 
@@ -108,8 +106,7 @@ function macros.concat(compiler)
 end
 
 function macros.new_table(compiler)
-  compiler:emit_push("{}")
-  --return ast.new_table()
+  return ast.new_table()
 end
 
 function macros.table_size(compiler)
@@ -349,12 +346,7 @@ function macros.for_ipairs(compiler)
   -- TODO should be removed or we should maintain proper scope
   compiler:def_var(var_name1, var_name1)
   compiler:def_var(var_name2, var_name2)
-  compiler:emit_line(string.format(
-    "for %s,%s in ipairs(stack:pop()) do", var_name1, var_name2))
-  --return ast._foreach(
-  --                    var_name1,
-  --                    var_name2,
-  --                    ast._ipairs(ast.pop()))
+  return ast._foreach(var_name1, var_name2, ast._ipairs(ast.pop()))
 end
 
 function macros.for_pairs(compiler)
@@ -363,50 +355,21 @@ function macros.for_pairs(compiler)
   -- TODO should be removed or we should maintain proper scope
   compiler:def_var(var_name1, var_name1)
   compiler:def_var(var_name2, var_name2)
-  compiler:emit_line(string.format(
-    "for %s,%s in pairs(stack:pop()) do", var_name1, var_name2))
-  --return ast._foreach(
-  --                    var_name1,
-  --                    var_name2,
-  --                    ast._pairs(ast.pop()))
+  return ast._foreach(var_name1, var_name2, ast._pairs(ast.pop()))
 end
 
 function macros._to(compiler)
   local loop_var = compiler:word()
   -- TODO should be removed or we should maintain proper scope
   compiler:def_var(loop_var, loop_var)
-  local var_start = gen_id("start")
-  local var_stop = gen_id("stop")
-  compiler:emit_line(string.format("local %s=stack:pop()", var_stop))
-  compiler:emit_line(string.format("local %s=stack:pop()", var_start))
-  compiler:emit_line(string.format("for %s=%s,%s do", loop_var, var_start, var_stop))
-
---[[  return ast._for(
-                      loop_var,
-                      var_start,
-                      var_stop,
-                      nil))
---]]
+  return ast._for(loop_var, ast.pop2nd(), ast.pop(), nil)
 end
 
 function macros._step(compiler)
   local loop_var = compiler:word()
   -- TODO should be removed or we should maintain proper scope
   compiler:def_var(loop_var, loop_var)
-  local var_start = gen_id("start")
-  local var_stop = gen_id("stop")
-  local var_step = gen_id("stop")
-  compiler:emit_line(string.format("local %s=stack:pop()", var_step))
-  compiler:emit_line(string.format("local %s=stack:pop()", var_stop))
-  compiler:emit_line(string.format("local %s=stack:pop()", var_start))
-  compiler:emit_line(string.format("for %s=%s,%s,%s do", loop_var, var_start, var_stop, var_step))
---[[  return ast._for(
-                      loop_var,
-                      var_start,
-                      var_stop,
---                    var_step
-                      nil))
---]]
+  return ast._for(loop_var, ast.pop3rd(), ast.pop2nd(), ast.pop(), nil)
 end
 
 function macros._end(compiler)

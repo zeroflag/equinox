@@ -225,21 +225,35 @@ stack:push(__a %s __b)
   if "assignment" == ast.name then
     return ast.var .. " = " .. gen(ast.exp)
   end
+  if "for" == ast.name and not ast.step then
+      return string.format(
+        "for %s=%s,%s do",
+        ast.loop_var, gen(ast.start), gen(ast.stop))
+  end
+  if "for" == ast.name and ast.step then
+      return string.format(
+        "for %s=%s,%s,%s do",
+        ast.loop_var, gen(ast.start), gen(ast.stop), gen(ast.step))
+  end
+  if "for_each" == ast.name then
+      return string.format(
+        "for %s,%s in %s do",
+        ast.loop_var1, ast.loop_var2, gen(ast.iterable))
+  end
+  if "pairs" == ast.name then
+    return string.format("pairs(%s)", gen(ast.iterable))
+  end
+  if "ipairs" == ast.name then
+    return string.format("ipairs(%s)", gen(ast.iterable))
+  end
   if "if" == ast.name then
     return "if " .. gen(ast.cond) .. " then"
   end
-  if "else" == ast.name then
-    return "else"
-  end
-  if "repeat" == ast.name then
-    return "repeat"
-  end
-  if "return" == ast.name then
-    return "do return end"
-  end
-  if "end" == ast.name then
-    return "end"
-  end
+  if "else" == ast.name then return "else" end
+  if "end" == ast.name then return "end" end
+  if "repeat" == ast.name then return "repeat" end
+  if "return" == ast.name then return "do return end" end
+  if "table_new" == ast.name then return "stack:push({})" end
   return nil
 end
 
