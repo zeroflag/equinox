@@ -178,16 +178,13 @@ function macros.from_aux(compiler)
 end
 
 function macros.dot(compiler)
-  compiler:emit_line([[
-io.write(tostring(stack:pop()))
-io.write(" ")]])
-  --return ast.unary_op(".", ast.pop()))
+  return ast.code_seq(
+    ast.func_call("io.write", ast.func_call("tostring", ast.pop())),
+    ast.func_call("io.write", ast.literal("string", " ")))
 end
 
 function macros.cr(compiler)
-  compiler:emit_line("print()")
-  --return ast.nullary_operator("cr")
-  -- fcall
+  return ast.func_call("print")
 end
 
 function macros.def_lua_alias(compiler)
@@ -244,6 +241,7 @@ function macros._while(compiler)
   --return ast._if(ast.unary_op("not", ast.pop())))
   --return ast._break())
   --return ast._end())
+  -- teljes if-et le lehessen generani then-el egyutt
 end
 
 function macros._case(compiler)

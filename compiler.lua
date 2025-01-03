@@ -228,6 +228,9 @@ stack:push(__a %s __b)
   if "literal" == ast.name and "boolean" == ast.kind then
     return ast.value
   end
+  if "literal" == ast.name and "string" == ast.kind then
+    return '"' .. ast.value .. '"'
+  end
   if "while" == ast.name then
     return string.format("while(%s)do", gen(ast.cond))
   end
@@ -271,6 +274,26 @@ stack:push(__a %s __b)
     return string.format(
       "%s[%s]=%s",
       gen(ast.tbl), gen(ast.key), gen(ast.value))
+  end
+  if "func_call" == ast.name then
+    local params = ""
+    for i, p in ipairs(ast.args) do
+      params = params .. gen(p)
+      if i < #ast.args then
+        params = params .. ","
+      end
+    end
+    return string.format("%s(%s)", ast.func_name, params)
+  end
+  if "code_seq" == ast.name then
+    local result = ""
+    for i, c in ipairs(ast.code) do
+      result = result .. gen(c)
+      if i < #ast.code then
+        result = result .. "\n"
+      end
+    end
+    return result
   end
   if "func_header" == ast.name then
     if ast.arity == 0 then

@@ -9,6 +9,18 @@ function ast.func_header(func_name, arity, void)
   }
 end
 
+function ast.func_call(func_name, ...)
+  return {
+    name = "func_call",
+    func_name = func_name,
+    args = {...}
+  }
+end
+
+function ast.code_seq(...)
+  return {name = "code_seq", code = {...}}
+end
+
 function ast.pop()
   return {name = "stack_op", op  = "pop"}
 end
@@ -99,13 +111,6 @@ function ast.unary_op(operator, operand)
     name = "unary_op",
     op = operator,
     p1 = operand
-  }
-end
-
-function ast.nullary_operator(operator, operand)
-  return {
-    name = "nullary_operator",
-    subtype = operator
   }
 end
 

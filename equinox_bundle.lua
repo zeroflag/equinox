@@ -12,6 +12,18 @@ function ast.func_header(func_name, arity, void)
   }
 end
 
+function ast.func_call(func_name, ...)
+  return {
+    name = "func_call",
+    func_name = func_name,
+    args = {...}
+  }
+end
+
+function ast.code_seq(...)
+  return {name = "code_seq", code = {...}}
+end
+
 function ast.pop()
   return {name = "stack_op", op  = "pop"}
 end
@@ -102,13 +114,6 @@ function ast.unary_op(operator, operand)
     name = "unary_op",
     op = operator,
     p1 = operand
-  }
-end
-
-function ast.nullary_operator(operator, operand)
-  return {
-    name = "nullary_operator",
-    subtype = operator
   }
 end
 
@@ -458,6 +463,9 @@ stack:push(__a %s __b)
   if "literal" == ast.name and "boolean" == ast.kind then
     return ast.value
   end
+  if "literal" == ast.name and "string" == ast.kind then
+    return '"' .. ast.value .. '"'
+  end
   if "while" == ast.name then
     return string.format("while(%s)do", gen(ast.cond))
   end
@@ -501,6 +509,26 @@ stack:push(__a %s __b)
     return string.format(
       "%s[%s]=%s",
       gen(ast.tbl), gen(ast.key), gen(ast.value))
+  end
+  if "func_call" == ast.name then
+    local params = ""
+    for i, p in ipairs(ast.args) do
+      params = params .. gen(p)
+      if i < #ast.args then
+        params = params .. ","
+      end
+    end
+    return string.format("%s(%s)", ast.func_name, params)
+  end
+  if "code_seq" == ast.name then
+    local result = ""
+    for i, c in ipairs(ast.code) do
+      result = result .. gen(c)
+      if i < #ast.code then
+        result = result .. "\n"
+      end
+    end
+    return result
   end
   if "func_header" == ast.name then
     if ast.arity == 0 then
@@ -896,16 +924,13 @@ function macros.from_aux(compiler)
 end
 
 function macros.dot(compiler)
-  compiler:emit_line([[
-io.write(tostring(stack:pop()))
-io.write(" ")]])
-  --return ast.unary_op(".", ast.pop()))
+  return ast.code_seq(
+    ast.func_call("io.write", ast.func_call("tostring", ast.pop())),
+    ast.func_call("io.write", ast.literal("string", " ")))
 end
 
 function macros.cr(compiler)
-  compiler:emit_line("print()")
-  --return ast.nullary_operator("cr")
-  -- fcall
+  return ast.func_call("print")
 end
 
 function macros.def_lua_alias(compiler)
@@ -962,6 +987,7 @@ function macros._while(compiler)
   --return ast._if(ast.unary_op("not", ast.pop())))
   --return ast._break())
   --return ast._end())
+  -- teljes if-et le lehessen generani then-el egyutt
 end
 
 function macros._case(compiler)
