@@ -269,19 +269,16 @@ end
 
 -- TODO this might overwrite user defined i/j ?
 function macros._i(compiler)
-  compiler:emit_push("aux:tos()")
-  --return ast.aux_op("tos")
+  return ast.push(ast.aux_op("tos"))
 end
 
 -- TODO this might overwrite user defined i/j ?
 function macros._j(compiler)
-  compiler:emit_push("aux:tos2()")
-  --return ast.aux_op("tos2")
+  return ast.push(ast.aux_op("tos2"))
 end
 
 function macros.unloop(compiler)
-  compiler:emit_line("aux:pop()")
-  --return ast.aux_op("drop")
+  return ast.aux_op("pop")
 end
 
 function macros._do(compiler)
