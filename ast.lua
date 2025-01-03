@@ -34,10 +34,11 @@ function ast.pop3rd()
 end
 
 function ast.stack_op(operation)
-  return {
-    name = "stack_op",
-    op = operation
-  }
+  return {name = "stack_op", op = operation}
+end
+
+function ast.aux_op(operation)
+  return {name = "aux_op", op = operation}
 end
 
 function ast.push(item)
@@ -45,30 +46,7 @@ function ast.push(item)
 end
 
 function ast.aux_push(item)
-  return {
-    name  = "push-aux",
-    children = { item }
-  }
-end
-
-function ast.aux_op(operation)
-  return {
-    name = "aux_op",
-    subtype = operation
-  }
-end
-
-function ast.to_aux(item)
-  return {
-    name = "to_aux",
-    children = { item }
-  }
-end
-
-function ast.from_aux()
-  return {
-    name = "from_aux"
-  }
+  return {name  = "push_aux", item = item}
 end
 
 function ast._while(cond)

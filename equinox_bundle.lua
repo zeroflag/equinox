@@ -37,10 +37,11 @@ function ast.pop3rd()
 end
 
 function ast.stack_op(operation)
-  return {
-    name = "stack_op",
-    op = operation
-  }
+  return {name = "stack_op", op = operation}
+end
+
+function ast.aux_op(operation)
+  return {name = "aux_op", op = operation}
 end
 
 function ast.push(item)
@@ -48,30 +49,7 @@ function ast.push(item)
 end
 
 function ast.aux_push(item)
-  return {
-    name  = "push-aux",
-    children = { item }
-  }
-end
-
-function ast.aux_op(operation)
-  return {
-    name = "aux_op",
-    subtype = operation
-  }
-end
-
-function ast.to_aux(item)
-  return {
-    name = "to_aux",
-    children = { item }
-  }
-end
-
-function ast.from_aux()
-  return {
-    name = "from_aux"
-  }
+  return {name  = "push_aux", item = item}
 end
 
 function ast._while(cond)
@@ -420,8 +398,14 @@ function gen(ast)
   if "stack_op" == ast.name then
     return "stack:" .. ast.op .. "()"
   end
+  if "aux_op" == ast.name then
+    return "aux:" .. ast.op .. "()"
+  end
   if "push" == ast.name then
     return string.format("stack:push(%s)", gen(ast.item))
+  end
+  if "push_aux" == ast.name then
+    return string.format("aux:push(%s)", gen(ast.item))
   end
   if "unary_op" == ast.name then
     return string.format("%s %s", ast.op, gen(ast.p1))
@@ -844,13 +828,11 @@ function macros.table_put()
 end
 
 function macros.depth(compiler)
-  compiler:emit_push("stack:depth()")
-  --return ast.stack_op("depth")
+  return ast.push(ast.stack_op("depth"))
 end
 
 function macros.adepth(compiler)
-  compiler:emit_push("aux:depth()")
-  --return ast.aux_op("depth")
+  return ast.push(ast.aux_op("depth"))
 end
 
 function macros.dup()
@@ -890,13 +872,11 @@ function macros.swap()
 end
 
 function macros.to_aux(compiler)
-  compiler:emit_line("aux:push(stack:pop())")
-  --return ast.to_aux(ast.pop())
+  return ast.aux_push(ast.pop())
 end
 
 function macros.from_aux(compiler)
-  compiler:emit_push("aux:pop()")
-  --return ast.from_aux()
+  return ast.push(ast.aux_op("pop"))
 end
 
 function macros.dot()

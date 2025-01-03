@@ -124,13 +124,11 @@ function macros.table_put()
 end
 
 function macros.depth(compiler)
-  compiler:emit_push("stack:depth()")
-  --return ast.stack_op("depth")
+  return ast.push(ast.stack_op("depth"))
 end
 
 function macros.adepth(compiler)
-  compiler:emit_push("aux:depth()")
-  --return ast.aux_op("depth")
+  return ast.push(ast.aux_op("depth"))
 end
 
 function macros.dup()
@@ -170,13 +168,11 @@ function macros.swap()
 end
 
 function macros.to_aux(compiler)
-  compiler:emit_line("aux:push(stack:pop())")
-  --return ast.to_aux(ast.pop())
+  return ast.aux_push(ast.pop())
 end
 
 function macros.from_aux(compiler)
-  compiler:emit_push("aux:pop()")
-  --return ast.from_aux()
+  return ast.push(ast.aux_op("pop"))
 end
 
 function macros.dot()

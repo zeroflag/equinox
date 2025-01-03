@@ -201,8 +201,14 @@ function gen(ast)
   if "stack_op" == ast.name then
     return "stack:" .. ast.op .. "()"
   end
+  if "aux_op" == ast.name then
+    return "aux:" .. ast.op .. "()"
+  end
   if "push" == ast.name then
     return string.format("stack:push(%s)", gen(ast.item))
+  end
+  if "push_aux" == ast.name then
+    return string.format("aux:push(%s)", gen(ast.item))
   end
   if "unary_op" == ast.name then
     return string.format("%s %s", ast.op, gen(ast.p1))
