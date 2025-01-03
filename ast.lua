@@ -1,10 +1,11 @@
 local ast = {}
 
-function ast.func_definition(func_name, children)
+function ast.func_header(func_name, arity, void)
   return {
-    name = "function",
-    func_name = name,
-    children = children
+    name = "func_header",
+    func_name = func_name,
+    arity = arity,
+    void = void
   }
 end
 

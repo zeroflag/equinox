@@ -263,7 +263,23 @@ stack:push(__a %s __b)
       "%s[%s]=%s",
       gen(ast.tbl), gen(ast.key), gen(ast.value))
   end
-  return nil
+  if "func_header" == ast.name then
+    if ast.arity == 0 then
+      return "function " .. ast.func_name .. "()"
+    else
+      local result = "function " .. ast.func_name .. "("
+      for i = 1, ast.arity do
+        result = result .. "__a" .. i
+        if i < ast.arity then result = result .. "," end
+      end
+      result = result .. ")\n"
+      for i = 1, ast.arity do
+        result = result .. "stack:push(__a" .. i .. ")\n"
+      end
+      return result
+    end
+  end
+  error("Unknown AST: " .. ast.name)
 end
 
 return compiler

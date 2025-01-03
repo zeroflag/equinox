@@ -200,22 +200,7 @@ function macros.colon(compiler)
   local forth_name, arity, void = interop.parse_signature(compiler:word())
   local lua_name = sanitize(forth_name)
   compiler:def_word(forth_name, lua_name, false)
-  if not arity or arity == 0 then
-    compiler:emit_line("function " .. lua_name .. "()")
-  else
-    compiler:emit("function " .. lua_name .. "(")
-    for i = 1, arity do
-      compiler:emit("__a" .. i)
-      if i < arity then
-        compiler:emit(",")
-      else
-        compiler:emit_line(")")
-      end
-    end
-    for i = 1, arity do
-      compiler:emit_push("__a" .. i)
-    end
-  end
+  return ast.func_header(lua_name, arity, void)
 end
 
 function macros.comment(compiler)
