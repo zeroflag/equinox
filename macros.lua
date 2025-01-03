@@ -1,6 +1,8 @@
 local stack = require("stack")
 local aux = require("aux")
 local interop = require("interop")
+local ast = require("ast")
+
 local macros = {}
 
 local id_counter = 1
@@ -44,89 +46,74 @@ function sanitize(str)
 end
 
 function macros.add(compiler)
-  compiler:emit_push("stack:pop() + stack:pop()")
+  return ast.bin_op("+", ast.pop(), ast.pop())
 end
 
 function macros.mul(compiler)
-  compiler:emit_push("stack:pop() * stack:pop()")
+  return ast.bin_op("*", ast.pop(), ast.pop())
 end
 
 function macros.sub(compiler)
-  compiler:emit_line([[
-local _a = stack:pop()
-local _b = stack:pop()
-stack:push(_b - _a)]])
+  return ast.bin_op("-", ast.pop2nd(), ast.pop())
 end
 
 function macros.div(compiler)
-  compiler:emit_line([[
-local _a = stack:pop()
-local _b = stack:pop()
-stack:push(_b / _a)]])
+  return ast.bin_op("/", ast.pop2nd(), ast.pop())
 end
 
 function macros.mod(compiler)
-  compiler:emit_line([[
-local _a = stack:pop()
-local _b = stack:pop()
-stack:push(_b % _a)]])
+  return ast.bin_op("%", ast.pop2nd(), ast.pop())
 end
 
 function macros.eq(compiler)
-  compiler:emit_push("stack:pop() == stack:pop()")
+  return ast.bin_op("==", ast.pop(), ast.pop())
 end
 
 function macros.neq(compiler)
-  compiler:emit_push("stack:pop() ~= stack:pop()")
+  return ast.bin_op("~=", ast.pop(), ast.pop())
 end
 
 function macros.lt(compiler)
-  compiler:emit_push("stack:pop() > stack:pop()")
+  return ast.bin_op(">", ast.pop(), ast.pop())
 end
 
 function macros.lte(compiler)
-  compiler:emit_push("stack:pop() >= stack:pop()")
+  return ast.bin_op(">=", ast.pop(), ast.pop())
 end
 
 function macros.gt(compiler)
-  compiler:emit_push("stack:pop() < stack:pop()")
+  return ast.bin_op("<", ast.pop(), ast.pop())
 end
 
 function macros.gte(compiler)
-  compiler:emit_push("stack:pop() <= stack:pop()")
+  return ast.bin_op("<=", ast.pop(), ast.pop())
 end
 
 function macros._not(compiler)
-  compiler:emit_push("not stack:pop()")
+  return ast.unary_op("not", ast.pop())
 end
 
 function macros._and(compiler)
-  compiler:emit_line([[
-local _a = stack:pop()
-local _b = stack:pop()
-stack:push(_a and _b)]])
+  -- use locals to prevent short circuit
+  return ast.bin_op("and", ast.pop(), ast.pop(), true)
 end
 
 function macros._or(compiler)
-  compiler:emit_line([[
-local _a = stack:pop()
-local _b = stack:pop()
-stack:push(_a or _b)]])
+  -- use locals to prevent short circuit
+  return ast.bin_op("or", ast.pop(), ast.pop(), true)
 end
 
 function macros.concat(compiler)
-  compiler:emit_line([[
-local _a = stack:pop()
-local _b = stack:pop()
-stack:push(_b .. _a)]])
+  return ast.bin_op("..", ast.pop2nd(), ast.pop())
 end
 
 function macros.new_table(compiler)
   compiler:emit_push("{}")
+  --return ast.new_table()
 end
 
 function macros.table_size(compiler)
-  compiler:emit_push("#stack:pop()")
+  return ast.unary_op("#", ast.pop())
 end
 
 function macros.table_at(compiler)
@@ -134,6 +121,7 @@ function macros.table_at(compiler)
 local _n = stack:pop()
 local _t = stack:pop()
 stack:push(_t[_n])]])
+  --return ast.table_at(ast.pop(), ast.pop())
 end
 
 function macros.table_put(compiler) -- TODO gen names
@@ -142,68 +130,76 @@ local _val = stack:pop()
 local _key = stack:pop()
 local _tbl = stack:pop()
 _tbl[_key] = _val]])
+  --return ast.table_put(ast.pop(), ast.pop(), ast.pop())
 end
 
 function macros.depth(compiler)
   compiler:emit_push("stack:depth()")
+  --return ast.stack_op("depth")
 end
 
 function macros.adepth(compiler)
   compiler:emit_push("aux:depth()")
+  --return ast.aux_op("depth")
 end
 
 function macros.dup(compiler)
-  compiler:emit_line("stack:dup()")
+  return ast.stack_op("dup")
 end
 
 function macros.drop(compiler)
-  compiler:emit_line("stack:pop()")
+  return ast.pop()
 end
 
 function macros.over(compiler)
-  compiler:emit_line("stack:over()")
+  return ast.stack_op("over")
 end
 
 function macros.nip(compiler)
-  compiler:emit_line("stack:nip()")
+  return ast.stack_op("nip")
 end
 
 function macros.dup2(compiler)
-  compiler:emit_line("stack:dup2()")
+  return ast.stack_op("dup2")
 end
 
 function macros.mrot(compiler)
-  compiler:emit_line("stack:mrot()")
+  return ast.stack_op("mrot")
 end
 
 function macros.tuck(compiler)
-  compiler:emit_line("stack:tuck()")
+  return ast.stack_op("tuck")
 end
 
 function macros.rot(compiler)
-  compiler:emit_line("stack:rot()")
+  return ast.stack_op("rot")
 end
 
 function macros.swap(compiler)
-  compiler:emit_line("stack:swap()")
+  return ast.stack_op("swap")
 end
 
 function macros.to_aux(compiler)
   compiler:emit_line("aux:push(stack:pop())")
+  --return ast.to_aux(ast.pop())
 end
 
 function macros.from_aux(compiler)
   compiler:emit_push("aux:pop()")
+  --return ast.from_aux()
 end
 
 function macros.dot(compiler)
   compiler:emit_line([[
 io.write(tostring(stack:pop()))
 io.write(" ")]])
+  --return ast.unary_op(".", ast.pop()))
 end
 
 function macros.cr(compiler)
   compiler:emit_line("print()")
+  --return ast.nullary_operator("cr")
+  -- fcall
 end
 
 function macros.def_lua_alias(compiler)
@@ -245,23 +241,25 @@ end
 function macros.var(compiler)
   local name = compiler:word()
   compiler:def_var(name, name)
-  compiler:emit_line("local " .. name)
+  return ast.def_local(name)
 end
 
 function macros.assignment(compiler)
-  compiler:emit_line(compiler:word() .. " = stack:pop()")
+  local variable = compiler:word()
+  return ast.assignment(variable, ast.pop())
 end
 
 function macros._if(compiler)
-  compiler:emit_line("if stack:pop() then")
+  return ast._if(ast.pop())
 end
 
 function macros._else(compiler)
-  compiler:emit_line("else")
+  return ast._else()
 end
 
 function macros._begin(compiler)
   compiler:emit_line("while(true) do")
+  --return ast._while(ast.literal("boolean", "true"))
 end
 
 function macros._until(compiler)
@@ -271,54 +269,78 @@ end
 
 function macros._while(compiler)
   compiler:emit_line("if not stack:pop() then break end")
+  --return ast._if(ast.unary_op("not", ast.pop())))
+  --return ast._break())
+  --return ast._end())
 end
 
 function macros._case(compiler)
   -- simulate goto with break, in pre lua5.2 since GOTO was not yet supported
-  compiler:emit_line("repeat")
+  return ast._repeat()
 end
 
 function macros._of(compiler)
   compiler:emit_push("stack:tos2()") -- OVER
   compiler:emit_line("if stack:pop() == stack:pop() then")
   compiler:emit_line("stack:pop()") -- DROP selector value
+--[[
+  return ast.stack_op("over"))
+  return ast._if(ast.bin_op("==", ast.pop(), ast.pop())))
+  return ast.pop())
+--]]
 end
 
 function macros._endof(compiler)
   compiler:emit_line("break end") -- GOTO endcase
+  --ast._break()
+  --return ast._end()
 end
 
 function macros._endcase(compiler)
   compiler:emit_line("until true")
+  --return ast._until(ast.literal("boolean", "true"))
 end
 
 function macros._exit(compiler)
-  compiler:emit_line("do return end")
+  return ast._return()
 end
 
 -- TODO this might overwrite user defined i/j ?
 function macros._i(compiler)
   compiler:emit_push("aux:tos()")
+  --return ast.aux_op("tos")
 end
 
 -- TODO this might overwrite user defined i/j ?
 function macros._j(compiler)
   compiler:emit_push("aux:tos2()")
+  --return ast.aux_op("tos2")
 end
 
 function macros.unloop(compiler)
   compiler:emit_line("aux:pop()")
+  --return ast.aux_op("drop")
 end
 
 function macros._do(compiler)
   local var = gen_id("loop_var")
   compiler:emit_line("for ".. var .."=stack:pop(), stack:pop() -1 do")
   compiler:emit_line("aux:push(".. var ..")")
+--[[
+  return ast._for(
+                      var,
+                      ast.pop(),
+                      ast.bin_op("-", ast.literal("number", 1), ast.pop()),
+                      nil))
+  return ast.aux_push(ast.var_ref(var)))
+--]]
 end
 
 function macros._loop(compiler)
   compiler:emit_line("aux:pop()") -- unloop i/j
   compiler:emit_line("end")
+  --return ast.aux_op("pop")
+  --return ast._end()
 end
 
 function macros.for_ipairs(compiler)
@@ -329,6 +351,10 @@ function macros.for_ipairs(compiler)
   compiler:def_var(var_name2, var_name2)
   compiler:emit_line(string.format(
     "for %s,%s in ipairs(stack:pop()) do", var_name1, var_name2))
+  --return ast._foreach(
+  --                    var_name1,
+  --                    var_name2,
+  --                    ast._ipairs(ast.pop()))
 end
 
 function macros.for_pairs(compiler)
@@ -339,6 +365,10 @@ function macros.for_pairs(compiler)
   compiler:def_var(var_name2, var_name2)
   compiler:emit_line(string.format(
     "for %s,%s in pairs(stack:pop()) do", var_name1, var_name2))
+  --return ast._foreach(
+  --                    var_name1,
+  --                    var_name2,
+  --                    ast._pairs(ast.pop()))
 end
 
 function macros._to(compiler)
@@ -350,6 +380,13 @@ function macros._to(compiler)
   compiler:emit_line(string.format("local %s=stack:pop()", var_stop))
   compiler:emit_line(string.format("local %s=stack:pop()", var_start))
   compiler:emit_line(string.format("for %s=%s,%s do", loop_var, var_start, var_stop))
+
+--[[  return ast._for(
+                      loop_var,
+                      var_start,
+                      var_stop,
+                      nil))
+--]]
 end
 
 function macros._step(compiler)
@@ -363,10 +400,17 @@ function macros._step(compiler)
   compiler:emit_line(string.format("local %s=stack:pop()", var_stop))
   compiler:emit_line(string.format("local %s=stack:pop()", var_start))
   compiler:emit_line(string.format("for %s=%s,%s,%s do", loop_var, var_start, var_stop, var_step))
+--[[  return ast._for(
+                      loop_var,
+                      var_start,
+                      var_stop,
+--                    var_step
+                      nil))
+--]]
 end
 
 function macros._end(compiler)
-  compiler:emit_line("end")
+  return ast._end()
 end
 
 function macros.words(compiler)

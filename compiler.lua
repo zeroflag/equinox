@@ -132,7 +132,11 @@ end
 function compiler.exec_macro(self, word)
   local mod, fun = dict.find(word).lua_name:match("^(.-)%.(.+)$")
   if mod == "macros" and type(macros[fun]) == "function" then
-    macros[fun](self)
+    local result = macros[fun](self)
+    if result then
+      self.output:append(gen(result))
+      self.output:new_line()
+    end
   else
     error("Unknown macro " .. word)
   end
@@ -193,6 +197,50 @@ end
 
 function compiler.emit(self, token)
   self.output:append(token)
+end
+
+-- TODO work in progress, extract elsewhere
+function gen(ast)
+  if "stack_op" == ast.name then
+    return "stack:" .. ast.op .. "()"
+  end
+  if "unary_op" == ast.name then
+    return string.format(
+      "stack:push(%s %s)", ast.op, gen(ast.p1))
+  end
+  if "bin_op" == ast.name then
+    if ast.use_locals then -- TODO gen local var names
+      return string.format([[
+local __a, __b = %s, %s
+stack:push(__a %s __b)
+]], gen(ast.p1), gen(ast.p2), ast.op)
+    else
+      return string.format(
+        "stack:push(%s %s %s)", gen(ast.p1), ast.op, gen(ast.p2))
+    end
+  end
+  if "local" == ast.name then
+    return "local " .. ast.var
+  end
+  if "assignment" == ast.name then
+    return ast.var .. " = " .. gen(ast.exp)
+  end
+  if "if" == ast.name then
+    return "if " .. gen(ast.cond) .. " then"
+  end
+  if "else" == ast.name then
+    return "else"
+  end
+  if "repeat" == ast.name then
+    return "repeat"
+  end
+  if "return" == ast.name then
+    return "do return end"
+  end
+  if "end" == ast.name then
+    return "end"
+  end
+  return nil
 end
 
 return compiler

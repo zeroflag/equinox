@@ -39,6 +39,17 @@ assert(stack:depth() == 1)
 assert(nil == stack:pop())
 assert(stack:depth() == 0)
 
+stack:push(1)
+stack:push(2)
+stack:push(3)
+assert(stack:depth() == 3)
+assert(stack:pop2nd() == 2)
+assert(stack:depth() == 2)
+assert(stack:pop() == 3)
+assert(stack:pop() == 1)
+assert(stack:depth() == 0)
+
+
 stack:push_many(1, 2, 3)
 assert(stack:depth() == 3)
 assert(stack:pop() == 3)
