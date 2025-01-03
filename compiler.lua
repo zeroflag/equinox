@@ -39,6 +39,7 @@ function compiler.alias(self, lua_name, forth_alias)
   return dict.def_lua_alias(lua_name, forth_alias)
 end
 
+-- TODO move to codegen
 function compiler.lua_call(self, name, arity, vararg, void)
   if vararg then
     error(name .. " has variable/unknown number of arguments. " ..
@@ -46,24 +47,22 @@ function compiler.lua_call(self, name, arity, vararg, void)
           "For example " .. name .. "/1")
   end
   local params = {}
-  local statements = {}
+  local stmts = {}
   if arity > 0 then
     for i = 1, arity do -- TODO gen name
       table.insert(params, ast.identifier("__p" .. i))
-      table.insert(
-        statements,
+      table.insert(stmts,
         ast.init_local("__p" .. (arity -i +1), ast.pop()))
     end
   end
   local unpack = table.unpack or unpack
   if void then
-    table.insert(statements, ast.func_call(name, unpack(params)))
+    table.insert(stmts, ast.func_call(name, unpack(params)))
   else
-    table.insert(statements,
-                 ast.push_many(
+    table.insert(stmts, ast.push_many(
                    ast.func_call(name, unpack(params))))
   end
-  return ast.code_seq(unpack(statements))
+  return ast.code_seq(unpack(stmts))
 end
 
 function compiler.compile_token(self, item)
