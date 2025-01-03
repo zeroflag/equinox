@@ -827,11 +827,11 @@ function macros.table_put()
   return ast.table_put(ast.pop3rd(), ast.pop2nd(), ast.pop())
 end
 
-function macros.depth(compiler)
+function macros.depth()
   return ast.push(ast.stack_op("depth"))
 end
 
-function macros.adepth(compiler)
+function macros.adepth()
   return ast.push(ast.aux_op("depth"))
 end
 
@@ -871,11 +871,11 @@ function macros.swap()
   return ast.stack_op("swap")
 end
 
-function macros.to_aux(compiler)
+function macros.to_aux()
   return ast.aux_push(ast.pop())
 end
 
-function macros.from_aux(compiler)
+function macros.from_aux()
   return ast.push(ast.aux_op("pop"))
 end
 
@@ -972,16 +972,16 @@ function macros._exit()
 end
 
 -- TODO this might overwrite user defined i/j ?
-function macros._i(compiler)
+function macros._i()
   return ast.push(ast.aux_op("tos"))
 end
 
 -- TODO this might overwrite user defined i/j ?
-function macros._j(compiler)
+function macros._j()
   return ast.push(ast.aux_op("tos2"))
 end
 
-function macros.unloop(compiler)
+function macros.unloop()
   return ast.aux_op("pop")
 end
 
@@ -999,11 +999,10 @@ function macros._do(compiler)
 --]]
 end
 
-function macros._loop(compiler)
-  compiler:emit_line("aux:pop()") -- unloop i/j
-  compiler:emit_line("end")
-  --return ast.aux_op("pop")
-  --return ast._end()
+function macros._loop()
+  return ast.code_seq(
+    ast.aux_op("pop"), -- unloop i/j
+    ast.keyword("end"))
 end
 
 function macros.for_ipairs(compiler)
