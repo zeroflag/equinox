@@ -260,7 +260,11 @@ function gen(ast)
     return string.format("ipairs(%s)", gen(ast.iterable))
   end
   if "if" == ast.name then
-    return "if " .. gen(ast.cond) .. " then"
+    if ast.body then
+      return "if " .. gen(ast.cond) .. " then " .. gen(ast.body) .. " end"
+    else
+      return "if " .. gen(ast.cond) .. " then"
+    end
   end
   if "keyword" == ast.name then return ast.keyword end
   if "identifier" == ast.name then return ast.id end

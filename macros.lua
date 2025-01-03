@@ -229,21 +229,17 @@ function macros._begin()
   return ast._while(ast.literal("boolean", "true"))
 end
 
-function macros._until(compiler)
-  compiler:emit_line("if stack:pop() then break end")
-  compiler:emit_line("end")
+function macros._until()
+  return ast.code_seq(
+    ast._if(ast.pop(), ast.keyword("break")),
+    ast.keyword("end"))
 end
 
-function macros._while(compiler)
-  compiler:emit_line("if not stack:pop() then break end")
-  --return ast._if(ast.unary_op("not", ast.pop())))
-  --return ast._break())
-  --return ast._end())
-  -- teljes if-et le lehessen generani then-el egyutt
+function macros._while()
+  return ast._if(ast.unary_op("not", ast.pop()), ast.keyword("break"))
 end
 
-function macros._case()
-  -- simulate goto with break, in pre lua5.2 since GOTO was not yet supported
+function macros._case() -- simulate goto with break, in pre lua5.2 since GOTO was not yet supported
   return ast.keyword("repeat")
 end
 

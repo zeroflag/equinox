@@ -133,10 +133,11 @@ function ast.table_put(tbl, key, value)
   }
 end
 
-function ast._if(cond)
+function ast._if(cond, body)
   return {
     name = "if",
-    cond = cond
+    cond = cond,
+    body = body
   }
 end
 
