@@ -1,11 +1,15 @@
 : sieve_of_eratosthenes ( limit -- tbl )
   var primes
   { } -> primes
-  2 over ( limit ) to: i i -> primes[i] end
+  2 over ( limit ) to: i
+    ( i -> primes[i] )
+    primes i i put
+  end
   2 over ( limit ) math.sqrt/1 to: i
-    primes[i] if
+    primes i at if
       i i * over ( limit ) i step: j
-        false -> primes[j]
+        ( false -> primes[j] )
+        primes j false put
       end
     then
   end
