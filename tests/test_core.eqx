@@ -157,6 +157,12 @@ depth 0 =assert
 20 =assert
 10 =assert
 
+50 60
+true if 65 then
+65 =assert
+60 =assert
+50 =assert
+
 true
 true not
 assert-false

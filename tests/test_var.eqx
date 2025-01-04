@@ -15,5 +15,11 @@ var v2
 v1 v2 - ( 10 13 - )
 -3 =assert
 
+var x
+10 20 30 -> x
+30 x =assert
+20 =assert
+10 =assert
+
 depth 0 =assert
 adepth 0 =assert

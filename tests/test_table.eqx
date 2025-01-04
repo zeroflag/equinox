@@ -122,5 +122,11 @@ tbl.k1.k2.k3.k4 42 =assert
 20 =assert
 10 =assert
 
+30 40
+tbl 2 "z" put
+tbl 2 at "z" =assert
+40 =assert
+30 =assert
+
 depth 0 =assert
 adepth 0 =assert
