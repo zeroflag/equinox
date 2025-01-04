@@ -483,7 +483,12 @@ function compiler.compile(self, text)
     end
     item = self.parser:next_item()
   end
+  self:optimize(self.ast)
   return self:generate_code()
+end
+
+function compiler.optimize(ast)
+  -- TODO
 end
 
 function compiler.generate_code(self)
