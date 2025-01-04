@@ -6,7 +6,7 @@ function CodeGen.new()
   return obj
 end
 
-function CodeGen.gen(self, ast)
+function CodeGen:gen(ast)
   if "stack_op" == ast.name then
     return "stack:" .. ast.op .. "()"
   end

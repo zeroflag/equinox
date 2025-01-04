@@ -6,23 +6,23 @@ function Output.new()
   return obj
 end
 
-function Output.append(self, str)
+function Output:append(str)
   self.lines[self:size()] = self.lines[self:size()] .. str
 end
 
-function Output.new_line(self)
+function Output:new_line()
   table.insert(self.lines, "")
 end
 
-function Output.size(self)
+function Output:size()
   return #self.lines
 end
 
-function Output.text(self, from)
+function Output:text(from)
   return table.concat(self.lines, "\n", from)
 end
 
-function Output.load(self)
+function Output:load()
   local text = self:text()
   if loadstring then
     return loadstring(text)

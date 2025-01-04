@@ -8,7 +8,7 @@ function Parser.new(source, dict)
   return obj
 end
 
-function Parser.parse_all(self)
+function Parser:parse_all()
   local result = {}
   local item = self:next_item()
   while item do
@@ -18,7 +18,7 @@ function Parser.parse_all(self)
   return result
 end
 
-function Parser.next_item(self)
+function Parser:next_item()
   local token = ""
   local begin_str = false
   local stop = false
@@ -49,13 +49,13 @@ function Parser.next_item(self)
   return self:parse_word(token, kind)
 end
 
-function Parser.next_chr(self)
+function Parser:next_chr()
   local chr = self.source:sub(self.index, self.index)
   self.index = self.index + 1
   return chr
 end
 
-function Parser.parse_word(self, token, kind)
+function Parser:parse_word(token, kind)
   local word = self.dict.find(token)
   if kind == "word" and word and word.immediate
   then
@@ -108,7 +108,7 @@ function Parser.parse_word(self, token, kind)
   return unknown(token)
 end
 
-function Parser.ended(self)
+function Parser:ended()
   return self.index > #self.source
 end
 
