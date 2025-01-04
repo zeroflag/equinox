@@ -157,5 +157,10 @@ depth 0 =assert
 20 =assert
 10 =assert
 
+true
+true not
+assert-false
+assert-true
+
 depth 0 =assert
 adepth 0 =assert

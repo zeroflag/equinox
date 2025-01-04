@@ -31,16 +31,24 @@ end
 function is_push_binop(ast)
   return is(ast, "push")
     and is(ast.item, "bin_op")
-    and is("stack_op", ast.item.p1.name)
-    and is("stack_op", ast.item.p2.name)
+  -- TOOD csak ha POP/POP2nd
+    and is(ast.item.p1.name, "stack_op")
+    and is(ast.item.p2.name, "stack_op")
 end
 
 function is_push_unop(ast)
-  return is(ast, "push") and is(ast.item, "unary_op")
+  return is(ast, "push")
+    and is(ast.item, "unary_op")
+  -- TOOD csak ha POP/POP2nd
+    and is(ast.item.p1.name, "stack_op")
 end
 
 function is_tbl_at(ast)
-  return is(ast, "push") and is(ast.item, "table_at")
+  return is(ast, "push")
+    and is(ast.item, "table_at")
+  -- TOOD csak ha POP/POP2nd
+    and is(ast.item.tbl, "stack_op")
+    and is(ast.item.key, "stack_op")
 end
 
 function is_push_tbl_at_with_const_params(ast)
@@ -82,7 +90,8 @@ function match(matchers, ast, start)
 end
 
 function Optimizer:log_ast(node)
-  self:log("AST: " .. node.name)
+  --require("tests/json")
+  --self:log("AST: " .. to_json_str(node))
 end
 
 function Optimizer:log(txt)
