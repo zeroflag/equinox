@@ -18,8 +18,10 @@ function is_push_id(ast)
   return is(ast, "push") and is(ast.item, "identifier")
 end
 
-function is_push_const(ast) -- or tbl at ? TODO
-  return is_push_id(ast) or is_push_lit(ast)
+function is_push_const(ast)
+  return is_push_id(ast)
+    or is_push_lit(ast)
+    or is_push_tbl_at_with_const_params(ast)
 end
 
 function not_push_const(ast)
@@ -36,6 +38,13 @@ end
 
 function is_tbl_at(ast)
   return is(ast, "push") and is(ast.item, "table_at")
+end
+
+function is_push_tbl_at_with_const_params(ast)
+  return is(ast, "push")
+    and is(ast.item, "table_at")
+    and (is(ast.item.tbl, "identifier") or is(ast.item.tbl, "literal"))
+    and (is(ast.item.key, "identifier") or is(ast.item.key, "literal"))
 end
 
 function is_tbl_put(ast)

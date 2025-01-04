@@ -151,6 +151,8 @@ function compiler.compile(self, text)
     item = self.parser:next_item()
   end
   self.ast = self.optimizer:optimize_ast(self.ast)
+  -- TODO
+  self.ast = self.optimizer:optimize_ast(self.ast)
   return self:generate_code()
 end
 
