@@ -3,13 +3,27 @@ repl = require("repl")
 
 local equinox = {}
 
+function start_repl()
+  compiler:eval_file("lib.eqx")
+  repl.welcome(version.current)
+  repl.start()
+end
+
+function eval_files(files)
+  compiler:eval_file("lib.eqx")
+  for i, filename in ipairs(files) do
+    if log_result then
+      print("Loading " .. filename)
+    end
+    equinox.eval_file(filename, log_result)
+  end
+end
+
 function equinox.main()
   version = require("version/version")
   version.load()
-  compiler:eval_file("lib.eqx")
   if #arg < 1 then
-    repl.welcome(version.current)
-    repl.start()
+    start_repl()
   else
     local log_result = false
     local files = {}
@@ -18,16 +32,13 @@ function equinox.main()
         log_result = true
       elseif param == "-o0" or param == "-O0" then
         compiler.optimization = false
+      elseif param == "-o1" or param == "-O1" then
+        compiler.optimization = true
       else
         table.insert(files, param)
       end
     end
-    for i, filename in ipairs(files) do
-      if log_result then
-        print("Loading " .. filename)
-      end
-      equinox.eval_file(filename, log_result)
-    end
+    eval_files(files)
   end
 end
 

@@ -25,10 +25,15 @@ test:
 				echo " - $$file..."; \
 				$$luaver $$file || exit 1; \
 			done; \
-			echo "Running Equinox tests ..."; \
+			echo "Running Equinox tests with -o0 ..."; \
 			for file in $(TEST_EQX_FILES); do \
 				echo " - $$file..."; \
-				$$luaver $(EQUINOX) $$file || exit 1; \
+				$$luaver $(EQUINOX) -o0 $$file || exit 1; \
+			done; \
+			echo "Running Equinox tests with -o1 ..."; \
+			for file in $(TEST_EQX_FILES); do \
+				echo " - $$file..."; \
+				$$luaver $(EQUINOX) -o1 $$file || exit 1; \
 			done; \
 		fi; \
 	done
