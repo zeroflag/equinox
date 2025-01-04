@@ -358,7 +358,7 @@ local Optimizer = require("ast_optimizer")
 local ast = require("ast")
 local unpack = table.unpack or unpack
 
-local compiler = { parser = nil, output = nil, code_start = 1 }
+local compiler = { optimization = true, parser = nil, output = nil, code_start = 1 }
 
 function compiler.word(self)
   return self.parser:next_item().token
@@ -485,7 +485,9 @@ function compiler.compile(self, text)
     end
     item = self.parser:next_item()
   end
-  self.ast = self.optimizer:optimize_iteratively(self.ast)
+  if self.optimization then
+    self.ast = self.optimizer:optimize_iteratively(self.ast)
+  end
   return self:generate_code()
 end
 
@@ -1554,6 +1556,9 @@ function equinox.main()
         log_result = true
       else
         table.insert(files, param)
+      end
+      if param == "-o0" or param == "-O0" then
+        compiler.optimization = false
       end
     end
     for i, filename in ipairs(files) do

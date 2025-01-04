@@ -16,6 +16,8 @@ function equinox.main()
     for i, param in ipairs(arg) do
       if param == "-d" then
         log_result = true
+      elseif param == "-o0" or param == "-O0" then
+        compiler.optimization = false
       else
         table.insert(files, param)
       end
