@@ -485,7 +485,7 @@ function compiler.compile(self, text)
     end
     item = self.parser:next_item()
   end
-  self.ast = self.optimizer:optimize_ast(self.ast)
+  self.ast = self.optimizer:optimize_iteratively(self.ast)
   return self:generate_code()
 end
 
