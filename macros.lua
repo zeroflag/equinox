@@ -254,34 +254,28 @@ function macros._exit()
   return ast._return()
 end
 
--- TODO this might overwrite user defined i/j ?
-function macros._i()
-  return ast.push(ast.aux_op("tos"))
-end
-
--- TODO this might overwrite user defined i/j ?
-function macros._j()
-  return ast.push(ast.aux_op("tos2"))
-end
-
 function macros.unloop()
   return ast.aux_op("pop")
 end
 
+local do_loop_nesting = 0
+local do_loop_vars = {"i", "j", "k"}
+
 function macros._do(compiler)
-  local var = ast.gen_id("loop_var")
-  return ast.code_seq(
-    ast._for(
-      var, ast.pop(),
+  do_loop_nesting = do_loop_nesting + 1
+  local loop_var = do_loop_vars[((do_loop_nesting -1) % #do_loop_vars) +1]
+  -- TODO remove or maintain proper scoping
+  compiler:def_var(loop_var, loop_var)
+  return ast._for(
+      loop_var,
+      ast.pop(),
       ast.bin_op("-", ast.pop(), ast.literal("number", 1)),
-      nil),
-    ast.aux_push(ast.identifier(var)))
+      nil)
 end
 
 function macros._loop()
-  return ast.code_seq(
-    ast.aux_op("pop"), -- unloop i/j
-    ast.keyword("end"))
+  do_loop_nesting = do_loop_nesting - 1
+  return ast.keyword("end")
 end
 
 function macros.for_ipairs(compiler)

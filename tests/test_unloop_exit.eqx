@@ -4,24 +4,21 @@ adepth 0 =assert
 : exit-test 5 exit 6 ;
 exit-test 5 =assert
 
-: tst 10 0 do i 5 = if unloop exit then loop ;
+: tst 10 0 do i 5 = if i exit then loop ;
 
-tst
+tst 5 =assert
 adepth 0 =assert
 
 : tst2
   10 0 do
     10 0 do
       i 5 = j 5 = and if
-        unloop
-        unloop
-        exit
+        i j *
       then
     loop
   loop ;
 
-tst2
-adepth 0 =assert
+tst2 25 =assert
 
 depth 0 =assert
 adepth 0 =assert

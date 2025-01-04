@@ -16,5 +16,17 @@ loop
 10004 =assert 10003 =assert 10002 =assert 10001 =assert 10000 =assert
 42424242 =assert
 
+var sum
+0 -> sum
+5 0 do
+ 5 0 do
+   5 0 do
+     i j * k * sum + -> sum
+   loop
+ loop
+loop
+
+1000 sum =assert
+
 depth 0 =assert
 adepth 0 =assert
