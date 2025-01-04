@@ -1,7 +1,7 @@
 local Optimizer = {}
 
-function Optimizer.new()
-  local obj = {}
+function Optimizer.new(logging)
+  local obj = {logging = logging}
   setmetatable(obj, {__index = Optimizer})
   return obj
 end
@@ -78,13 +78,14 @@ function match(matchers, ast, start)
   return true
 end
 
-function log_ast(node)
-  require("tests/json")
-  print(to_json_str(node))
+function Optimizer:log_ast(node)
+  self:log("AST: " .. node.name)
 end
 
-function log(txt)
-  print("[OPTIMIZER] " .. txt)
+function Optimizer:log(txt)
+  if self.logging then
+    print("[OPTIMIZER] " .. txt)
+  end
 end
 
 function Optimizer:optimize_iteratively(ast)
@@ -92,7 +93,7 @@ function Optimizer:optimize_iteratively(ast)
   repeat
     ast, num_of_optimizations = self:optimize(ast)
     iterations = iterations + 1
-    log(string.format(
+    self:log(string.format(
           "Iteration: %d finished. Number of optimizations: %d",
           iterations, num_of_optimizations))
   until num_of_optimizations == 0
@@ -104,10 +105,10 @@ function Optimizer:optimize(ast)
   local result, i, num_matches = {}, 1, 0
   while i <= #ast do
     local node = ast[i]
-    -- log_ast(node)
+    self:log_ast(node)
     -- tbl const/var const/var put
     if match(tbl_put_inline_params, ast, i) then
-      log("inlining tbl put params")
+      self:log("inlining tbl put params")
       num_matches = num_matches + 1
       local tbl, key, val, op = ast[i], ast[i + 1], ast[i + 2], ast[i + 3]
       op.tbl = tbl.item
@@ -117,17 +118,16 @@ function Optimizer:optimize(ast)
       i = i + #tbl_put_inline_params
     -- tbl const/var at
     elseif match(tbl_at_inline_params, ast, i) then
-      log("inlining tbl at params")
+      self:log("inlining tbl at params")
       num_matches = num_matches + 1
       local tbl, idx, op = ast[i], ast[i + 1], ast[i + 2]
       op.item.tbl = tbl.item
       op.item.key = idx.item
       table.insert(result, op)
-      log_ast(op)
       i = i + #tbl_at_inline_params
     -- const/var const/var OP
     elseif match(binop_inline_params, ast, i) then
-      log("inlining binary operator params")
+      self:log("inlining binary operator params")
       num_matches = num_matches + 1
       local p1, p2, op = ast[i], ast[i + 1], ast[i + 2]
       op.item.p1 = p1.item
@@ -136,7 +136,7 @@ function Optimizer:optimize(ast)
       i = i + #binop_inline_params
     -- ? const/var OP
     elseif match(binop_inline_param_p2, ast, i) then
-      log("inlining binary operator's 2nd param")
+      self:log("inlining binary operator's 2nd param")
       num_matches = num_matches + 1
       local p1, p2, op = ast[i], ast[i + 1], ast[i + 2]
       op.item.p1.op = "pop" -- overwrite if it's pop2nd
@@ -146,7 +146,7 @@ function Optimizer:optimize(ast)
       i = i + #binop_inline_param_p2
     -- const/var OP
     elseif match(unop_inline_param, ast, i) then
-      log("inlining unary operator's param")
+      self:log("inlining unary operator's param")
       num_matches = num_matches + 1
       local p1, op = ast[i], ast[i + 1]
       op.item.p1 = p1.item
@@ -154,7 +154,7 @@ function Optimizer:optimize(ast)
       i = i + #unop_inline_param
     -- const/var -> VAR
     elseif match(assignment_inline_param, ast, i) then
-      log("inlining assignment operator's param")
+      self:log("inlining assignment operator's param")
       num_matches = num_matches + 1
       local p1, op = ast[i], ast[i + 1]
       op.exp = p1.item
@@ -162,7 +162,7 @@ function Optimizer:optimize(ast)
       i = i + #assignment_inline_param
     -- const/var IF
     elseif match(if_inline_cond, ast, i) then
-      log("inlining if condition")
+      self:log("inlining if condition")
       num_matches = num_matches + 1
       local p1, op = ast[i], ast[i + 1]
       local cond, _if = ast[i], ast[i + 1]
