@@ -107,7 +107,7 @@ function macros.table_size()
 end
 
 function macros.table_at()
-  return ast.table_at(ast.pop2nd(), ast.pop())
+  return ast.push(ast.table_at(ast.pop2nd(), ast.pop()))
 end
 
 function macros.table_put()

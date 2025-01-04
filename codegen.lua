@@ -89,7 +89,7 @@ function CodeGen.gen(self, ast)
   if "return" == ast.name then return "do return end" end
   if "table_new" == ast.name then return "stack:push({})" end
   if "table_at" == ast.name then
-    return string.format("stack:push(%s[%s])",
+    return string.format("%s[%s]",
                          self:gen(ast.tbl), self:gen(ast.key))
   end
   if "table_put" == ast.name then
