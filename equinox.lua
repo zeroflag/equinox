@@ -9,7 +9,7 @@ function start_repl()
   repl.start()
 end
 
-function eval_files(files)
+function eval_files(files, log_result)
   compiler:eval_file("lib.eqx")
   for i, filename in ipairs(files) do
     if log_result then
@@ -38,7 +38,7 @@ function equinox.main()
         table.insert(files, param)
       end
     end
-    eval_files(files)
+    eval_files(files, log_result)
   end
 end
 
