@@ -20,33 +20,33 @@ function is(ast, name)
   return ast.name == name
 end
 
-function lit_push(ast)
+function is_lit(ast)
   return is(ast, "push") and is(ast.item, "literal")
 end
 
-function id_push(ast)
+function is_id(ast)
   return is(ast, "push") and is(ast.item, "identifier")
 end
 
-function lit_or_id_push(ast)
-  return id_push(ast) or lit_push(ast)
+function is_lit_or_id(ast)
+  return is_id(ast) or is_lit(ast)
 end
 
-function binop_push(ast)
+function is_binop(ast)
   return is(ast, "push") and is(ast.item, "bin_op")
 end
 
-function unop_push(ast)
+function is_unop(ast)
   return is(ast, "push") and is(ast.item, "unary_op")
 end
 
-function assignment(ast)
+function is_assignment(ast)
   return is(ast, "assignment")
 end
 
-local binop = {lit_or_id_push, lit_or_id_push, binop_push}
-local unop = {lit_or_id_push, unop_push}
-local ass = {lit_or_id_push, assignment}
+local binop_inline_params = {is_lit_or_id, is_lit_or_id, is_binop}
+local unop_inline_param = {is_lit_or_id, is_unop}
+local assignment_inline_param = {is_lit_or_id, is_assignment}
 
 function match(matcher, ast, start)
   for i, m in ipairs(matcher) do
@@ -62,28 +62,22 @@ function Optimizer:optimize_ast(ast)
   local i = 1
   while i <= #ast do
     local node = ast[i]
-      require("tests/json")
-      print(node.name .. ": " .. to_json_str(node))
-    if match(binop, ast, i) then
-      local p1 = ast[i]
-      local p2 = ast[i + 1]
-      local push_bin = ast[i + 2]
-      push_bin.item.p1 = p1.item
-      push_bin.item.p2 = p2.item
-      table.insert(result, push_bin)
-      i = i + #binop
-    elseif match(unop, ast, i) then
-      local p1 = ast[i]
-      local push_un = ast[i + 1]
-      push_un.item.p1 = p1.item
-      table.insert(result, push_un)
-      i = i + #unop
-    elseif match(ass, ast, i) then
-      local p1 = ast[i]
-      local op = ast[i + 1]
+    if match(binop_inline_params, ast, i) then
+      local p1, p2, op = ast[i],  ast[i + 1], ast[i + 2]
+      op.item.p1 = p1.item
+      op.item.p2 = p2.item
+      table.insert(result, op)
+      i = i + #binop_inline_params
+    elseif match(unop_inline_param, ast, i) then
+      local p1, op = ast[i], ast[i + 1]
+      op.item.p1 = p1.item
+      table.insert(result, op)
+      i = i + #unop_inline_param
+    elseif match(assignment_inline_param, ast, i) then
+      local p1, op = ast[i], ast[i + 1]
       op.exp = p1.item
       table.insert(result, op)
-      i = i + #ass
+      i = i + #assignment_inline_param
     else
       table.insert(result, node)
       i = i + 1
