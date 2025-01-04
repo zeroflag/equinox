@@ -151,5 +151,11 @@ depth 0 =assert
 
 1 2 >a 3 a> - - 0 =assert
 
+10 20
+30 40 +
+70 =assert
+20 =assert
+10 =assert
+
 depth 0 =assert
 adepth 0 =assert

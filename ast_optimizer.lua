@@ -29,7 +29,10 @@ function not_push_const(ast)
 end
 
 function is_push_binop(ast)
-  return is(ast, "push") and is(ast.item, "bin_op")
+  return is(ast, "push")
+    and is(ast.item, "bin_op")
+    and is("stack_op", ast.item.p1.name)
+    and is("stack_op", ast.item.p2.name)
 end
 
 function is_push_unop(ast)
@@ -106,8 +109,14 @@ function Optimizer:optimize(ast)
   while i <= #ast do
     local node = ast[i]
     self:log_ast(node)
+    -- unpack codesequence
+    if "code_seq" == node.name then
+      for _, code in ipairs(node.code) do
+        table.insert(result, code)
+      end
+      i = i + 1
     -- tbl const/var const/var put
-    if match(tbl_put_inline_params, ast, i) then
+    elseif match(tbl_put_inline_params, ast, i) then
       self:log("inlining tbl put params")
       num_matches = num_matches + 1
       local tbl, key, val, op = ast[i], ast[i + 1], ast[i + 2], ast[i + 3]
@@ -135,11 +144,12 @@ function Optimizer:optimize(ast)
       table.insert(result, op)
       i = i + #binop_inline_params
     -- ? const/var OP
+    -- dup i /   ->   pop2nd pop /
     elseif match(binop_inline_param_p2, ast, i) then
       self:log("inlining binary operator's 2nd param")
       num_matches = num_matches + 1
       local p1, p2, op = ast[i], ast[i + 1], ast[i + 2]
-      op.item.p1.op = "pop" -- overwrite if it's pop2nd
+      if op.item.p1.op == "pop2nd" then op.item.p1.op = "pop" end
       op.item.p2 = p2.item
       table.insert(result, p1)
       table.insert(result, op)
