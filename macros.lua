@@ -67,19 +67,19 @@ function macros.neq()
 end
 
 function macros.lt()
-  return ast.push(ast.bin_op(">", ast.pop(), ast.pop()))
+  return ast.push(ast.bin_op(">", ast.pop2nd(), ast.pop()))
 end
 
 function macros.lte()
-  return ast.push(ast.bin_op(">=", ast.pop(), ast.pop()))
+  return ast.push(ast.bin_op(">=", ast.pop2nd(), ast.pop()))
 end
 
 function macros.gt()
-  return ast.push(ast.bin_op("<", ast.pop(), ast.pop()))
+  return ast.push(ast.bin_op("<", ast.pop2nd(), ast.pop()))
 end
 
 function macros.gte()
-  return ast.push(ast.bin_op("<=", ast.pop(), ast.pop()))
+  return ast.push(ast.bin_op("<=", ast.pop2nd(), ast.pop()))
 end
 
 function macros._not()

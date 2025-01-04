@@ -354,6 +354,7 @@ local Parser = require("parser")
 local Output = require("output")
 local interop = require("interop")
 local CodeGen = require("codegen")
+local Optimizer = require("ast_optimizer")
 local ast = require("ast")
 local unpack = table.unpack or unpack
 
@@ -458,6 +459,7 @@ function compiler.init(self, text)
   self.parser = Parser.new(text, dict)
   self.output = Output.new()
   self.codegen = CodeGen.new()
+  self.optimizer = Optimizer.new()
   self.output:append("local stack = require(\"stack\")")
   self.output:new_line()
   self.output:append("local aux = require(\"aux\")")
@@ -483,12 +485,8 @@ function compiler.compile(self, text)
     end
     item = self.parser:next_item()
   end
-  self:optimize(self.ast)
+  self.ast = self.optimizer:optimize_ast(self.ast)
   return self:generate_code()
-end
-
-function compiler.optimize(ast)
-  -- TODO
 end
 
 function compiler.generate_code(self)
@@ -585,10 +583,10 @@ dict.def_macro(".", "macros.dot")
 dict.def_macro("cr", "macros.cr")
 dict.def_macro("=", "macros.eq")
 dict.def_macro("!=", "macros.neq")
-dict.def_macro("<", "macros.lt")
-dict.def_macro("<=", "macros.lte")
-dict.def_macro(">", "macros.gt")
-dict.def_macro(">=", "macros.gte")
+dict.def_macro(">", "macros.lt")
+dict.def_macro(">=", "macros.lte")
+dict.def_macro("<", "macros.gt")
+dict.def_macro("<=", "macros.gte")
 dict.def_macro("swap", "macros.swap")
 dict.def_macro("over", "macros.over")
 dict.def_macro("rot", "macros.rot")
@@ -786,19 +784,19 @@ function macros.neq()
 end
 
 function macros.lt()
-  return ast.push(ast.bin_op(">", ast.pop(), ast.pop()))
+  return ast.push(ast.bin_op(">", ast.pop2nd(), ast.pop()))
 end
 
 function macros.lte()
-  return ast.push(ast.bin_op(">=", ast.pop(), ast.pop()))
+  return ast.push(ast.bin_op(">=", ast.pop2nd(), ast.pop()))
 end
 
 function macros.gt()
-  return ast.push(ast.bin_op("<", ast.pop(), ast.pop()))
+  return ast.push(ast.bin_op("<", ast.pop2nd(), ast.pop()))
 end
 
 function macros.gte()
-  return ast.push(ast.bin_op("<=", ast.pop(), ast.pop()))
+  return ast.push(ast.bin_op("<=", ast.pop2nd(), ast.pop()))
 end
 
 function macros._not()

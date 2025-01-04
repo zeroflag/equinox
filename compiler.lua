@@ -19,6 +19,7 @@ local Parser = require("parser")
 local Output = require("output")
 local interop = require("interop")
 local CodeGen = require("codegen")
+local Optimizer = require("ast_optimizer")
 local ast = require("ast")
 local unpack = table.unpack or unpack
 
@@ -123,6 +124,7 @@ function compiler.init(self, text)
   self.parser = Parser.new(text, dict)
   self.output = Output.new()
   self.codegen = CodeGen.new()
+  self.optimizer = Optimizer.new()
   self.output:append("local stack = require(\"stack\")")
   self.output:new_line()
   self.output:append("local aux = require(\"aux\")")
@@ -148,12 +150,8 @@ function compiler.compile(self, text)
     end
     item = self.parser:next_item()
   end
-  self:optimize(self.ast)
+  self.ast = self.optimizer:optimize_ast(self.ast)
   return self:generate_code()
-end
-
-function compiler.optimize(ast)
-  -- TODO
 end
 
 function compiler.generate_code(self)
