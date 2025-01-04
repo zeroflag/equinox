@@ -10,27 +10,27 @@ function is(ast, name)
   return ast.name == name
 end
 
-function is_lit(ast)
+function is_push_lit(ast)
   return is(ast, "push") and is(ast.item, "literal")
 end
 
-function is_id(ast)
+function is_push_id(ast)
   return is(ast, "push") and is(ast.item, "identifier")
 end
 
-function is_lit_or_id(ast) -- or tbl at ? TODO
-  return is_id(ast) or is_lit(ast)
+function is_push_const(ast) -- or tbl at ? TODO
+  return is_push_id(ast) or is_push_lit(ast)
 end
 
-function not_lit_not_id(ast)
-  return not is_lit_or_id(ast)
+function not_push_const(ast)
+  return not is_push_const(ast)
 end
 
-function is_binop(ast)
+function is_push_binop(ast)
   return is(ast, "push") and is(ast.item, "bin_op")
 end
 
-function is_unop(ast)
+function is_push_unop(ast)
   return is(ast, "push") and is(ast.item, "unary_op")
 end
 
@@ -50,13 +50,13 @@ function is_if(ast)
   return is(ast, "if")
 end
 
-local tbl_at_inline_params = {is_lit_or_id, is_lit_or_id, is_tbl_at}
-local tbl_put_inline_params = {is_lit_or_id, is_lit_or_id, is_lit_or_id, is_tbl_put}
-local binop_inline_params = {is_lit_or_id, is_lit_or_id, is_binop}
-local binop_inline_param_p2 = {not_lit_not_id, is_lit_or_id, is_binop}
-local unop_inline_param = {is_lit_or_id, is_unop}
-local assignment_inline_param = {is_lit_or_id, is_assignment}
-local if_inline_cond = {is_lit_or_id, is_if}
+local tbl_at_inline_params = {is_push_const, is_push_const, is_tbl_at}
+local tbl_put_inline_params = {is_push_const, is_push_const, is_push_const, is_tbl_put}
+local binop_inline_params = {is_push_const, is_push_const, is_push_binop}
+local binop_inline_param_p2 = {not_push_const , is_push_const, is_push_binop}
+local unop_inline_param = {is_push_const, is_push_unop}
+local assignment_inline_param = {is_push_const, is_assignment}
+local if_inline_cond = {is_push_const, is_if}
 
 function match(matchers, ast, start)
   for i, matcher in ipairs(matchers) do
