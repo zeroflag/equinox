@@ -984,6 +984,7 @@ function macros._do(compiler)
 end
 
 function macros._loop()
+  -- TODO detect incorrect nesting
   do_loop_nesting = do_loop_nesting - 1
   return ast.keyword("end")
 end

@@ -18,7 +18,7 @@ function is_id(ast)
   return is(ast, "push") and is(ast.item, "identifier")
 end
 
-function is_lit_or_id(ast)
+function is_lit_or_id(ast) -- or tbl at ? TODO
   return is_id(ast) or is_lit(ast)
 end
 
@@ -69,11 +69,17 @@ function match(matchers, ast, start)
   return true
 end
 
+function log(node)
+  require("tests/json")
+  print(to_json_str(node))
+end
+
 function Optimizer:optimize_ast(ast)
   local result = {}
   local i = 1
   while i <= #ast do
     local node = ast[i]
+    -- log(node)
     -- tbl const/var const/var put
     if match(tbl_put_inline_params, ast, i) then
       local tbl, key, val, op = ast[i], ast[i + 1], ast[i + 2], ast[i + 3]
