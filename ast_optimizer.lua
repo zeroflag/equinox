@@ -40,8 +40,13 @@ function unop_push(ast)
   return is(ast, "push") and is(ast.item, "unary_op")
 end
 
+function assignment(ast)
+  return is(ast, "assignment")
+end
+
 local binop = {lit_or_id_push, lit_or_id_push, binop_push}
 local unop = {lit_or_id_push, unop_push}
+local ass = {lit_or_id_push, assignment}
 
 function match(matcher, ast, start)
   for i, m in ipairs(matcher) do
@@ -73,6 +78,12 @@ function Optimizer:optimize_ast(ast)
       push_un.item.p1 = p1.item
       table.insert(result, push_un)
       i = i + #unop
+    elseif match(ass, ast, i) then
+      local p1 = ast[i]
+      local op = ast[i + 1]
+      op.exp = p1.item
+      table.insert(result, op)
+      i = i + #ass
     else
       table.insert(result, node)
       i = i + 1
