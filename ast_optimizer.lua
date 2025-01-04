@@ -32,23 +32,23 @@ function is_push_binop(ast)
   return is(ast, "push")
     and is(ast.item, "bin_op")
   -- TOOD csak ha POP/POP2nd
-    and is(ast.item.p1, "stack_op")
-    and is(ast.item.p2, "stack_op")
+    and is(ast.item.p1, "stack_access")
+    and is(ast.item.p2, "stack_access")
 end
 
 function is_push_unop(ast)
   return is(ast, "push")
     and is(ast.item, "unary_op")
   -- TOOD csak ha POP/POP2nd
-    and is(ast.item.p1, "stack_op")
+    and is(ast.item.p1, "stack_access")
 end
 
 function is_tbl_at(ast)
   return is(ast, "push")
     and is(ast.item, "table_at")
   -- TOOD csak ha POP/POP2nd
-    and is(ast.item.tbl, "stack_op")
-    and is(ast.item.key, "stack_op")
+    and is(ast.item.tbl, "stack_access")
+    and is(ast.item.key, "stack_access")
 end
 
 function is_push_tbl_at_with_const_params(ast)
@@ -60,17 +60,16 @@ end
 
 function is_tbl_put(ast)
   return is(ast, "table_put") -- no push here
-    and is(ast.tbl, "stack_op") -- TODO pop/popX
-    and is(ast.key, "stack_op")
+    and is(ast.tbl, "stack_access")
+    and is(ast.key, "stack_access")
 end
 
 function is_assignment(ast)
-  return is(ast, "assignment")
-    and is(ast.exp, "stack_op") -- TODO pop/popn
+  return is(ast, "assignment") and is(ast.exp, "stack_access")
 end
 
 function is_if(ast)
-  return is(ast, "if") and is(ast.cond, "stack_op") -- TODO pop/popx
+  return is(ast, "if") and is(ast.cond, "stack_access")
 end
 
 local tbl_at_inline_params = {is_push_const, is_push_const, is_tbl_at}

@@ -7,7 +7,7 @@ function CodeGen.new()
 end
 
 function CodeGen:gen(ast)
-  if "stack_op" == ast.name then
+  if "stack_op" == ast.name or "stack_access" == ast.name then
     return "stack:" .. ast.op .. "()"
   end
   if "aux_op" == ast.name then
