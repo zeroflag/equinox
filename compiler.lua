@@ -23,7 +23,7 @@ local Optimizer = require("ast_optimizer")
 local ast = require("ast")
 local unpack = table.unpack or unpack
 
-local compiler = { optimization = true, parser = nil, output = nil, code_start = 1 }
+local compiler = { optimization = true, log_opt = false, parser = nil, output = nil, code_start = 1 }
 
 function compiler.word(self)
   return self.parser:next_item().token
@@ -124,7 +124,7 @@ function compiler.init(self, text)
   self.parser = Parser.new(text, dict)
   self.output = Output.new()
   self.codegen = CodeGen.new()
-  self.optimizer = Optimizer.new(false)
+  self.optimizer = Optimizer.new(self.log_opt)
   self.output:append("local stack = require(\"stack\")")
   self.output:new_line()
   self.output:append("local aux = require(\"aux\")")

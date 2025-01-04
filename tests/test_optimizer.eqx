@@ -1,0 +1,58 @@
+depth 0 =assert
+adepth 0 =assert
+9999
+
+"***** optimization tests *****" . cr
+
+\ assignment param inline
+var c 5 -> c
+var d 2 -> d
+var verus true -> verus
+var tbl [ "x" 1 ] -> tbl
+
+\ bin op inline [const-const]
+50 30 + 80  =assert
+20 15 -  5  =assert
+
+\ bin op inline [const var]
+30  c + 35  =assert
+20  c - 15  =assert
+
+\ bin op inline [var const]
+c 30 + 35  =assert
+c  2 -  3  =assert
+
+\ bin op inline [var var]
+c d + 7   =assert
+c d - 3   =assert
+
+\ bin op inline 2nd param
+10 dup 7 - 3 =assert
+10 =assert
+
+\ unary op inline
+true
+false not assert-true
+verus not assert-false
+assert-true
+
+\ if condition inline
+false
+true if "yes" then "yes" =assert
+false if "no" else "yes" then "yes" =assert
+assert-false
+
+\ TODO opti
+\ 1 2 < if "yes" then "yes" =assert
+
+\ inline tbl at param
+tbl 1 at "x" =assert
+
+\ inline tbl put params
+tbl 1 "y" put
+tbl 1 at "y" =assert
+
+
+9999 =assert
+depth 0 =assert
+adepth 0 =assert

@@ -30,10 +30,12 @@ function equinox.main()
     for i, param in ipairs(arg) do
       if param == "-d" then
         log_result = true
-      elseif param == "-o0" or param == "-O0" then
+      elseif param == "-o0" then
         compiler.optimization = false
-      elseif param == "-o1" or param == "-O1" then
+      elseif param == "-o1" then
         compiler.optimization = true
+      elseif param == "-od" then
+        compiler.log_opt = true
       else
         table.insert(files, param)
       end

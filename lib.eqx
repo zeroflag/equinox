@@ -26,4 +26,3 @@ lua-alias: table.remove!2 remove
     2 / 0 do
       dup >a -rot put a>
     loop ;
-

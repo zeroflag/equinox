@@ -99,7 +99,7 @@ end
 
 function Optimizer:log(txt)
   if self.logging then
-    print("[OPTIMIZER] " .. txt)
+    print("[OPTI] " .. txt)
   end
 end
 
