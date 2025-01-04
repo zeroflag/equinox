@@ -31,7 +31,6 @@ end
 function is_push_binop(ast)
   return is(ast, "push")
     and is(ast.item, "bin_op")
-  -- TOOD csak ha POP/POP2nd
     and is(ast.item.p1, "stack_access")
     and is(ast.item.p2, "stack_access")
 end
@@ -39,14 +38,12 @@ end
 function is_push_unop(ast)
   return is(ast, "push")
     and is(ast.item, "unary_op")
-  -- TOOD csak ha POP/POP2nd
     and is(ast.item.p1, "stack_access")
 end
 
 function is_tbl_at(ast)
   return is(ast, "push")
     and is(ast.item, "table_at")
-  -- TOOD csak ha POP/POP2nd
     and is(ast.item.tbl, "stack_access")
     and is(ast.item.key, "stack_access")
 end
