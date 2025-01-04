@@ -2,8 +2,6 @@ depth 0 =assert
 adepth 0 =assert
 9999
 
-"***** optimization tests *****" . cr
-
 \ assignment param inline
 var c 5 -> c
 var d 2 -> d

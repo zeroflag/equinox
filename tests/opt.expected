@@ -1,0 +1,29 @@
+[OPTI] inlining binary operator's 2nd param
+[OPTI] inlining binary operator's 2nd param
+[OPTI] inlining binary operator's 2nd param
+[OPTI] inlining binary operator's 2nd param
+[OPTI] Iteration: 1 finished. Number of optimizations: 4
+[OPTI] inlining binary operator's 2nd param
+[OPTI] Iteration: 2 finished. Number of optimizations: 1
+[OPTI] Iteration: 3 finished. Number of optimizations: 0
+[OPTI] inlining assignment operator's param
+[OPTI] inlining assignment operator's param
+[OPTI] inlining assignment operator's param
+[OPTI] inlining binary operator params
+[OPTI] inlining binary operator params
+[OPTI] inlining binary operator params
+[OPTI] inlining binary operator params
+[OPTI] inlining binary operator params
+[OPTI] inlining binary operator params
+[OPTI] inlining binary operator params
+[OPTI] inlining binary operator params
+[OPTI] inlining binary operator's 2nd param
+[OPTI] inlining unary operator's param
+[OPTI] inlining unary operator's param
+[OPTI] inlining if condition
+[OPTI] inlining if condition
+[OPTI] inlining tbl at params
+[OPTI] inlining tbl put params
+[OPTI] inlining tbl at params
+[OPTI] Iteration: 1 finished. Number of optimizations: 19
+[OPTI] Iteration: 2 finished. Number of optimizations: 0

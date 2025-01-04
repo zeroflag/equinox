@@ -35,6 +35,9 @@ test:
 				echo " - $$file..."; \
 				$$luaver $(EQUINOX) -o1 $$file || exit 1; \
 			done; \
+			echo "Running optimizer tests"; \
+			$$luaver $(EQUINOX) -od "tests/test_optimizer.eqx" > "tests/opt.out" || exit 1; \
+			diff "tests/opt.out" "tests/opt.expected" || exit 1; \
 		fi; \
 	done
 	@echo "$(GREEN)All tests passed!$(NC)"
