@@ -10,27 +10,30 @@ local messages = {
   "The Prime Directive: Preserve Stack Integrity at All Costs.",
   "Engage warp speed and may your stack never overflow.",
   "Welcome aboard Commander. The stack is ready for your orders.",
-  "Our mission is to explore new words and to seek out new stack operations.",
+  "Our mission is to explore new words and seek out new stack operations.",
   "Welcome, Officer. May your debugging skills be as sharp as a phaser.",
-  "Our mission is to push (and pop) the boundaries of programming.",
-  "Captain's log: In the Delta Quadrant every stack operation is a new discovery.",
+  "Your mission is to PUSH the boundaries of programming.",
+  "In the Delta Quadrant every stack operation is a new discovery.",
   "One wrong stack move and your program could warp into an infinite loop.",
   "Take responsibility for your code as errors will affect the entire fleet.",
   "Picard's programming tip: Complexity can be a form of the enemy.",
-  "Spocks's programming tip: Logic is the foundation of all good code.",
-  "Spocks's programming tip: Do not let emotion cloud your judgment in debugging.",
+  "Spock's programming tip: Logic is the foundation of all good code.",
+  "Spock's programming tip: Do not let emotion cloud your debugging.",
   "Worf's programming tip: A true programmer fights for correctness.",
   "Worf's programming tip: When facing a bug, fire your phasers at full power.",
   "One misplaced DROP can send your code into warp core breach.",
-  "To reach warp speed, the code needs to be optimized for maximum efficiency.",
+  "To reach warp speed, the code must be optimized for maximum efficiency.",
   "Working in Forth sometimes feels like working in a Jeffries tube.",
-  "A balanced stack is a stable warp core. Keep it well protected",
+  "A balanced stack is a stable warp core. Keep it well protected.",
+  "All systems are stable, commander. Stack integrity is 100%.",
+  "Captain, the stack is clear and ready for warp.",
+  "Deflector shields holding steady captain, the stack is well protected."
 }
 
 math.randomseed(os.time())
 
 function repl.welcome(version)
-  print("Equinox Forth REPL (" .. _VERSION .. ")")
+  print("Equinox Forth Console (" .. _VERSION .. ") @ Delta Quadrant.")
   print(messages[math.random(1, #messages)])
   print("\27[1;96m")
   print(string.format([[
