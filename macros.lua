@@ -254,10 +254,6 @@ function macros._exit()
   return ast._return()
 end
 
-function macros.unloop()
-  return ast.aux_op("pop")
-end
-
 local do_loop_nesting = 0
 local do_loop_vars = {"i", "j", "k"}
 

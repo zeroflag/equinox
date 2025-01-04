@@ -624,7 +624,6 @@ dict.def_macro("endof", "macros._endof")
 dict.def_macro("endcase", "macros._endcase")
 dict.def_macro("do", "macros._do")
 dict.def_macro("loop", "macros._loop")
-dict.def_macro("unloop", "macros.unloop")
 dict.def_macro("ipairs:", "macros.for_ipairs")
 dict.def_macro("pairs:", "macros.for_pairs")
 dict.def_macro("to:", "macros._to")
@@ -967,10 +966,6 @@ end
 
 function macros._exit()
   return ast._return()
-end
-
-function macros.unloop()
-  return ast.aux_op("pop")
 end
 
 local do_loop_nesting = 0
