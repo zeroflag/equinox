@@ -3,6 +3,13 @@ local _ENV = _ENV
 package.preload[ "ast" ] = function( ... ) local arg = _G.arg;
 local ast = {}
 
+local id_counter = 1
+
+function ast.gen_id(prefix)
+  id_counter = id_counter + 1
+  return prefix .. id_counter
+end
+
 function ast.func_header(func_name, arity, void)
   return {
     name = "func_header",
@@ -348,6 +355,7 @@ local Output = require("output")
 local interop = require("interop")
 local CodeGen = require("codegen")
 local ast = require("ast")
+local unpack = table.unpack or unpack
 
 local compiler = { parser = nil, output = nil, code_start = 1 }
 
@@ -376,13 +384,15 @@ function compiler.lua_call(self, name, arity, vararg, void)
   local params = {}
   local stmts = {}
   if arity > 0 then
-    for i = 1, arity do -- TODO gen name
-      table.insert(params, ast.identifier("__p" .. i))
+    for i = 1, arity do
+      table.insert(params,
+        ast.identifier(ast.gen_id("__p")))
+    end
+    for i = arity, 1, -1 do
       table.insert(stmts,
-        ast.init_local("__p" .. (arity -i +1), ast.pop()))
+        ast.init_local(params[i].id, ast.pop()))
     end
   end
-  local unpack = table.unpack or unpack
   if void then
     table.insert(stmts, ast.func_call(name, unpack(params)))
   else
@@ -700,16 +710,7 @@ local aux = require("aux")
 local interop = require("interop")
 local ast = require("ast")
 
--- TODO remove all compiler params
-
 local macros = {}
-
-local id_counter = 1
-
-function gen_id(prefix)
-  id_counter = id_counter + 1
-  return prefix .. id_counter
-end
 
 function sanitize(str)
   str = str:gsub("-", "_mi_")
@@ -975,7 +976,7 @@ function macros.unloop()
 end
 
 function macros._do(compiler)
-  local var = gen_id("loop_var")
+  local var = ast.gen_id("loop_var")
   return ast.code_seq(
     ast._for(
       var, ast.pop(),

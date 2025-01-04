@@ -3,16 +3,7 @@ local aux = require("aux")
 local interop = require("interop")
 local ast = require("ast")
 
--- TODO remove all compiler params
-
 local macros = {}
-
-local id_counter = 1
-
-function gen_id(prefix)
-  id_counter = id_counter + 1
-  return prefix .. id_counter
-end
 
 function sanitize(str)
   str = str:gsub("-", "_mi_")
@@ -278,7 +269,7 @@ function macros.unloop()
 end
 
 function macros._do(compiler)
-  local var = gen_id("loop_var")
+  local var = ast.gen_id("loop_var")
   return ast.code_seq(
     ast._for(
       var, ast.pop(),

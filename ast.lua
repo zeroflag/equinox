@@ -1,5 +1,12 @@
 local ast = {}
 
+local id_counter = 1
+
+function ast.gen_id(prefix)
+  id_counter = id_counter + 1
+  return prefix .. id_counter
+end
+
 function ast.func_header(func_name, arity, void)
   return {
     name = "func_header",
