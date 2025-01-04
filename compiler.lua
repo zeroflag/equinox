@@ -53,7 +53,7 @@ function compiler.lua_call(self, name, arity, vararg, void)
       table.insert(params,
         ast.identifier(ast.gen_id("__p")))
     end
-    for i = arity, 1, -1 do
+    for i = arity, 1, -1 do -- reverse parameter order
       table.insert(stmts,
         ast.init_local(params[i].id, ast.pop()))
     end
@@ -113,11 +113,7 @@ end
 function compiler.exec_macro(self, word)
   local mod, fun = dict.find(word).lua_name:match("^(.-)%.(.+)$")
   if mod == "macros" and type(macros[fun]) == "function" then
-    local result = macros[fun](self)
-    if result then
-      self.output:append(self.codegen:gen(result))
-      self.output:new_line()
-    end
+    return macros[fun](self)
   else
     error("Unknown macro " .. word)
   end
@@ -131,6 +127,7 @@ function compiler.init(self, text)
   self.output:new_line()
   self.output:append("local aux = require(\"aux\")")
   self.output:new_line()
+  self.ast = {}
   self.code_start = self.output:size()
   dict.def_var("true", "true")
   dict.def_var("false", "false")
@@ -142,12 +139,22 @@ function compiler.compile(self, text)
   local item = self.parser:next_item()
   while item do
     if item.kind == "macro" then
-      self:exec_macro(item.token)
+      local result = self:exec_macro(item.token)
+      if result then
+        table.insert(self.ast, result)
+      end
     else
-      self.output:append(self.codegen:gen(self:compile_token(item)))
-      self.output:new_line()
+      table.insert(self.ast, self:compile_token(item))
     end
     item = self.parser:next_item()
+  end
+  return self:generate_code()
+end
+
+function compiler.generate_code(self)
+  for i, ast in ipairs(self.ast) do
+    self.output:append(self.codegen:gen(ast))
+    self.output:new_line()
   end
   return self.output
 end
