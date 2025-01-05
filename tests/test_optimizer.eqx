@@ -50,6 +50,10 @@ tbl 1 at "x" =assert
 tbl 1 "y" put
 tbl 1 at "y" =assert
 
+\ inline table at param2
+tbl
+dup 1 at "y" =assert
+tbl =assert
 
 9999 =assert
 depth 0 =assert

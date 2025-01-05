@@ -25,5 +25,6 @@
 [OPTI] inlining tbl at params
 [OPTI] inlining tbl put params
 [OPTI] inlining tbl at params
-[OPTI] Iteration: 1 finished. Number of optimizations: 19
+[OPTI] inlining tbl at 2nd param
+[OPTI] Iteration: 1 finished. Number of optimizations: 20
 [OPTI] Iteration: 2 finished. Number of optimizations: 0
