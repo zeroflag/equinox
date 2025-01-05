@@ -55,11 +55,8 @@ function is_push_binop(ast)
     and is(ast.item.p2, "stack_access")
 end
 
-function is_push_inlined_binop(ast)
-  return is(ast, "push")
-    and is(ast.item, "bin_op")
-    and is_const(ast.item.p1)
-    and is_const(ast.item.p2)
+function is_push_any_binop(ast)
+  return is(ast, "push") and is(ast.item, "bin_op")
 end
 
 function is_push_unop(ast)
@@ -68,10 +65,8 @@ function is_push_unop(ast)
     and is(ast.item.p1, "stack_access")
 end
 
-function is_push_inlined_unop(ast)
-  return is(ast, "push")
-    and is(ast.item, "unary_op")
-    and is_const(ast.item.p1)
+function is_push_any_unop(ast)
+  return is(ast, "push") and is(ast.item, "unary_op")
 end
 
 function is_tbl_at(ast)
@@ -300,8 +295,8 @@ return {
   IfCondInline:new(
     "if cond inline",
     {OR(is_push_const,
-        is_push_inlined_unop,
-        is_push_inlined_binop), is_if}),
+        is_push_any_unop,
+        is_push_any_binop), is_if}),
 
   InlineInitLocalConst:new(
     "inline init local const", -- only optimizes one parameter

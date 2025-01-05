@@ -1,12 +1,11 @@
 [OPTI] inlining binary operator's 2nd param
 [OPTI] inlining binary operator's 2nd param
 [OPTI] inlining binary operator's 2nd param
+[OPTI] inlining if condition
 [OPTI] inlining init local constant
 [OPTI] inlining binary operator's 2nd param
-[OPTI] Iteration: 1 finished. Number of optimizations: 5
-[OPTI] inlining binary operator's 2nd param
-[OPTI] Iteration: 2 finished. Number of optimizations: 1
-[OPTI] Iteration: 3 finished. Number of optimizations: 0
+[OPTI] Iteration: 1 finished. Number of optimizations: 6
+[OPTI] Iteration: 2 finished. Number of optimizations: 0
 [OPTI] inlining assignment operator's param
 [OPTI] inlining assignment operator's param
 [OPTI] inlining assignment operator's param
