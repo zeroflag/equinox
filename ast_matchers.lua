@@ -276,7 +276,7 @@ return {
         is_push_inlined_binop), is_if}),
 
   InlineInitLocalConst:new(
-    "inline init local const",
+    "inline init local const", -- only optimizes one parameter
     {is_push_const, is_init_local}),
 
 }
