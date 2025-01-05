@@ -22,10 +22,22 @@ function not_push_const(ast)
   return not is_push_const(ast)
 end
 
+function OR(f1, f2)
+  return function(ast)
+    return f1(ast) or f2(ast)
+  end
+end
+
+function AND(f1, f2)
+  return function(ast)
+    return f1(ast) and f2(ast)
+  end
+end
+
 function is_stack_op(op)
-  return (function(ast)
+  return function(ast)
     return is(ast, "stack_op") and ast.op == op
-  end)
+  end
 end
 
 function is_push_binop(ast)
@@ -108,6 +120,7 @@ IfCondInline = AstMatcher:new()
 AssignmentInline = AstMatcher:new()
 UnaryInline = AstMatcher:new()
 DupUnaryInline = AstMatcher:new()
+DupIfInline = AstMatcher:new()
 BinaryInline = AstMatcher:new()
 BinaryInlineP2 = AstMatcher:new()
 
@@ -165,8 +178,16 @@ function DupUnaryInline:optimize(ast, i, result)
   self:log("inlining dup before unary operator")
   local p1, op = ast[i], ast[i + 1]
   op.item.p1.op = "tos"
-  op.item.p1.name = "stack_op" -- replace stack_access to stack_os
+  op.item.p1.name = "stack_op" -- replace stack_access to stack_os, to prevent further inlining
   table.insert(result, op)
+end
+
+function DupIfInline:optimize(ast, i, result)
+  self:log("inlining dup before if")
+  local dup, _if = ast[i], ast[i + 1]
+  _if.cond.op = "tos"
+  _if.cond.name = "stack_op" -- replace stack_access to stack_os, to prevent further inlining
+  table.insert(result, _if)
 end
 
 function BinaryInline:optimize(ast, i, result)
@@ -218,10 +239,15 @@ return {
     "dup unary inline",
     {is_stack_op("dup"), is_push_unop}),
 
+  DupIfInline:new(
+    "dup unary inline",
+    {is_stack_op("dup"), is_if}),
+
   AssignmentInline:new(
     "assignment inline",
     {is_push_const, is_assignment}),
 
+  -- TODO inline binary with 2 constants or 1 unary with one constant
   IfCondInline:new(
     "if cond inline",
     {is_push_const, is_if}),
