@@ -20,26 +20,20 @@ function is_push_const(ast)
   return is(ast, "push") and is_const(ast.item)
 end
 
-function OR(f1, f2)
+function OR(...)
+  local fs = {...}
   return function(ast)
-    return f1(ast) or f2(ast)
-  end
-end
-
-function AND(f1, f2)
-  return function(ast)
-    return f1(ast) and f2(ast)
+    local result = false
+    for i, f in ipairs(fs) do
+      result = result or f(ast)
+    end
+    return result
   end
 end
 
 function NOT(f)
   return function(ast)
     return not f(ast)
-  end
-end
-function AND(f1, f2)
-  return function(ast)
-    return f1(ast) and f2(ast)
   end
 end
 
@@ -67,6 +61,12 @@ function is_push_unop(ast)
   return is(ast, "push")
     and is(ast.item, "unary_op")
     and is(ast.item.p1, "stack_access")
+end
+
+function is_push_inlined_unop(ast)
+  return is(ast, "push")
+    and is(ast.item, "unary_op")
+    and is_const(ast.item.p1)
 end
 
 function is_tbl_at(ast)
@@ -259,5 +259,6 @@ return {
   IfCondInline:new(
     "if cond inline",
     {OR(is_push_const,
+        is_push_inlined_unop,
         is_push_inlined_binop), is_if}),
 }
