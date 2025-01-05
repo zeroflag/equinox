@@ -48,7 +48,7 @@ version:
 
 bundle:
 	@echo "Creating $(BUNDLE)"
-	$(AMALG) -s $(EQUINOX) compiler codegen ast_optimizer aux dict ast interop parser macros output stack_def repl stack -o $(BUNDLE)
+	$(AMALG) -s $(EQUINOX) compiler codegen ast_optimizer ast_matchers aux dict ast interop parser macros output stack_def repl stack -o $(BUNDLE)
 
 repl:
 	lua $(EQUINOX)
