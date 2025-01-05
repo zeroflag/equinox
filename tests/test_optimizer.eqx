@@ -44,6 +44,8 @@ assert-false
 1 2 < dup if "yes" then "yes" =assert assert-true
 tbl 1 at if "yes" then "yes" =assert
 
+verus not if "ok then" then
+
 \ inline tbl at param
 tbl 1 at "x" =assert
 
