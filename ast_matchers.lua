@@ -64,7 +64,7 @@ function is_if(ast)
 end
 
 function AstMatcher:new(name, parts)
-  local obj = {name = name, parts = parts}
+  local obj = {name = name, parts = parts, logging = false}
   setmetatable(obj, self)
   self.__index = self
   return obj
@@ -86,7 +86,9 @@ function AstMatcher:optimize(ast, i, result)
 end
 
 function AstMatcher:log(message)
-  print("[OPTI] " .. message)
+  if self.logging then
+    print("[OPTI] " .. message)
+  end
 end
 
 function AstMatcher:size()
@@ -94,6 +96,7 @@ function AstMatcher:size()
 end
 
 AtParamsInline = AstMatcher:new()
+AtParamsInlineP2 = AstMatcher:new()
 PutParamsInline = AstMatcher:new()
 IfCondInline = AstMatcher:new()
 AssignmentInline = AstMatcher:new()
@@ -101,20 +104,28 @@ UnaryInline = AstMatcher:new()
 BinaryInline = AstMatcher:new()
 BinaryInlineP2 = AstMatcher:new()
 
-function AtParamsInline:optimize(ast, i, result, logging)
-  if logging then
+function AtParamsInline:optimize(ast, i, result)
   self:log("inlining tbl at params")
-  end
   local tbl, idx, op = ast[i], ast[i + 1], ast[i + 2]
   op.item.tbl = tbl.item
   op.item.key = idx.item
   table.insert(result, op)
 end
 
-function PutParamsInline:optimize(ast, i, result, logging)
-  if logging then
-  self:log("inlining tbl put params")
+function AtParamsInlineP2:optimize(ast, i, result)
+  self:log("inlining tbl at 2nd param")
+  local tbl, idx, op = ast[i], ast[i + 1], ast[i + 2]
+  if op.item.tbl.name == "stack_access" and
+     op.item.tbl.op == "pop2nd" then
+    op.item.tbl.op = "pop"
   end
+  op.item.key = idx.item
+  table.insert(result, tbl)
+  table.insert(result, op)
+end
+
+function PutParamsInline:optimize(ast, i, result)
+  self:log("inlining tbl put params")
   local tbl, key, val, op = ast[i], ast[i + 1], ast[i + 2], ast[i + 3]
   op.tbl = tbl.item
   op.key = key.item
@@ -122,50 +133,42 @@ function PutParamsInline:optimize(ast, i, result, logging)
   table.insert(result, op)
 end
 
-function IfCondInline:optimize(ast, i, result, logging)
-  if logging then
+function IfCondInline:optimize(ast, i, result)
   self:log("inlining if condition")
-  end
-  local p1, op = ast[i], ast[i + 1]
   local cond, _if = ast[i], ast[i + 1]
   _if.cond = cond.item
   table.insert(result, _if)
 end
 
-function AssignmentInline:optimize(ast, i, result, logging)
-  if logging then
+function AssignmentInline:optimize(ast, i, result)
   self:log("inlining assignment operator's param")
-  end
   local p1, op = ast[i], ast[i + 1]
   op.exp = p1.item
   table.insert(result, op)
 end
 
-function UnaryInline:optimize(ast, i, result, logging)
-  if logging then
+function UnaryInline:optimize(ast, i, result)
   self:log("inlining unary operator's param")
-  end
   local p1, op = ast[i], ast[i + 1]
   op.item.p1 = p1.item
   table.insert(result, op)
 end
 
-function BinaryInline:optimize(ast, i, result, logging)
-  if logging then
+function BinaryInline:optimize(ast, i, result)
   self:log("inlining binary operator params")
-  end
   local p1, p2, op = ast[i], ast[i + 1], ast[i + 2]
   op.item.p1 = p1.item
   op.item.p2 = p2.item
   table.insert(result, op)
 end
 
-function BinaryInlineP2:optimize(ast, i, result, logging)
-  if logging then
+function BinaryInlineP2:optimize(ast, i, result)
   self:log("inlining binary operator's 2nd param")
-  end
   local p1, p2, op = ast[i], ast[i + 1], ast[i + 2]
-  if op.item.p1.op == "pop2nd" then op.item.p1.op = "pop" end
+  if op.item.p1.name == "stack_access" and
+     op.item.p1.op == "pop2nd" then
+    op.item.p1.op = "pop"
+  end
   op.item.p2 = p2.item
   table.insert(result, p1)
   table.insert(result, op)
@@ -179,6 +182,10 @@ return {
   AtParamsInline:new(
     "inline at params",
     {is_push_const, is_push_const, is_tbl_at}),
+
+  AtParamsInlineP2:new(
+    "inline at p2",
+    {not_push_const, is_push_const, is_tbl_at}),
 
   BinaryInline:new(
     "binary inline",

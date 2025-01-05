@@ -44,8 +44,9 @@ function Optimizer:optimize(ast)
     else
       local found = false
       for _, matcher in ipairs(matchers) do
-        if not found and matcher:matches(ast, i) then
-          matcher:optimize(ast, i, result, self.logging)
+        if matcher:matches(ast, i) then
+          matcher.logging = self.logging
+          matcher:optimize(ast, i, result)
           i = i + matcher:size()
           num_matches = num_matches + 1
           found = true
