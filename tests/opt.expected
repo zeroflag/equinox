@@ -22,11 +22,14 @@
 [OPTI] inlining unary operator's param
 [OPTI] inlining if condition
 [OPTI] inlining if condition
+[OPTI] inlining binary operator params
 [OPTI] inlining tbl at params
 [OPTI] inlining tbl put params
 [OPTI] inlining tbl at params
 [OPTI] inlining tbl at 2nd param
 [OPTI] inlining dup before unary operator
 [OPTI] inlining dup before if
-[OPTI] Iteration: 1 finished. Number of optimizations: 22
-[OPTI] Iteration: 2 finished. Number of optimizations: 0
+[OPTI] Iteration: 1 finished. Number of optimizations: 23
+[OPTI] inlining if condition
+[OPTI] Iteration: 2 finished. Number of optimizations: 1
+[OPTI] Iteration: 3 finished. Number of optimizations: 0

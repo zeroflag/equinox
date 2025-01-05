@@ -4,20 +4,20 @@ function is(ast, name) return ast.name == name end
 function is_literal(ast) return is(ast, "literal") end
 function is_identifier(ast) return is(ast, "identifier") end
 
+function is_literal_tbl_at(ast)
+  return is(ast, "table_at")
+    and (is_identifier(ast.tbl) or is_literal(ast.tbl))
+    and (is_identifier(ast.key) or is_literal(ast.key))
+end
+
 function is_const(ast)
   return is_identifier(ast)
     or is_literal(ast)
-    or is_tbl_at_with_const_params(ast)
+    or is_literal_tbl_at(ast)
 end
 
 function is_push_const(ast)
   return is(ast, "push") and is_const(ast.item)
-end
-
-function is_tbl_at_with_const_params(ast)
-  return is(ast, "table_at")
-    and (is_identifier(ast.tbl) or is_literal(ast.tbl))
-    and (is_identifier(ast.key) or is_literal(ast.key))
 end
 
 function OR(f1, f2)
@@ -256,7 +256,6 @@ return {
     "assignment inline",
     {is_push_const, is_assignment}),
 
-  -- TODO inlined unop
   IfCondInline:new(
     "if cond inline",
     {OR(is_push_const,

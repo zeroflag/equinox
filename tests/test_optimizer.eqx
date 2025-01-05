@@ -40,8 +40,7 @@ true if "yes" then "yes" =assert
 false if "no" else "yes" then "yes" =assert
 assert-false
 
-\ TODO opti
-\ 1 2 < if "yes" then "yes" =assert
+1 2 < if "yes" then "yes" =assert
 
 \ inline tbl at param
 tbl 1 at "x" =assert
