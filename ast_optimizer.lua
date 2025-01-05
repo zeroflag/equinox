@@ -20,6 +20,7 @@ end
 
 function Optimizer:optimize_iteratively(ast)
   local num_of_optimizations, iterations = 0, 0
+  ast = self:flatten(ast)
   repeat
     ast, num_of_optimizations = self:optimize(ast)
     iterations = iterations + 1
@@ -30,32 +31,38 @@ function Optimizer:optimize_iteratively(ast)
   return ast
 end
 
+function Optimizer:flatten(ast)
+  local result = {}
+  for _, node in ipairs(ast) do
+    if "code_seq" == node.name then
+      for _, code in ipairs(node.code) do
+        table.insert(result, code)
+      end
+    else
+      table.insert(result, node)
+    end
+  end
+  return result
+end
+
 function Optimizer:optimize(ast)
   local result, i, num_matches = {}, 1, 0
   while i <= #ast do
     local node = ast[i]
     self:log_ast(node)
-
-    if "code_seq" == node.name then
-      for _, code in ipairs(node.code) do
-        table.insert(result, code)
+    local found = false
+    for _, matcher in ipairs(matchers) do
+      if matcher:matches(ast, i) then
+        matcher.logging = self.logging
+        matcher:optimize(ast, i, result)
+        i = i + matcher:size()
+        num_matches = num_matches + 1
+        found = true
       end
+    end
+    if not found then
+      table.insert(result, node)
       i = i + 1
-    else
-      local found = false
-      for _, matcher in ipairs(matchers) do
-        if matcher:matches(ast, i) then
-          matcher.logging = self.logging
-          matcher:optimize(ast, i, result)
-          i = i + matcher:size()
-          num_matches = num_matches + 1
-          found = true
-        end
-      end
-      if not found then
-        table.insert(result, node)
-        i = i + 1
-      end
     end
   end
   return result, num_matches

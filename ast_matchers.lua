@@ -3,6 +3,7 @@ local AstMatcher = {}
 function is(ast, name) return ast.name == name end
 function is_literal(ast) return is(ast, "literal") end
 function is_identifier(ast) return is(ast, "identifier") end
+function is_stack_access(ast) return is(ast, "stack_access") end
 
 function is_literal_tbl_at(ast)
   return is(ast, "table_at")
@@ -41,6 +42,10 @@ function is_stack_op(op)
   return function(ast)
     return is(ast, "stack_op") and ast.op == op
   end
+end
+
+function is_init_local(ast)
+  return is(ast, "init_local") and is_stack_access(ast.val)
 end
 
 function is_push_binop(ast)
@@ -132,6 +137,7 @@ DupUnaryInline = AstMatcher:new()
 DupIfInline = AstMatcher:new()
 BinaryInline = AstMatcher:new()
 BinaryInlineP2 = AstMatcher:new()
+InlineInitLocalConst = AstMatcher:new()
 
 function AtParamsInline:optimize(ast, i, result)
   self:log("inlining tbl at params")
@@ -219,6 +225,13 @@ function BinaryInlineP2:optimize(ast, i, result)
   table.insert(result, op)
 end
 
+function InlineInitLocalConst:optimize(ast, i, result)
+  self:log("inlining init local constant")
+  local p1, init_local = ast[i], ast[i + 1]
+  init_local.val = p1.item
+  table.insert(result, init_local)
+end
+
 return {
   PutParamsInline:new(
     "inline put params ",
@@ -261,4 +274,10 @@ return {
     {OR(is_push_const,
         is_push_inlined_unop,
         is_push_inlined_binop), is_if}),
+
+--[[
+  InlineInitLocalConst:new(
+    "inline init local const",
+    {is_push_const, is_init_local}),
+]]
 }
