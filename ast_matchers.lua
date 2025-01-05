@@ -49,45 +49,42 @@ function is_init_local(ast)
 end
 
 function is_push_binop(ast)
-  return is(ast, "push")
-    and is(ast.item, "bin_op")
-    and is(ast.item.p1, "stack_access")
-    and is(ast.item.p2, "stack_access")
-end
-
-function is_push_any_binop(ast)
   return is(ast, "push") and is(ast.item, "bin_op")
 end
 
-function is_push_unop(ast)
-  return is(ast, "push")
-    and is(ast.item, "unary_op")
-    and is(ast.item.p1, "stack_access")
+function is_push_binop_pop(ast)
+  return is_push_binop(ast)
+    and is_stack_access(ast.item.p1)
+    and is_stack_access(ast.item.p2)
 end
 
-function is_push_any_unop(ast)
+function is_push_unop(ast)
   return is(ast, "push") and is(ast.item, "unary_op")
+end
+
+function is_push_unop_pop(ast)
+  return is_push_unop(ast) and is_stack_access(ast.item.p1)
 end
 
 function is_tbl_at(ast)
   return is(ast, "push")
     and is(ast.item, "table_at")
-    and is(ast.item.tbl, "stack_access")
-    and is(ast.item.key, "stack_access")
+    and is_stack_access(ast.item.tbl)
+    and is_stack_access(ast.item.key)
 end
 
 function is_tbl_put(ast)
   return is(ast, "table_put") -- no push here
-    and is(ast.tbl, "stack_access")
-    and is(ast.key, "stack_access")
+    and is_stack_access(ast.tbl)
+    and is_stack_access(ast.key)
 end
 
 function is_assignment(ast)
-  return is(ast, "assignment") and is(ast.exp, "stack_access")
+  return is(ast, "assignment") and is_stack_access(ast.exp)
 end
 
 function is_if(ast)
-  return is(ast, "if") and is(ast.cond, "stack_access")
+  return is(ast, "if") and is_stack_access(ast.cond)
 end
 
 function AstMatcher:new(name, parts)
@@ -148,7 +145,8 @@ function AtParamsInlineP2:optimize(ast, i, result)
   self:log("inlining tbl at 2nd param")
   local tbl, idx, op = ast[i], ast[i + 1], ast[i + 2]
   if op.item.tbl.name == "stack_access" and
-     op.item.tbl.op == "pop2nd" then
+     op.item.tbl.op == "pop2nd"
+  then
     op.item.tbl.op = "pop"
   end
   op.item.key = idx.item
@@ -262,27 +260,27 @@ return {
 
   BinaryInline:new(
     "binary inline",
-    {is_push_const, is_push_const, is_push_binop}),
+    {is_push_const, is_push_const, is_push_binop_pop}),
 
   BinaryInlineP2:new(
     "binary p2 inline",
-    {NOT(is_push_const), is_push_const, is_push_binop}),
+    {NOT(is_push_const), is_push_const, is_push_binop_pop}),
 
   UnaryInline:new(
     "unary inline",
-    {is_push_const, is_push_unop}),
+    {is_push_const, is_push_unop_pop}),
 
   DupUnaryInline:new(
     "dup unary inline",
-    {is_stack_op("dup"), is_push_unop}),
+    {is_stack_op("dup"), is_push_unop_pop}),
 
   DupDupBinaryInline:new(
     "dup unary inline",
-    {is_stack_op("dup"), is_stack_op("dup"), is_push_binop}),
+    {is_stack_op("dup"), is_stack_op("dup"), is_push_binop_pop}),
 
   DupBinaryInline:new(
     "dup unary inline",
-    {is_stack_op("dup"), is_push_binop}),
+    {is_stack_op("dup"), is_push_binop_pop}),
 
   DupIfInline:new(
     "dup unary inline",
@@ -295,8 +293,8 @@ return {
   IfCondInline:new(
     "if cond inline",
     {OR(is_push_const,
-        is_push_any_unop,
-        is_push_any_binop), is_if}),
+        is_push_unop,
+        is_push_binop), is_if}),
 
   InlineInitLocalConst:new(
     "inline init local const", -- only optimizes one parameter
