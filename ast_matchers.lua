@@ -1,17 +1,8 @@
 local AstMatcher = {}
 
-function is(ast, name)
-  return ast.name == name
-end
-
+function is(ast, name) return ast.name == name end
 function is_literal(ast) return is(ast, "literal") end
 function is_identifier(ast) return is(ast, "identifier") end
-
-function is_tbl_at_with_const_params(ast)
-  return is(ast, "table_at")
-    and (is_identifier(ast.tbl) or is_literal(ast.tbl))
-    and (is_identifier(ast.key) or is_literal(ast.key))
-end
 
 function is_const(ast)
   return is_identifier(ast)
@@ -23,8 +14,10 @@ function is_push_const(ast)
   return is(ast, "push") and is_const(ast.item)
 end
 
-function not_push_const(ast)
-  return not is_push_const(ast)
+function is_tbl_at_with_const_params(ast)
+  return is(ast, "table_at")
+    and (is_identifier(ast.tbl) or is_literal(ast.tbl))
+    and (is_identifier(ast.key) or is_literal(ast.key))
 end
 
 function OR(f1, f2)
@@ -33,6 +26,17 @@ function OR(f1, f2)
   end
 end
 
+function AND(f1, f2)
+  return function(ast)
+    return f1(ast) and f2(ast)
+  end
+end
+
+function NOT(f)
+  return function(ast)
+    return not f(ast)
+  end
+end
 function AND(f1, f2)
   return function(ast)
     return f1(ast) and f2(ast)
@@ -226,7 +230,7 @@ return {
 
   AtParamsInlineP2:new(
     "inline at p2",
-    {not_push_const, is_push_const, is_tbl_at}),
+    {NOT(is_push_const), is_push_const, is_tbl_at}),
 
   BinaryInline:new(
     "binary inline",
@@ -234,7 +238,7 @@ return {
 
   BinaryInlineP2:new(
     "binary p2 inline",
-    {not_push_const , is_push_const, is_push_binop}),
+    {NOT(is_push_const), is_push_const, is_push_binop}),
 
   UnaryInline:new(
     "unary inline",
