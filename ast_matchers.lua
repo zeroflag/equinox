@@ -134,6 +134,8 @@ IfCondInline = AstMatcher:new()
 AssignmentInline = AstMatcher:new()
 UnaryInline = AstMatcher:new()
 DupUnaryInline = AstMatcher:new()
+DupBinaryInline = AstMatcher:new()
+DupDupBinaryInline = AstMatcher:new()
 DupIfInline = AstMatcher:new()
 BinaryInline = AstMatcher:new()
 BinaryInlineP2 = AstMatcher:new()
@@ -194,6 +196,24 @@ function DupUnaryInline:optimize(ast, i, result)
   local p1, op = ast[i], ast[i + 1]
   op.item.p1.op = "tos"
   op.item.p1.name = "stack_op" -- replace stack_access to stack_os, to prevent further inlining
+  table.insert(result, op)
+end
+
+function DupBinaryInline:optimize(ast, i, result)
+  self:log("inlining dup before binary operator")
+  local p1, op = ast[i], ast[i + 1]
+  op.item.p1.op = "tos"
+  op.item.p1.name = "stack_op" -- replace stack_access to stack_os, to prevent further inlining
+  table.insert(result, op)
+end
+
+function DupDupBinaryInline:optimize(ast, i, result)
+  self:log("inlining dup dup before binary operator")
+  local p1, p2, op = ast[i], ast[i + 1], ast[i + 2]
+  op.item.p1.op = "tos"
+  op.item.p2.op = "tos"
+  op.item.p1.name = "stack_op" -- replace stack_access to stack_os, to prevent further inlining
+  op.item.p2.name = "stack_op" -- replace stack_access to stack_os, to prevent further inlining
   table.insert(result, op)
 end
 
@@ -260,6 +280,14 @@ return {
   DupUnaryInline:new(
     "dup unary inline",
     {is_stack_op("dup"), is_push_unop}),
+
+  DupDupBinaryInline:new(
+    "dup unary inline",
+    {is_stack_op("dup"), is_stack_op("dup"), is_push_binop}),
+
+  DupBinaryInline:new(
+    "dup unary inline",
+    {is_stack_op("dup"), is_push_binop}),
 
   DupIfInline:new(
     "dup unary inline",
