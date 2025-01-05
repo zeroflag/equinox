@@ -4,18 +4,19 @@ function is(ast, name)
   return ast.name == name
 end
 
-function is_literal(ast) return is("literal") end
-function is_identifier(ast) return is("identifier") end
+function is_literal(ast) return is(ast, "literal") end
+function is_identifier(ast) return is(ast, "identifier") end
+
 function is_const(ast)
   return is_identifier(ast) or is_literal(ast)
 end
 
 function is_push_lit(ast)
-  return is(ast, "push") and is(ast.item, "literal")
+  return is(ast, "push") and is_literal(ast.item)
 end
 
 function is_push_id(ast)
-  return is(ast, "push") and is(ast.item, "identifier")
+  return is(ast, "push") and is_identifier(ast.item)
 end
 
 function is_push_const(ast)
