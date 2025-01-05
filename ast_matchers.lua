@@ -275,9 +275,8 @@ return {
         is_push_inlined_unop,
         is_push_inlined_binop), is_if}),
 
---[[
   InlineInitLocalConst:new(
     "inline init local const",
     {is_push_const, is_init_local}),
-]]
+
 }
