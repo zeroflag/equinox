@@ -111,7 +111,7 @@ end
 
 function AstMatcher:log(message)
   if self.logging then
-    print("[OPTI] " .. message)
+    print("[OPTI] " .. self.name .. ": " .. message)
   end
 end
 
