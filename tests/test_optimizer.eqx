@@ -55,6 +55,11 @@ tbl
 dup 1 at "y" =assert
 tbl =assert
 
+\ inline dup before unary
+"abcd"
+dup size 4 =assert
+"abcd" =assert
+
 9999 =assert
 depth 0 =assert
 adepth 0 =assert

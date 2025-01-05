@@ -22,6 +22,12 @@ function not_push_const(ast)
   return not is_push_const(ast)
 end
 
+function is_stack_op(op)
+  return (function(ast)
+    return is(ast, "stack_op") and ast.op == op
+  end)
+end
+
 function is_push_binop(ast)
   return is(ast, "push")
     and is(ast.item, "bin_op")
@@ -101,6 +107,7 @@ PutParamsInline = AstMatcher:new()
 IfCondInline = AstMatcher:new()
 AssignmentInline = AstMatcher:new()
 UnaryInline = AstMatcher:new()
+DupUnaryInline = AstMatcher:new()
 BinaryInline = AstMatcher:new()
 BinaryInlineP2 = AstMatcher:new()
 
@@ -154,6 +161,14 @@ function UnaryInline:optimize(ast, i, result)
   table.insert(result, op)
 end
 
+function DupUnaryInline:optimize(ast, i, result)
+  self:log("inlining dup before unary operator")
+  local p1, op = ast[i], ast[i + 1]
+  op.item.p1.op = "tos"
+  op.item.p1.name = "stack_op" -- replace stack_access to stack_os
+  table.insert(result, op)
+end
+
 function BinaryInline:optimize(ast, i, result)
   self:log("inlining binary operator params")
   local p1, p2, op = ast[i], ast[i + 1], ast[i + 2]
@@ -198,6 +213,10 @@ return {
   UnaryInline:new(
     "unary inline",
     {is_push_const, is_push_unop}),
+
+  DupUnaryInline:new(
+    "dup unary inline",
+    {is_stack_op("dup"), is_push_unop}),
 
   AssignmentInline:new(
     "assignment inline",
