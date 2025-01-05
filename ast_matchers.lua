@@ -133,6 +133,10 @@ BinaryInline = AstMatcher:new()
 BinaryInlineP2 = AstMatcher:new()
 InlineInitLocalConst = AstMatcher:new()
 
+--[[
+ Inline table at parameters
+  1.)  t  4 at   =>   PUSH(t[4])
+]]--
 function AtParamsInline:optimize(ast, i, result)
   self:log("inlining tbl at params")
   local tbl, idx, op = ast[i], ast[i + 1], ast[i + 2]
@@ -141,6 +145,10 @@ function AtParamsInline:optimize(ast, i, result)
   table.insert(result, op)
 end
 
+--[[
+ Inline table at index parameter
+  1.)  ... 4 at   =>   PUSH(POP[4])
+]]--
 function AtParamsInlineP2:optimize(ast, i, result)
   self:log("inlining tbl at 2nd param")
   local tbl, idx, op = ast[i], ast[i + 1], ast[i + 2]
@@ -154,6 +162,10 @@ function AtParamsInlineP2:optimize(ast, i, result)
   table.insert(result, op)
 end
 
+--[[
+ Inline table put parameters
+  1.)  t 4 "abc" put   =>   t[4]="abc"
+]]--
 function PutParamsInline:optimize(ast, i, result)
   self:log("inlining tbl put params")
   local tbl, key, val, op = ast[i], ast[i + 1], ast[i + 2], ast[i + 3]
@@ -296,6 +308,9 @@ function BinaryInlineP2:optimize(ast, i, result)
   table.insert(result, op)
 end
 
+--[[
+  Used internally
+]]--
 function InlineInitLocalConst:optimize(ast, i, result)
   self:log("inlining init local constant")
   local p1, init_local = ast[i], ast[i + 1]
