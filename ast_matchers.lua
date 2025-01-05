@@ -7,22 +7,20 @@ end
 function is_literal(ast) return is(ast, "literal") end
 function is_identifier(ast) return is(ast, "identifier") end
 
+function is_tbl_at_with_const_params(ast)
+  return is(ast, "table_at")
+    and (is_identifier(ast.tbl) or is_literal(ast.tbl))
+    and (is_identifier(ast.key) or is_literal(ast.key))
+end
+
 function is_const(ast)
-  return is_identifier(ast) or is_literal(ast)
-end
-
-function is_push_lit(ast)
-  return is(ast, "push") and is_literal(ast.item)
-end
-
-function is_push_id(ast)
-  return is(ast, "push") and is_identifier(ast.item)
+  return is_identifier(ast)
+    or is_literal(ast)
+    or is_tbl_at_with_const_params(ast)
 end
 
 function is_push_const(ast)
-  return is_push_id(ast)
-    or is_push_lit(ast)
-    or is_push_tbl_at_with_const_params(ast)
+  return is(ast, "push") and is_const(ast.item)
 end
 
 function not_push_const(ast)
@@ -72,13 +70,6 @@ function is_tbl_at(ast)
     and is(ast.item, "table_at")
     and is(ast.item.tbl, "stack_access")
     and is(ast.item.key, "stack_access")
-end
-
-function is_push_tbl_at_with_const_params(ast)
-  return is(ast, "push")
-    and is(ast.item, "table_at")
-    and (is(ast.item.tbl, "identifier") or is(ast.item.tbl, "literal"))
-    and (is(ast.item.key, "identifier") or is(ast.item.key, "literal"))
 end
 
 function is_tbl_put(ast)

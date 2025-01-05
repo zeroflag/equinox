@@ -27,5 +27,6 @@
 [OPTI] inlining tbl at params
 [OPTI] inlining tbl at 2nd param
 [OPTI] inlining dup before unary operator
-[OPTI] Iteration: 1 finished. Number of optimizations: 21
+[OPTI] inlining dup before if
+[OPTI] Iteration: 1 finished. Number of optimizations: 22
 [OPTI] Iteration: 2 finished. Number of optimizations: 0

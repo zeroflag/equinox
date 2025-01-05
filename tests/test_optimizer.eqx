@@ -60,6 +60,12 @@ tbl =assert
 dup size 4 =assert
 "abcd" =assert
 
+\ inline dup before ip
+true
+dup if "yes" then
+"yes" =assert
+assert-true
+
 9999 =assert
 depth 0 =assert
 adepth 0 =assert
