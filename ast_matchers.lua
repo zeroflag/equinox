@@ -4,6 +4,12 @@ function is(ast, name)
   return ast.name == name
 end
 
+function is_literal(ast) return is("literal") end
+function is_identifier(ast) return is("identifier") end
+function is_const(ast)
+  return is_identifier(ast) or is_literal(ast)
+end
+
 function is_push_lit(ast)
   return is(ast, "push") and is(ast.item, "literal")
 end
@@ -45,6 +51,13 @@ function is_push_binop(ast)
     and is(ast.item, "bin_op")
     and is(ast.item.p1, "stack_access")
     and is(ast.item.p2, "stack_access")
+end
+
+function is_push_inlined_binop(ast)
+  return is(ast, "push")
+    and is(ast.item, "bin_op")
+    and is_const(ast.item.p1)
+    and is_const(ast.item.p2)
 end
 
 function is_push_unop(ast)
@@ -247,9 +260,9 @@ return {
     "assignment inline",
     {is_push_const, is_assignment}),
 
-  -- TODO inline binary with 2 constants or 1 unary with one constant
+  -- TODO inlined unop
   IfCondInline:new(
     "if cond inline",
-    {is_push_const, is_if}),
-
+    {OR(is_push_const,
+        is_push_inlined_binop), is_if}),
 }
