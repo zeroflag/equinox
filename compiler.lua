@@ -1,6 +1,5 @@
+-- TODO
 -- hyperstatic glob
--- optize output
--- i shadows user defined i in pairs:/ipairs:
 -- fix Lua's accidental global
 -- tab auto complete repl
 -- var with dash generates error

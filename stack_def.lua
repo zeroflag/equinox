@@ -20,10 +20,12 @@ function Stack:push_many(...)
 end
 
 function Stack:pop()
-  local item = table.remove(self.stack)
-  if not item then
+  local size = #self.stack
+  if size == 0 then
     error("Stack underflow: " .. self.name)
   end
+  local item = self.stack[size]
+  self.stack[size] = nil
   return item ~= NIL and item or nil
 end
 
