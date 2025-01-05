@@ -5,7 +5,7 @@
 
 [ 3 5 7 "apple" [ 4 5 ] "banana" ] size 6 =assert
 
-: make-table [ 99 7 [ 9 6 ] "orange" :grapes ] ;
+: make-table [ 99 7 [ 9 6 ] "orange" &grapes ] ;
 
 make-table size 5 =assert
 make-table 1 at 99 =assert
@@ -13,7 +13,7 @@ make-table 2 at 7 =assert
 make-table 3 at 1 at 9 =assert
 make-table 3 at 2 at 6 =assert
 make-table 4 at "orange" =assert
-make-table 5 at :grapes =assert
+make-table 5 at &grapes =assert
 
 var tbl
 [ 1 2 3 4 5 ] -> tbl
@@ -103,7 +103,7 @@ tbl 1 at "y" =assert
 tbl size 1 =assert
 
 \ key lookup with dot syntax
-{ :k1 42 :k2 "apple" } -> tbl
+{ &k1 42 &k2 "apple" } -> tbl
 tbl.k1 42 =assert
 tbl.k2 "apple" =assert
 
@@ -114,7 +114,7 @@ tbl.k1 15 =assert
 "orange" -> tbl.k2
 tbl.k2 "orange" =assert
 
-{ :k1 { :k2 { :k3 { :k4 42 } } } } -> tbl
+{ &k1 { &k2 { &k3 { &k4 42 } } } } -> tbl
 tbl.k1.k2.k3.k4 42 =assert
 
 [ "x" "y" ] -> tbl

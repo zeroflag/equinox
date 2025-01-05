@@ -1,14 +1,11 @@
 -- hyperstatic glob
 -- optize output
 -- i shadows user defined i in pairs:/ipairs:
--- symbol & instead of :
--- Stack as Macro
 -- fix Lua's accidental global
 -- tab auto complete repl
 -- var with dash generates error
 -- line numbers + errors
 -- a[i] syntax test
--- TOS optimiziation
 -- 14 -> var x syntax ?
 
 local stack = require("stack")

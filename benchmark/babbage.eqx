@@ -1,0 +1,16 @@
+: babbage
+  1
+  begin
+    1 +
+    dup dup *
+    1000000 %
+    269696 =
+  until ;
+
+os.clock/0
+1 500 to: i
+  babbage drop
+end
+os.clock/0 swap ( started ) - . cr
+
+babbage . cr

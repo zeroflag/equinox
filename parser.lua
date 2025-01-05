@@ -45,7 +45,7 @@ function Parser:next_item()
   if token == "" then
     return nil
   end
-  if token:match("^:.+") then kind = "symbol" end
+  if token:match("^&.+") then kind = "symbol" end
   return self:parse_word(token, kind)
 end
 

@@ -23,8 +23,8 @@ assert_table(
   parse('"test string"'))
 
 assert_table(
-  {{token = ":sym", kind = "literal", subtype = "symbol"}},
-  parse(':sym'))
+  {{token = "&sym", kind = "literal", subtype = "symbol"}},
+  parse('&sym'))
 
 assert_table(
   {{token = "math.min/2", kind = "lua_func_call", name = "math.min", arity = 2, vararg = false, void = false}},
