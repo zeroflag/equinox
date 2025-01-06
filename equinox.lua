@@ -5,6 +5,37 @@ repl = require("repl")
 
 local equinox = {}
 
+local lib = [[
+lua-alias: table.insert!2 append
+lua-alias: table.insert!3 insert
+lua-alias: table.remove!2 remove
+
+: assert-true assert!1 ;
+: assert-false not assert-true ;
+: =assert = assert-true ;
+
+: [ depth >a ;
+: ]
+  <table>
+  depth a> - 1 - 0
+  do
+    dup >a
+    1 rot table.insert!3 ( tbl idx value )
+    a>
+  loop ;
+
+: { depth >a ;
+: }
+    <table>
+    depth a> - 1 -
+    dup 2 % 0 != if
+      "Table should be created with even number of items" error/1
+    then
+    2 / 0 do
+      dup >a -rot put a>
+    loop ;
+]]
+
 function version()
   if __VERSION__ then
     return __VERSION__
@@ -16,13 +47,13 @@ function version()
 end
 
 function start_repl()
-  compiler:eval_file("lib.eqx")
+  compiler:eval(lib)
   repl.welcome(version())
   repl.start()
 end
 
 function eval_files(files, log_result)
-  compiler:eval_file("lib.eqx")
+  compiler:eval(lib)
   for i, filename in ipairs(files) do
     if log_result then
       print("Loading " .. filename)

@@ -1,7 +1,5 @@
 local compiler = require("compiler")
 
-compiler:eval_file("lib.eqx")
-
 function assert_tos(result, code)
   local stack = compiler:eval(code)
   assert(stack:depth() == 1,
