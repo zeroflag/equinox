@@ -1,15 +1,19 @@
-local Compiler = require("compiler")
-local Optimizer = require("ast_optimizer")
-local CodeGen = require("codegen")
 local stack = require("stack")
 
 local SINGLE_LINE = 1
 local MULTI_LINE = 2
 
-local optimizer = Optimizer.new()
-local compiler = Compiler.new(optimizer, CodeGen.new())
+local Repl = {}
 
-local repl = { mode = SINGLE_LINE, input = "", log_result = false }
+function Repl.new(compiler, optimizer)
+  local obj = {compiler = compiler,
+               optimizer = optimizer,
+               mode = SINGLE_LINE,
+               input = "",
+               log_result = false }
+  setmetatable(obj, {__index = Repl})
+  return obj
+end
 
 local messages = {
   "The Prime Directive: Preserve Stack Integrity at All Costs.",
@@ -37,7 +41,7 @@ local messages = {
 
 math.randomseed(os.time())
 
-function repl.welcome(version)
+function Repl:welcome(version)
   print("Equinox Forth Console (" .. _VERSION .. ") @ Delta Quadrant.")
   print(messages[math.random(1, #messages)])
   print("\27[1;96m")
@@ -66,23 +70,23 @@ function show_help()
   ]])
 end
 
-function repl.prompt()
-  if repl.mode == SINGLE_LINE then
+function Repl:prompt()
+  if self.mode == SINGLE_LINE then
     return "#"
   else
     return "..."
   end
 end
 
-function repl.show_prompt()
-  io.write(string.format("\27[1;95m%s \27[0m", repl.prompt()))
+function Repl:show_prompt()
+  io.write(string.format("\27[1;95m%s \27[0m", self:prompt()))
 end
 
-function repl.read()
-  if repl.mode == SINGLE_LINE then
-    repl.input = io.read()
+function Repl:read()
+  if self.mode == SINGLE_LINE then
+    self.input = io.read()
   else
-    repl.input = repl.input .. "\n" .. io.read()
+    self.input = self.input .. "\n" .. io.read()
   end
 end
 
@@ -90,8 +94,8 @@ function trim(str)
   return str:match("^%s*(.-)%s*$")
 end
 
-function repl.process_commands()
-  local command = trim(repl.input)
+function Repl:process_commands()
+  local command = trim(self.input)
   if command == "bye" then
     os.exit(0)
   end
@@ -100,38 +104,38 @@ function repl.process_commands()
     return true
   end
   if command == "log-on" then
-    repl.log_result = true
+    self.log_result = true
     print("Log turned on")
     return true
   end
   if command == "log-off" then
-    repl.log_result = false
+    self.log_result = false
     print("Log turned off")
     return true
   end
   if command == "opt-on" then
-    optimizer:enable(true)
+    self.optimizer:enable(true)
     print("Optimization turned on")
     return true
   end
   if command == "opt-off" then
-    optimizer:enable(false)
+    self.optimizer:enable(false)
     print("Optimization turned off")
     return true
   end
   local path = command:match("load%-file%s+(.+)")
   if path then
-    safe_call(function() compiler:eval_file(path) end)
+    safe_call(function() self.compiler:eval_file(path) end)
     return true
   end
   return false
 end
 
-function repl.print_err(result)
+function Repl:print_err(result)
   print("\27[91m" .. "Red Alert: " .. "\27[0m" .. result)
 end
 
-function repl.print_ok()
+function Repl:print_ok()
   if stack:depth() > 0 then
     print("\27[92m" .. "OK(".. stack:depth()  .. ")" .. "\27[0m")
   else
@@ -139,34 +143,34 @@ function repl.print_ok()
   end
 end
 
-function safe_call(func)
+function Repl:safe_call(func)
   local success, result = pcall(func)
   if success then
-    repl.print_ok()
+    self:print_ok()
   else
-    repl.print_err(result)
+    self:print_err(result)
   end
 end
 
-function repl.start()
+function Repl:start()
   local prompt = "#"
   while true do
-    repl.show_prompt()
-    repl.read()
-    if not repl.process_commands() then
+    self:show_prompt()
+    self:read()
+    if not self:process_commands() then
       local success, result = pcall(function ()
-          return compiler:compile_and_load(repl.input, repl.log_result)
+          return self.compiler:compile_and_load(self.input, self.log_result)
       end)
       if not success then
-        repl.print_err(result)
+        self:print_err(result)
       elseif not result then
-        repl.mode = MULTI_LINE
+        self.mode = MULTI_LINE
       else
-        repl.mode = SINGLE_LINE
-        safe_call(function() result() end)
+        self.mode = SINGLE_LINE
+        self:safe_call(function() result() end)
       end
     end
   end
 end
 
-return repl
+return Repl

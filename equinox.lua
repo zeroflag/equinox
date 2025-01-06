@@ -3,12 +3,13 @@ __VERSION__=nil
 local Compiler = require("compiler")
 local Optimizer = require("ast_optimizer")
 local CodeGen = require("codegen")
-local repl = require("repl")
+local Repl = require("repl")
 
 local equinox = {}
 
 local optimizer = Optimizer.new()
 local compiler = Compiler.new(optimizer, CodeGen.new())
+local repl = Repl.new(compiler, optimizer)
 
 local lib = [[
 lua-alias: table.insert!2 append
@@ -53,8 +54,8 @@ end
 
 function start_repl()
   compiler:eval(lib)
-  repl.welcome(version())
-  repl.start()
+  repl:welcome(version())
+  repl:start()
 end
 
 function eval_files(files, log_result)
