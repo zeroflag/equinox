@@ -125,7 +125,7 @@ function Repl:process_commands()
   end
   local path = command:match("load%-file%s+(.+)")
   if path then
-    safe_call(function() self.compiler:eval_file(path) end)
+    self:safe_call(function() self.compiler:eval_file(path) end)
     return true
   end
   return false

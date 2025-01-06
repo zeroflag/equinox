@@ -6,6 +6,7 @@
 -- line numbers + errors
 -- a[i] syntax test
 -- 14 -> var x syntax ?
+-- bug: define trim / override repl
 
 local stack = require("stack")
 local macros = require("macros")

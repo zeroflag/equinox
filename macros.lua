@@ -35,6 +35,9 @@ function sanitize(str)
   if str:match("^%d+") then
     str = "_" .. str
   end
+  if str:match("^%.") then
+    str = "dot_" .. str:sub(2)
+  end
   return str
 end
 
@@ -164,6 +167,10 @@ end
 
 function macros.from_aux()
   return ast.push(ast.aux_op("pop"))
+end
+
+function macros.pick()
+  return ast.push(ast.func_call("stack:at", ast.pop()))
 end
 
 function macros.dot()

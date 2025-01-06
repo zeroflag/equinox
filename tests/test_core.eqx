@@ -168,5 +168,25 @@ true not
 assert-false
 assert-true
 
+1 2 3
+depth 3 =assert
+
+0 pick
+
+depth 4 =assert
+3 =assert
+
+1 pick
+depth 4 =assert
+2 =assert
+
+2 pick
+depth 4 =assert
+1 =assert
+
+3 =assert
+2 =assert
+1 =assert
+
 depth 0 =assert
 adepth 0 =assert

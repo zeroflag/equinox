@@ -15,6 +15,7 @@ local lib = [[
 lua-alias: table.insert!2 append
 lua-alias: table.insert!3 insert
 lua-alias: table.remove!2 remove
+lua-alias: tostring/1 >string
 
 : assert-true assert!1 ;
 : assert-false not assert-true ;
@@ -72,7 +73,7 @@ function equinox.main()
   if #arg < 1 then
     start_repl()
   else
-    local log_result = false
+    local log_result, repl = false, false
     local files = {}
     for i, param in ipairs(arg) do
       if param == "-d" then
@@ -83,11 +84,14 @@ function equinox.main()
         optimizer:enable(true)
       elseif param == "-od" then
         optimizer:enable_logging(true)
+      elseif param == "-repl" then
+        repl = true
       else
         table.insert(files, param)
       end
     end
     eval_files(files, log_result)
+    if repl then start_repl() end
   end
 end
 

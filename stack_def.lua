@@ -162,4 +162,12 @@ function Stack:depth()
   return #self.stack
 end
 
+function Stack:at(index)
+  local item = self.stack[#self.stack - index]
+  if not item then
+    error("Stack underflow: " .. self.name)
+  end
+  return item ~= NIL and item or nil
+end
+
 return Stack

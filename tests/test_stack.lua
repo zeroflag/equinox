@@ -78,4 +78,16 @@ assert(stack:depth() == 2)
 assert(stack:pop() == 5)
 assert(stack:pop() == 4)
 
+stack:push(1)
+stack:push(2)
+stack:push(3)
+
+assert(3 == stack:at(0))
+assert(2 == stack:at(1))
+assert(1 == stack:at(2))
+
+assert(stack:pop() == 3)
+assert(stack:pop() == 2)
+assert(stack:pop() == 1)
+
 assert(stack:depth() == 0)
