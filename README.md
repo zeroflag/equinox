@@ -3,7 +3,7 @@ Forth Programming Language, hosted by Lua.
 
 ### Design goals
 
-* Compiles directly to Lua source code
+* Compiles directly to (optimized) Lua source code
 * Modeless with no interpretation mode
 * Uses Lua call semantics, no return stack
 * Lua table and array support 
