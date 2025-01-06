@@ -93,8 +93,9 @@ function equinox.eval_file(str, log_result)
   return compiler:eval_file(str, log_result)
 end
 
-if arg and (arg[0]:match("equinox.lua$")
-            or arg[0]:match("equinox_bundle.lua$")) then
+if arg and arg[0] and
+  (arg[0]:match("equinox.lua$") or
+   arg[0]:match("equinox_bundle.lua$")) then
   equinox.main(arg)
 end
 
