@@ -11,6 +11,8 @@ function Repl.new(compiler, optimizer)
   local obj = {compiler = compiler,
                optimizer = optimizer,
                mode = SINGLE_LINE,
+               always_show_stack = false,
+               repl_helper_loaded = false,
                input = "",
                log_result = false }
   setmetatable(obj, {__index = Repl})
@@ -67,6 +69,8 @@ function show_help()
 - opt-on "turn on optimization"
 - opt-off "turn off optimization"
 - load-file <path> "load an eqx file"
+- stack-on "always show stack after each input"
+- stack-off "don't show stack after each input"
 - bye "exit repl"
 - help "show this help"
   ]])
@@ -115,6 +119,20 @@ function Repl:process_commands()
     print("Log turned off")
     return true
   end
+  if command == "stack-on" then
+    if self.repl_helper_loaded then
+      self.always_show_stack = true
+      print("Show stack after input is on")
+    else
+      print("Requires " .. repl_helper)
+    end
+    return true
+  end
+  if command == "stack-off" then
+    self.always_show_stack = off
+    print("Show stack after input is off")
+    return true
+  end
   if command == "opt-on" then
     self.optimizer:enable(true)
     print("Optimization turned on")
@@ -140,6 +158,9 @@ end
 function Repl:print_ok()
   if stack:depth() > 0 then
     print("\27[92m" .. "OK(".. stack:depth()  .. ")" .. "\27[0m")
+    if self.always_show_stack and self.repl_helper_loaded then
+      self.compiler:eval(".s")
+    end
   else
     print("\27[92mOK\27[0m")
   end
@@ -163,6 +184,7 @@ end
 function Repl:start()
   if file_exists(repl_helper) then
     self.compiler:eval_file(repl_helper)
+    self.repl_helper_loaded = true
   end
   local prompt = "#"
   while true do
