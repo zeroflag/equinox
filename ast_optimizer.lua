@@ -1,10 +1,18 @@
 local Optimizer = {}
 local matchers = require("ast_matchers")
 
-function Optimizer.new(logging)
-  local obj = {logging = logging}
+function Optimizer.new()
+  local obj = {logging = false, enabled = true}
   setmetatable(obj, {__index = Optimizer})
   return obj
+end
+
+function Optimizer:enable_logging(bool)
+  self.logging = bool
+end
+
+function Optimizer:enable(bool)
+  self.enabled = bool
 end
 
 function Optimizer:log_ast(node)
@@ -19,6 +27,7 @@ function Optimizer:log(txt)
 end
 
 function Optimizer:optimize_iteratively(ast)
+  if not self.enabled then return ast end
   local num_of_optimizations, iterations = 0, 0
   ast = self:flatten(ast)
   repeat

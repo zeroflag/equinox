@@ -1,8 +1,13 @@
-local compiler = require("compiler")
+local Compiler = require("compiler")
+local Optimizer = require("ast_optimizer")
+local CodeGen = require("codegen")
 local stack = require("stack")
 
 local SINGLE_LINE = 1
 local MULTI_LINE = 2
+
+local optimizer = Optimizer.new()
+local compiler = Compiler.new(optimizer, CodeGen.new())
 
 local repl = { mode = SINGLE_LINE, input = "", log_result = false }
 
@@ -53,6 +58,8 @@ function show_help()
   print([[
 - log-on "turn on logging"
 - log-off "turn off logging"
+- opt-on "turn on optimization"
+- opt-off "turn off optimization"
 - load-file <path> "load an eqx file"
 - bye "exit repl"
 - help "show this help"
@@ -100,6 +107,16 @@ function repl.process_commands()
   if command == "log-off" then
     repl.log_result = false
     print("Log turned off")
+    return true
+  end
+  if command == "opt-on" then
+    optimizer:enable(true)
+    print("Optimization turned on")
+    return true
+  end
+  if command == "opt-off" then
+    optimizer:enable(false)
+    print("Optimization turned off")
     return true
   end
   local path = command:match("load%-file%s+(.+)")

@@ -1,4 +1,8 @@
-local compiler = require("compiler")
+local Compiler = require("compiler")
+local Optimizer = require("ast_optimizer")
+local CodeGen = require("codegen")
+
+local compiler = Compiler.new(Optimizer.new(), CodeGen.new())
 
 function assert_tos(result, code)
   local stack = compiler:eval(code)

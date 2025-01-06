@@ -1,9 +1,14 @@
 __VERSION__=nil
 
-compiler = require("compiler")
-repl = require("repl")
+local Compiler = require("compiler")
+local Optimizer = require("ast_optimizer")
+local CodeGen = require("codegen")
+local repl = require("repl")
 
 local equinox = {}
+
+local optimizer = Optimizer.new()
+local compiler = Compiler.new(optimizer, CodeGen.new())
 
 local lib = [[
 lua-alias: table.insert!2 append
@@ -72,11 +77,11 @@ function equinox.main()
       if param == "-d" then
         log_result = true
       elseif param == "-o0" then
-        compiler.optimization = false
+        optimizer:enable(false)
       elseif param == "-o1" then
-        compiler.optimization = true
+        optimizer:enable(true)
       elseif param == "-od" then
-        compiler.log_opt = true
+        optimizer:enable_logging(true)
       else
         table.insert(files, param)
       end

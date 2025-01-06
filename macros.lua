@@ -312,7 +312,7 @@ function macros._end()
 end
 
 function macros.words(compiler)
-  for i, each in ipairs(compiler.word_list()) do
+  for i, each in ipairs(compiler:word_list()) do
     io.write(each .. " ")
   end
   print()

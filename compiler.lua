@@ -14,30 +14,55 @@ local dict = require("dict")
 local Parser = require("parser")
 local Output = require("output")
 local interop = require("interop")
-local CodeGen = require("codegen")
-local Optimizer = require("ast_optimizer")
 local ast = require("ast")
 local unpack = table.unpack or unpack
 
-local compiler = { optimization = true, log_opt = false, parser = nil, output = nil, code_start = 1 }
+local Compiler = {}
 
-function compiler.word(self)
+function Compiler.new(codegen, optimizer)
+  local obj = {
+    parser = nil,
+    output = nil,
+    code_start = 1,
+    optimizer = codegen,
+    codegen = optimizer,
+  }
+  setmetatable(obj, {__index = Compiler})
+  return obj
+end
+
+function Compiler:init(text)
+  self.parser = Parser.new(text, dict)
+  self.output = Output.new()
+  self.output:append("local stack = require(\"stack\")")
+  self.output:new_line()
+  self.output:append("local aux = require(\"aux\")")
+  self.output:new_line()
+  self.ast = {}
+  self.code_start = self.output:size()
+  dict.def_var("true", "true")
+  dict.def_var("false", "false")
+  dict.def_var("nil", "NIL")
+end
+
+
+function Compiler:word()
   return self.parser:next_item().token
 end
 
-function compiler.next(self)
+function Compiler:next()
   return self.parser:next_chr()
 end
 
-function compiler.word_list(self)
+function Compiler:word_list()
   return dict.word_list()
 end
 
-function compiler.alias(self, lua_name, forth_alias)
+function Compiler:alias(lua_name, forth_alias)
   return dict.def_lua_alias(lua_name, forth_alias)
 end
 
-function compiler.lua_call(self, name, arity, vararg, void)
+function Compiler:lua_call(name, arity, vararg, void)
   if vararg then
     error(name .. " has variable/unknown number of arguments. " ..
           "Use " .. name .. "/n" .. " to specify arity. " ..
@@ -64,7 +89,7 @@ function compiler.lua_call(self, name, arity, vararg, void)
   return ast.code_seq(unpack(stmts))
 end
 
-function compiler.compile_token(self, item)
+function Compiler:compile_token(item)
   if item.kind == "word" then
     local word = dict.find(item.token)
     if word.callable then
@@ -99,15 +124,15 @@ function compiler.compile_token(self, item)
   end
 end
 
-function compiler.def_word(self, alias, name, immediate)
+function Compiler:def_word(alias, name, immediate)
   dict.def_word(alias, name, immediate)
 end
 
-function compiler.def_var(self, alias, name)
+function Compiler:def_var(alias, name)
   dict.def_var(alias, name)
 end
 
-function compiler.exec_macro(self, word)
+function Compiler:exec_macro(word)
   local mod, fun = dict.find(word).lua_name:match("^(.-)%.(.+)$")
   if mod == "macros" and type(macros[fun]) == "function" then
     return macros[fun](self)
@@ -116,23 +141,7 @@ function compiler.exec_macro(self, word)
   end
 end
 
-function compiler.init(self, text)
-  self.parser = Parser.new(text, dict)
-  self.output = Output.new()
-  self.codegen = CodeGen.new()
-  self.optimizer = Optimizer.new(self.log_opt)
-  self.output:append("local stack = require(\"stack\")")
-  self.output:new_line()
-  self.output:append("local aux = require(\"aux\")")
-  self.output:new_line()
-  self.ast = {}
-  self.code_start = self.output:size()
-  dict.def_var("true", "true")
-  dict.def_var("false", "false")
-  dict.def_var("nil", "NIL")
-end
-
-function compiler.compile(self, text)
+function Compiler:compile(text)
   self:init(text)
   local item = self.parser:next_item()
   while item do
@@ -146,13 +155,11 @@ function compiler.compile(self, text)
     end
     item = self.parser:next_item()
   end
-  if self.optimization then
-    self.ast = self.optimizer:optimize_iteratively(self.ast)
-  end
+  self.ast = self.optimizer:optimize_iteratively(self.ast)
   return self:generate_code()
 end
 
-function compiler.generate_code(self)
+function Compiler:generate_code()
   for i, ast in ipairs(self.ast) do
     self.output:append(self.codegen:gen(ast))
     self.output:new_line()
@@ -160,12 +167,12 @@ function compiler.generate_code(self)
   return self.output
 end
 
-function compiler.eval(self, text, log_result)
+function Compiler:eval(text, log_result)
   self:compile_and_load(text, log_result)()
   return stack
 end
 
-function compiler.compile_and_load(self, text, log_result)
+function Compiler:compile_and_load(text, log_result)
   local out = self:compile(text)
   if log_result then
     io.write(self.output:text(self.code_start))
@@ -173,7 +180,7 @@ function compiler.compile_and_load(self, text, log_result)
   return out:load()
 end
 
-function compiler.eval_file(self, path, log_result)
+function Compiler:eval_file(path, log_result)
   local file = io.open(path, "r")
   if not file then
     error("Could not open file: " .. path)
@@ -183,4 +190,4 @@ function compiler.eval_file(self, path, log_result)
   return self:eval(content, log_result)
 end
 
-return compiler
+return Compiler
