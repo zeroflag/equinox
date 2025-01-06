@@ -5,6 +5,8 @@ local MULTI_LINE = 2
 
 local Repl = {}
 
+local repl_helper = "repl_helper.eqx"
+
 function Repl.new(compiler, optimizer)
   local obj = {compiler = compiler,
                optimizer = optimizer,
@@ -152,7 +154,16 @@ function Repl:safe_call(func)
   end
 end
 
+function file_exists(filename)
+  local file = io.open(filename, "r")
+  if file then file:close() return true
+  else return false end
+end
+
 function Repl:start()
+  if file_exists(repl_helper) then
+    self.compiler:eval_file(repl_helper)
+  end
   local prompt = "#"
   while true do
     self:show_prompt()
