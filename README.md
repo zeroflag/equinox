@@ -1,6 +1,8 @@
 # Equinox
 Forth Programming Language, hosted by Lua. 
 
+Work in progress.
+
 ### Design goals
 
 * Compiles directly to (optimized) Lua source code
