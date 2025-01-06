@@ -133,11 +133,19 @@ function Stack:dup2()
 end
 
 function Stack:tos()
-  return self.stack[#self.stack]
+  local item = self.stack[#self.stack]
+  if not item then
+    error("Stack underflow: " .. self.name)
+  end
+  return item ~= NIL and item or nil
 end
 
 function Stack:tos2()
-  return self.stack[#self.stack - 1]
+  local item = self.stack[#self.stack - 1]
+  if not item then
+    error("Stack underflow: " .. self.name)
+  end
+  return item ~= NIL and item or nil
 end
 
 function Stack:_and()
