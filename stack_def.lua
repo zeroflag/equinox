@@ -1,8 +1,9 @@
 local Stack = {}
-local NIL = "__NIL__"
+local NIL = {} -- nil cannot be stored in table, use this placeholder
 
 function Stack.new(name)
-  local obj = {stack = {nil,nil,nil,nil,nil,nil,nil,nil}, name = name}
+  local obj = {stack = {nil,nil,nil,nil,nil,nil,nil,nil},
+               name = name}
   setmetatable(obj, {__index = Stack})
   return obj
 end
@@ -14,27 +15,32 @@ end
 function Stack:push_many(...)
   local args = {...}
   local stack = self.stack
+  local n = #stack
   for i = 1, #args do
-    stack[#stack + 1] = (args[i] ~= nil and args[i] or NIL)
+    stack[n + i] = (args[i] ~= nil and args[i] or NIL)
   end
 end
 
 function Stack:pop()
-  local size = #self.stack
+  local stack = self.stack
+  local size = #stack
   if size == 0 then
     error("Stack underflow: " .. self.name)
   end
-  local item = self.stack[size]
-  self.stack[size] = nil
+  local item = stack[size]
+  stack[size] = nil
   return item ~= NIL and item or nil
 end
 
 function Stack:pop2nd()
-  local n = #self.stack
+  local stack = self.stack
+  local n = #stack
   if n < 2 then
     error("Stack underflow: " .. self.name)
   end
-  local item = table.remove(self.stack, n - 1)
+  local item = stack[n - 1]
+  stack[n -1] = stack[n]
+  stack[n] = nil
   return item ~= NIL and item or nil
 end
 
@@ -48,38 +54,43 @@ function Stack:pop3rd()
 end
 
 function Stack:swap()
-  local n = #self.stack
+  local stack = self.stack
+  local n = #stack
   if n < 2 then
     error("Stack underflow: " .. self.name)
   end
-  self.stack[n], self.stack[n - 1] = self.stack[n - 1], self.stack[n]
+  stack[n], stack[n - 1] = stack[n - 1], stack[n]
 end
 
 function Stack:rot()
-  local n = #self.stack
+  local stack = self.stack
+  local n = #stack
   if n < 3 then
     error("Stack underflow: " .. self.name)
   end
-  local new_top = self.stack[n-2]
-  table.remove(self.stack, n - 2)
-  self.stack[n] = new_top
+  local new_top = stack[n -2]
+  table.remove(stack, n - 2)
+  stack[n] = new_top
 end
 
 function Stack:mrot()
-  local n = #self.stack
+  local stack = self.stack
+  local n = #stack
   if n < 3 then
     error("Stack underflow: " .. self.name)
   end
-  local temp = table.remove(self.stack, n)
-  table.insert(self.stack, n - 2, temp)
+  local temp = stack[n]
+  stack[n] = nil
+  table.insert(stack, n - 2, temp)
 end
 
 function Stack:over()
-  local n = #self.stack
+  local stack = self.stack
+  local n = #stack
   if n < 2 then
     error("Stack underflow: " .. self.name)
   end
-  self.stack[n + 1] = self.stack[n - 1]
+  stack[n + 1] = stack[n - 1]
 end
 
 function Stack:tuck()
@@ -91,30 +102,34 @@ function Stack:tuck()
 end
 
 function Stack:nip()
-  local n = #self.stack
+  local stack = self.stack
+  local n = #stack
   if n < 2 then
     error("Stack underflow: " .. self.name)
   end
-  table.remove(self.stack, n - 1)
+  stack[n - 1] = stack[n]
+  stack[n] = nil
 end
 
 function Stack:dup()
-  local n = #self.stack
+  local stack = self.stack
+  local n = #stack
   if n < 1 then
     error("Stack underflow: " .. self.name)
   end
-  self.stack[n + 1] = self.stack[n]
+  stack[n + 1] = stack[n]
 end
 
 function Stack:dup2()
-  local n = #self.stack
+  local stack = self.stack
+  local n = #stack
   if n < 2 then
     error("Stack underflow: " .. self.name)
   end
-  local tos1 = self.stack[n]
-  local tos2 = self.stack[n - 1]
-  self.stack[n + 1] = tos2
-  self.stack[n + 2] = tos1
+  local tos1 = stack[n]
+  local tos2 = stack[n - 1]
+  stack[n + 1] = tos2
+  stack[n + 2] = tos1
 end
 
 function Stack:tos()
