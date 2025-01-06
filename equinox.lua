@@ -1,11 +1,23 @@
+__VERSION__=nil
+
 compiler = require("compiler")
 repl = require("repl")
 
 local equinox = {}
 
+function version()
+  if __VERSION__ then
+    return __VERSION__
+  else
+    version = require("version/version")
+    version.load()
+    return version.current
+  end
+end
+
 function start_repl()
   compiler:eval_file("lib.eqx")
-  repl.welcome(version.current)
+  repl.welcome(version())
   repl.start()
 end
 
@@ -20,8 +32,6 @@ function eval_files(files, log_result)
 end
 
 function equinox.main()
-  version = require("version/version")
-  version.load()
   if #arg < 1 then
     start_repl()
   else

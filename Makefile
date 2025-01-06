@@ -47,8 +47,10 @@ version:
 	lua version/version.lua
 
 bundle:
-	@echo "Creating $(BUNDLE)"
-	$(AMALG) -s $(EQUINOX) compiler codegen ast_optimizer ast_matchers aux dict ast interop parser macros output stack_def repl stack -o $(BUNDLE)
+	@version=$$(cat "version/version.txt") ; \
+	echo "Creating $(BUNDLE) v$$version" ; \
+	$(AMALG) -s $(EQUINOX) compiler codegen ast_optimizer ast_matchers aux dict ast interop parser macros output stack_def repl stack -o $(BUNDLE); \
+	sed -i "s/^__VERSION__=.*$$/__VERSION__=\"$$version\"/" $(BUNDLE); \
 
 repl:
 	lua $(EQUINOX)
