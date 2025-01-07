@@ -176,6 +176,15 @@ var steps
     "Type:"
     "  10 fib"
   ]
+  [
+    "'10 fib' generated 12 items, since we already started with two items on the stack."
+    "You can check the size of the stack by"
+    ""
+    "Type:"
+    "  depth ."
+    "  clear"
+    "  depth ."
+  ]
   [ "Congratulations, you finished the basic Equinox Forth tutorial." ]
 ] -> steps
 
