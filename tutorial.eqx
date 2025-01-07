@@ -129,9 +129,12 @@ var steps
   [
     "The 'over' word works similarly to 'dup', but instead of making a copy of the top item, it makes a copy of the second item."
     "1 2 over will result in 1 2 1."
-    "tuck makes a copy of the top item and pushes it below the second item."
+    ""
+    "'tuck' makes a copy of the top item and pushes it below the second item."
     "1 2 tuck will result in 2 1 2."
+    ""
     "Many of these words are defined as combinations of others, like nip, which is the same as swap drop, and tuck, which is the same as swap over. 2dup is the same as over over."
+    ""
     "Try these words out and observe how the stack changes."
   ]
   [
@@ -157,8 +160,8 @@ var steps
     "We just need to put it into a loop and we're done."
     ""
     "Type:"
-    "  : fib 0 1 8 0 do 2dup + loop ;"
     "  clear"
+    "  : fib 0 1 8 0 do 2dup + loop ;"
     "  fib"
     "Here we use a 'do' loop that goes from 0 to 8-1, so it will be executed 8 times."
   ]
@@ -166,11 +169,11 @@ var steps
     "If we want to parameterize the number of iterations, you would need to do something like:"
     ""
     "Type:"
+    "  clear"
     "  : fib ( n -- .. ) 0 1 rot ( param ) 0 do 2dup + loop ;"
     "I added a comment to the word indicating that it expects a number, as well as a 'rot' word in place of the hardcoded 8 to bring this parameter to the top before entering the loop."
     ""
     "Type:"
-    "  clear"
     "  10 fib"
   ]
   [ "Congratulations, you finished the basic Equinox Forth tutorial." ]
