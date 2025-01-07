@@ -1,6 +1,8 @@
-local dict = require("dict")
+local Dict = require("dict")
 local json = require("tests/json")
 local Parser = require("parser")
+
+local dict = Dict.new()
 
 function parse(text)
   local parser = Parser.new(text, dict)
@@ -54,7 +56,7 @@ assert_table(
   {{token = "tbl1.key1", kind = "lua_table_lookup", resolved = false}},
   parse("tbl1.key1"))
 
-dict.def_var("tbl1", "tbl1")
+dict:def_var("tbl1", "tbl1")
 
 assert_table(
   {{token = "tbl1.key1", kind = "lua_table_lookup", resolved = true}},
@@ -64,7 +66,7 @@ assert_table(
   {{token = "math.pi", kind = "lua_table_lookup", resolved = true}},
   parse("math.pi"))
 
-dict.def_word("myword", "myword")
+dict:def_word("myword", "myword")
 assert_table(
   {{token = "myword", kind = "word"}},
   parse("myword"))

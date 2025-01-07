@@ -56,7 +56,7 @@ function Parser:next_chr()
 end
 
 function Parser:parse_word(token, kind)
-  local word = self.dict.find(token)
+  local word = self.dict:find(token)
   if kind == "word" and word and word.immediate
   then
     return {token = token, kind = "macro"}
@@ -95,7 +95,7 @@ function Parser:parse_word(token, kind)
     -- Table lookup
     local lua_obj = interop.resolve_lua_obj(token)
     -- best effort to check if it's valid lookup
-    if lua_obj or self.dict.find(token:match("^[^.]+")) then
+    if lua_obj or self.dict:find(token:match("^[^.]+")) then
       return lua_table_lookup(token, true)
     else
       return lua_table_lookup(token, false)

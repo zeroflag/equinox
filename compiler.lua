@@ -11,7 +11,7 @@
 local stack = require("stack")
 local macros = require("macros")
 local Stack = require("stack_def")
-local dict = require("dict")
+local Dict = require("dict")
 local Parser = require("parser")
 local Output = require("output")
 local interop = require("interop")
@@ -27,13 +27,15 @@ function Compiler.new(codegen, optimizer)
     code_start = 1,
     optimizer = codegen,
     codegen = optimizer,
+    dict = Dict.new()
   }
   setmetatable(obj, {__index = Compiler})
+  obj:init()
   return obj
 end
 
 function Compiler:init(text)
-  self.parser = Parser.new(text, dict)
+  self.parser = Parser.new(text, self.dict)
   self.output = Output.new()
   self.output:append("local stack = require(\"stack\")")
   self.output:new_line()
@@ -41,11 +43,7 @@ function Compiler:init(text)
   self.output:new_line()
   self.ast = {}
   self.code_start = self.output:size()
-  dict.def_var("true", "true")
-  dict.def_var("false", "false")
-  dict.def_var("nil", "NIL")
 end
-
 
 function Compiler:word()
   return self.parser:next_item().token
@@ -56,11 +54,11 @@ function Compiler:next()
 end
 
 function Compiler:word_list()
-  return dict.word_list()
+  return self.dict:word_list()
 end
 
 function Compiler:alias(lua_name, forth_alias)
-  return dict.def_lua_alias(lua_name, forth_alias)
+  return self.dict:def_lua_alias(lua_name, forth_alias)
 end
 
 function Compiler:lua_call(name, arity, vararg, void)
@@ -92,7 +90,7 @@ end
 
 function Compiler:compile_token(item)
   if item.kind == "word" then
-    local word = dict.find(item.token)
+    local word = self.dict:find(item.token)
     if word.callable then
       -- Forth word
       return ast.func_call(word.lua_name)
@@ -126,15 +124,15 @@ function Compiler:compile_token(item)
 end
 
 function Compiler:def_word(alias, name, immediate)
-  dict.def_word(alias, name, immediate)
+  self.dict:def_word(alias, name, immediate)
 end
 
 function Compiler:def_var(alias, name)
-  dict.def_var(alias, name)
+  self.dict:def_var(alias, name)
 end
 
 function Compiler:exec_macro(word)
-  local mod, fun = dict.find(word).lua_name:match("^(.-)%.(.+)$")
+  local mod, fun = self.dict:find(word).lua_name:match("^(.-)%.(.+)$")
   if mod == "macros" and type(macros[fun]) == "function" then
     return macros[fun](self)
   else
@@ -143,7 +141,7 @@ function Compiler:exec_macro(word)
 end
 
 function Compiler:compile(text)
-  self:init(text)
+  self:init(text) -- TODO CALL once
   local item = self.parser:next_item()
   while item do
     if item.kind == "macro" then
