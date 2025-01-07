@@ -98,7 +98,9 @@ var steps
     "Pay attention to the leading colon (:) and ending semicolon (;), and keep a space between them and the next word."
   ]
   [
-    "You have successfully defined a new word called 'min'. Let's try it out."
+    "You have successfully defined a new word called 'min'. To see all available words you can type 'words'."
+    "Type:"
+    "  words"
     ""
     "Type:"
     "  5"
@@ -106,6 +108,7 @@ var steps
     "  min"
     "  ."
     "If you did it correctly, you will see 2 on the top of the stack."
+    ""
     "Now you can try defining the word 'max' on your own to select the maximum between two numbers."
   ]
   [
@@ -139,8 +142,7 @@ var steps
   ]
   [
     "Let's write a word for generating the Fibonacci sequence, where each number is the sum of the two preceding ones, starting from 0 and 1."
-    "Example: 0, 1, 1, 2, 3, 5, 8, 13 ..."
-    "In Forth, this is very easy thanks to the stack."
+    "Example: 0, 1, 1, 2, 3, 5, 8, 13 ... In Forth, this is very easy thanks to the stack."
     "Let's put the first two items of the Fibonacci sequence onto the stack."
     ""
     "Type:"
@@ -184,11 +186,6 @@ var steps
     "  depth ."
     "  clear"
     "  depth ."
-    ""
-    "The newly defined 'fib' word is not part of the Forth dictionary yet. You can check all available words by typing words."
-    ""
-    "Type:"
-    "  words"
   ]
   [
     "Equinox is a hosted language that doesn't have its own standard library but relies on Lua functions."
@@ -222,7 +219,7 @@ var steps
 : len ( -- ) steps size ;
 
 : show-progress ( -- )
-  "Tutorial \(%d/%d\):" counter len string.format/3 . cr
+  "Lecture \(%d/%d\):" counter len string.format/3 . cr
   "================" . cr ;
 
 : finished? counter len >= ;
