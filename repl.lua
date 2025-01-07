@@ -60,6 +60,7 @@ function Repl:welcome(version)
 ]], version))
   print("\27[0m")
   print("Type 'words' for wordlist, 'bye' to exit or 'help'.")
+  print("First time Forth user? Type: load-file tutorial")
 end
 
 function show_help()
@@ -145,7 +146,14 @@ function Repl:process_commands()
   end
   local path = command:match("load%-file%s+(.+)")
   if path then
-    self:safe_call(function() self.compiler:eval_file(path) end)
+    if not file_exists(path) and not extension(path) then
+      path = path .. ".eqx"
+    end
+    if file_exists(path) then
+      self:safe_call(function() self.compiler:eval_file(path) end)
+    else
+      print("File does not exist: " .. path)
+    end
     return true
   end
   return false
@@ -179,6 +187,10 @@ function file_exists(filename)
   local file = io.open(filename, "r")
   if file then file:close() return true
   else return false end
+end
+
+function extension(filename)
+    return filename:match("^.+(%.[^%.]+)$")
 end
 
 function Repl:start()

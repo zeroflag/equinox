@@ -1,0 +1,183 @@
+var counter 0 -> counter
+var steps
+
+[
+  [
+    "Welcome to the Equinox Forth programming language tutorial."
+    "Forth-based languages use postfix notation, so instead of writing '1 + 2' you need to use '1 2 +'."
+    "Type:"
+    "  1 2 +"
+    "Then hit enter."
+  ]
+  [
+    "Forth uses a stack to pass parameters as well as to store return values."
+    "When you type 1 2, both numbers are pushed onto the stack."
+    "Then the word '+' pops those two numbers, adds them together, and leaves the result (3) on the stack."
+    "You see a prompt OK(1), where the number 1 indicates the depth of the stack."
+    "Type:"
+    "  ."
+    "This will print out the top of the stack."
+  ]
+  [
+    "You can show the stack anytime in the REPL by typing '.s'."
+    "To make things easier, let's enable stack visualization after every command by typing 'stack-on'."
+    "Type:"
+    "  stack-on"
+    "Now let's type these number again, one by one and see how they're arranged on the stack."
+    "Type:"
+    "  1"
+    "  2"
+    "The number 2 is on top because it was pushed last, and 1 is below."
+    "Type:"
+    "  +"
+    "After hitting enter, you should see the result, 3 on the stack."
+    "Type:"
+    "  ."
+  ]
+  [
+    "Words '+' or '*' expect two items on the stack, and their order doesn't matter."
+    "But the word '-' will subtract the top item from the one below. So, if you type 1 2 -, the result will be negative one."
+    "There are words in Forth for rearranging the stack. One of the simplest ones is 'swap', which swaps the top two items."
+    "Type:"
+    "  1"
+    "  2"
+    "  swap"
+    "  -"
+    "You should see 1 as the result."
+    "You can type 'clear' anytime to remove all items from the stack."
+  ]
+  [
+    "'dup' is another stack manipulation word that makes a copy of the top of the stack."
+    "Type:"
+    "3"
+    "dup"
+    "*"
+    "."
+    "You should see 9 as the result."
+    "drop is the opposite of dup, removing the top item from the stack."
+    "nip is similar to drop, but it removes the second item from the top."
+    "Type:"
+    "  1"
+    "  2"
+    "  nip"
+    "  drop"
+  ]
+  [
+    "The colon (:) character is used to extend Forth's dictionary by defining new words."
+    "Let's define a 'min' word to select the smaller of two numbers."
+    "If the top of the stack is smaller, we need to nip the second item; otherwise, we need to drop the top."
+    "Here is how you would write it in Forth."
+    "Type:"
+    "  : min > if nip else drop then ;"
+    "Pay attention to the leading colon (:) and ending semicolon (;), and keep a space between them and the next word."
+  ]
+  [
+    "You have successfully defined a new word called 'min'. Let's try it out."
+    "Type:"
+    "  5"
+    "  2"
+    "  min"
+    "  ."
+    "If you did it correctly, you will see 2 on the top of the stack."
+    "Now you can try defining the word 'max' on your own to select the maximum between two numbers."
+  ]
+  [
+    "Let's get back to stack manipulation words. The 'rot' and '-rot' words rotate the first three items on the stack."
+    "Type:"
+    "   1 2 3"
+    "   rot"
+    "   clear"
+    "You will see that 'rot' brings the third item to the top and shifts the rest."
+  ]
+  [
+    "The '-rot' works the opposite way by pushing the top item to the third place."
+    "Type:"
+    "  1 2 3"
+    "  -rot"
+    "  clear"
+    "By the way, 'rot rot' is the same as '-rot'."
+  ]
+  [
+    "The 'over' word works similarly to 'dup', but instead of making a copy of the top item, it makes a copy of the second item."
+    "1 2 over will result in 1 2 1."
+    "tuck makes a copy of the top item and pushes it below the second item."
+    "1 2 tuck will result in 2 1 2."
+    "2dup duplicates the top two items. It works the same as dup but treats two items as one."
+    "1 2 2dup will result in 1 2 1 2."
+    "Many of these words are defined as combinations of others, like nip, which is the same as swap drop, and tuck, which is the same as swap over. 2dup is the same as over over."
+    "Try these words out and observe how the stack changes."
+  ]
+  [
+    "Let's write a word for generating the Fibonacci sequence, where each number is the sum of the two preceding ones, starting from 0 and 1."
+    "Example: 0, 1, 1, 2, 3, 5, 8, 13 ..."
+    "In Forth, this is very easy thanks to the stack."
+    "Let's put the first two items of the Fibonacci sequence onto the stack."
+    "Type:"
+    "  clear"
+    "  0 1"
+    "Then use 2dup to make a copy of each."
+    "Type:"
+    "  2dup"
+    "Then simply add these numbers together."
+    "Type:"
+    "  +"
+    "You should see 0 1 1. If you continue with '2dup +' you will keep getting the next number from the Fibonacci sequence."
+  ]
+  [
+    "We just need to put it into a loop and we're done."
+    "Type:"
+    "  : fib 0 1 8 0 do 2dup + loop ;"
+    "  clear"
+    "  fib"
+    "Here we use a 'do' loop that goes from 0 to 8-1, so it will be executed 8 times."
+  ]
+  [
+    "If we want to parameterize the number of iterations, you would need to do something like:"
+    "Type:"
+    "  : fib ( n -- .. ) 0 1 rot ( param ) 0 do 2dup + loop ;"
+    "I added a comment to the word indicating that it expects a number, as well as a 'rot' word in place of the hardcoded 8 to bring this parameter to the top before entering the loop."
+    "Type:"
+    "  clear"
+    "  10 fib"
+  ]
+  [ "Congratulations, you finished the basic Equinox Forth tutorial." ]
+] -> steps
+
+: show-instructions ( -- )
+  "After you finished, type 'forward' to go to the next tutorial step or 'backward' to go back." . ;
+
+: len ( -- ) steps size ;
+
+: show-progress ( -- )
+  "\[%d/%d\]" counter len string.format/3 . cr ;
+
+: finished? counter len >= ;
+: current ( -- [] ) steps counter at ;
+
+: show-step ( -- )
+  current ipairs: i line
+    line . cr
+  end ;
+
+: show ( -- )
+  show-progress
+  show-step cr
+  finished? not if show-instructions cr then ;
+
+: clamp ( -- )
+  counter 1 math.max/2 -> counter
+  counter len math.min/2 -> counter ;
+
+: advance-by ( n -- )
+  counter swap + -> counter
+  clamp ;
+
+: forward ( -- )
+  1 advance-by
+  show ;
+
+: back ( -- )
+  -1 advance-by
+  show ;
+
+forward
