@@ -63,7 +63,7 @@ function Repl:welcome(version)
   print("First time Forth user? Type: load-file tutorial")
 end
 
-function show_help()
+local function show_help()
   print([[
 - log-on "turn on logging"
 - log-off "turn off logging"
@@ -97,7 +97,7 @@ function Repl:read()
   end
 end
 
-function trim(str)
+local function trim(str)
   return str:match("^%s*(.-)%s*$")
 end
 
@@ -183,13 +183,13 @@ function Repl:safe_call(func)
   end
 end
 
-function file_exists(filename)
+local function file_exists(filename)
   local file = io.open(filename, "r")
   if file then file:close() return true
   else return false end
 end
 
-function extension(filename)
+local function extension(filename)
     return filename:match("^.+(%.[^%.]+)$")
 end
 
