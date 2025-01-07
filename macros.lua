@@ -5,7 +5,7 @@ local ast = require("ast")
 
 local macros = {}
 
-function sanitize(str)
+local function sanitize(str)
   str = str:gsub("-", "_mi_")
     :gsub("%+", "_pu_")
     :gsub("%%", "_pe_")

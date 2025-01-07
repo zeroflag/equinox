@@ -18,6 +18,52 @@ function Parser:parse_all()
   return result
 end
 
+local function is_quote(chr)
+  return chr:match('"')
+end
+
+local function lua_func_call(token, res)
+  return {
+    token = token,
+    kind = "lua_func_call",
+    name = res.name,
+    arity = res.arity,
+    vararg = res.vararg,
+    void = res.void
+  }
+end
+
+local function lua_method_call(token, res)
+  return {
+    token = token,
+    kind = "lua_method_call",
+    name = res.name,
+    arity = res.arity,
+    vararg = res.vararg,
+    void = res.void
+  }
+end
+
+local function lua_table_lookup(token, resolved)
+  return {token = token, kind = "lua_table_lookup", resolved = resolved}
+end
+
+local function lua_array_lookup(token, resolved)
+  return {token = token, kind = "lua_array_lookup", resolved = resolved}
+end
+
+local function literal(token, subtype)
+  return {token = token, kind = "literal", subtype = subtype}
+end
+
+local function unknown(token)
+  return {token = token, kind = "unknown"}
+end
+
+local function is_whitespace(chr)
+  return chr:match("%s")
+end
+
 function Parser:next_item()
   local token = ""
   local begin_str = false
@@ -110,52 +156,6 @@ end
 
 function Parser:ended()
   return self.index > #self.source
-end
-
-function lua_func_call(token, res)
-  return {
-    token = token,
-    kind = "lua_func_call",
-    name = res.name,
-    arity = res.arity,
-    vararg = res.vararg,
-    void = res.void
-  }
-end
-
-function lua_method_call(token, res)
-  return {
-    token = token,
-    kind = "lua_method_call",
-    name = res.name,
-    arity = res.arity,
-    vararg = res.vararg,
-    void = res.void
-  }
-end
-
-function lua_table_lookup(token, resolved)
-  return {token = token, kind = "lua_table_lookup", resolved = resolved}
-end
-
-function lua_array_lookup(token, resolved)
-  return {token = token, kind = "lua_array_lookup", resolved = resolved}
-end
-
-function literal(token, subtype)
-  return {token = token, kind = "literal", subtype = subtype}
-end
-
-function unknown(token)
-  return {token = token, kind = "unknown"}
-end
-
-function is_quote(chr)
-  return chr:match('"')
-end
-
-function is_whitespace(chr)
-  return chr:match("%s")
 end
 
 return Parser

@@ -7,7 +7,7 @@ function Dict.new()
   return obj
 end
 
-function entry(forth_name, lua_name, immediate, callable, is_lua_alias)
+local function entry(forth_name, lua_name, immediate, callable, is_lua_alias)
   return {
     forth_name = forth_name,
     lua_name = lua_name,

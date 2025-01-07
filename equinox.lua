@@ -43,7 +43,7 @@ lua-alias: tostring/1 >string
     loop ;
 ]]
 
-function version()
+local function version()
   if __VERSION__ then
     return __VERSION__
   else
@@ -53,13 +53,13 @@ function version()
   end
 end
 
-function start_repl()
+local function start_repl()
   compiler:eval(lib)
   repl:welcome(version())
   repl:start()
 end
 
-function eval_files(files, log_result)
+local function eval_files(files, log_result)
   compiler:eval(lib)
   for i, filename in ipairs(files) do
     if log_result then

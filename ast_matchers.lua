@@ -1,27 +1,27 @@
 local AstMatcher = {}
 
-function is(ast, name) return ast.name == name end
-function is_literal(ast) return is(ast, "literal") end
-function is_identifier(ast) return is(ast, "identifier") end
-function is_stack_access(ast) return is(ast, "stack_access") end
+local function is(ast, name) return ast.name == name end
+local function is_literal(ast) return is(ast, "literal") end
+local function is_identifier(ast) return is(ast, "identifier") end
+local function is_stack_access(ast) return is(ast, "stack_access") end
 
-function is_literal_tbl_at(ast)
+local function is_literal_tbl_at(ast)
   return is(ast, "table_at")
     and (is_identifier(ast.tbl) or is_literal(ast.tbl))
     and (is_identifier(ast.key) or is_literal(ast.key))
 end
 
-function is_const(ast)
+local function is_const(ast)
   return is_identifier(ast)
     or is_literal(ast)
     or is_literal_tbl_at(ast)
 end
 
-function is_push_const(ast)
+local function is_push_const(ast)
   return is(ast, "push") and is_const(ast.item)
 end
 
-function OR(...)
+local function OR(...)
   local fs = {...}
   return function(ast)
     local result = false
@@ -32,58 +32,58 @@ function OR(...)
   end
 end
 
-function NOT(f)
+local function NOT(f)
   return function(ast)
     return not f(ast)
   end
 end
 
-function is_stack_op(op)
+local function is_stack_op(op)
   return function(ast)
     return is(ast, "stack_op") and ast.op == op
   end
 end
 
-function is_init_local(ast)
+local function is_init_local(ast)
   return is(ast, "init_local") and is_stack_access(ast.val)
 end
 
-function is_push_binop(ast)
+local function is_push_binop(ast)
   return is(ast, "push") and is(ast.item, "bin_op")
 end
 
-function is_push_binop_pop(ast)
+local function is_push_binop_pop(ast)
   return is_push_binop(ast)
     and is_stack_access(ast.item.p1)
     and is_stack_access(ast.item.p2)
 end
 
-function is_push_unop(ast)
+local function is_push_unop(ast)
   return is(ast, "push") and is(ast.item, "unary_op")
 end
 
-function is_push_unop_pop(ast)
+local function is_push_unop_pop(ast)
   return is_push_unop(ast) and is_stack_access(ast.item.p1)
 end
 
-function is_tbl_at(ast)
+local function is_tbl_at(ast)
   return is(ast, "push")
     and is(ast.item, "table_at")
     and is_stack_access(ast.item.tbl)
     and is_stack_access(ast.item.key)
 end
 
-function is_tbl_put(ast)
+local function is_tbl_put(ast)
   return is(ast, "table_put") -- no push here
     and is_stack_access(ast.tbl)
     and is_stack_access(ast.key)
 end
 
-function is_assignment(ast)
+local function is_assignment(ast)
   return is(ast, "assignment") and is_stack_access(ast.exp)
 end
 
-function is_if(ast)
+local function is_if(ast)
   return is(ast, "if") and is_stack_access(ast.cond)
 end
 

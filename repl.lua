@@ -7,6 +7,16 @@ local Repl = {}
 
 local repl_helper = "repl_helper.eqx"
 
+local function file_exists(filename)
+  local file = io.open(filename, "r")
+  if file then file:close() return true
+  else return false end
+end
+
+local function extension(filename)
+  return filename:match("^.+(%.[^%.]+)$")
+end
+
 function Repl.new(compiler, optimizer)
   local obj = {compiler = compiler,
                optimizer = optimizer,
@@ -181,16 +191,6 @@ function Repl:safe_call(func)
   else
     self:print_err(result)
   end
-end
-
-local function file_exists(filename)
-  local file = io.open(filename, "r")
-  if file then file:close() return true
-  else return false end
-end
-
-local function extension(filename)
-    return filename:match("^.+(%.[^%.]+)$")
 end
 
 function Repl:start()
