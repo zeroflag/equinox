@@ -5,6 +5,7 @@ var steps
   [
     "Welcome to the Equinox Forth programming language tutorial."
     "Forth-based languages use postfix notation, so instead of writing '1 + 2' you need to use '1 2 +'."
+    ""
     "Type:"
     "  1 2 +"
     "Then hit enter."
@@ -14,23 +15,32 @@ var steps
     "When you type 1 2, both numbers are pushed onto the stack."
     "Then the word '+' pops those two numbers, adds them together, and leaves the result (3) on the stack."
     "You see a prompt OK(1), where the number 1 indicates the depth of the stack."
+    ""
     "Type:"
     "  ."
-    "This will print out the top of the stack."
+    "The dot (.) word will print out the top of the stack, and you should see 3."
   ]
   [
-    "You can show the stack anytime in the REPL by typing '.s'."
+    "You can print out the stack anytime in the REPL by typing '.s'."
     "To make things easier, let's enable stack visualization after every command by typing 'stack-on'."
+    ""
     "Type:"
     "  stack-on"
+    ""
+    "You can type 'clear' anytime to remove all items from the stack."
+  ]
+  [
     "Now let's type these number again, one by one and see how they're arranged on the stack."
+    ""
     "Type:"
     "  1"
     "  2"
     "The number 2 is on top because it was pushed last, and 1 is below."
+    ""
     "Type:"
     "  +"
     "After hitting enter, you should see the result, 3 on the stack."
+    ""
     "Type:"
     "  ."
   ]
@@ -38,24 +48,29 @@ var steps
     "Words '+' or '*' expect two items on the stack, and their order doesn't matter."
     "But the word '-' will subtract the top item from the one below. So, if you type 1 2 -, the result will be negative one."
     "There are words in Forth for rearranging the stack. One of the simplest ones is 'swap', which swaps the top two items."
+    ""
     "Type:"
     "  1"
     "  2"
     "  swap"
     "  -"
+    "  ."
     "You should see 1 as the result."
-    "You can type 'clear' anytime to remove all items from the stack."
   ]
   [
     "'dup' is another stack manipulation word that makes a copy of the top of the stack."
+    ""
     "Type:"
     "3"
     "dup"
     "*"
     "."
     "You should see 9 as the result."
-    "drop is the opposite of dup, removing the top item from the stack."
-    "nip is similar to drop, but it removes the second item from the top."
+  ]
+  [
+    "'drop' is the opposite of dup, removing the top item from the stack."
+    "'nip' is similar to drop, but it removes the second item from the top."
+    ""
     "Type:"
     "  1"
     "  2"
@@ -67,12 +82,15 @@ var steps
     "Let's define a 'min' word to select the smaller of two numbers."
     "If the top of the stack is smaller, we need to nip the second item; otherwise, we need to drop the top."
     "Here is how you would write it in Forth."
+    ""
     "Type:"
-    "  : min > if nip else drop then ;"
+    "  : min 2dup > if nip else drop then ;"
+    ""
     "Pay attention to the leading colon (:) and ending semicolon (;), and keep a space between them and the next word."
   ]
   [
     "You have successfully defined a new word called 'min'. Let's try it out."
+    ""
     "Type:"
     "  5"
     "  2"
@@ -83,6 +101,7 @@ var steps
   ]
   [
     "Let's get back to stack manipulation words. The 'rot' and '-rot' words rotate the first three items on the stack."
+    ""
     "Type:"
     "   1 2 3"
     "   rot"
@@ -91,6 +110,7 @@ var steps
   ]
   [
     "The '-rot' works the opposite way by pushing the top item to the third place."
+    ""
     "Type:"
     "  1 2 3"
     "  -rot"
@@ -112,19 +132,23 @@ var steps
     "Example: 0, 1, 1, 2, 3, 5, 8, 13 ..."
     "In Forth, this is very easy thanks to the stack."
     "Let's put the first two items of the Fibonacci sequence onto the stack."
+    ""
     "Type:"
     "  clear"
     "  0 1"
     "Then use 2dup to make a copy of each."
+    ""
     "Type:"
     "  2dup"
     "Then simply add these numbers together."
+    ""
     "Type:"
     "  +"
     "You should see 0 1 1. If you continue with '2dup +' you will keep getting the next number from the Fibonacci sequence."
   ]
   [
     "We just need to put it into a loop and we're done."
+    ""
     "Type:"
     "  : fib 0 1 8 0 do 2dup + loop ;"
     "  clear"
@@ -133,9 +157,11 @@ var steps
   ]
   [
     "If we want to parameterize the number of iterations, you would need to do something like:"
+    ""
     "Type:"
     "  : fib ( n -- .. ) 0 1 rot ( param ) 0 do 2dup + loop ;"
     "I added a comment to the word indicating that it expects a number, as well as a 'rot' word in place of the hardcoded 8 to bring this parameter to the top before entering the loop."
+    ""
     "Type:"
     "  clear"
     "  10 fib"
@@ -144,12 +170,13 @@ var steps
 ] -> steps
 
 : show-instructions ( -- )
-  "After you finished, type 'forward' to go to the next tutorial step or 'backward' to go back." . ;
+  "After you finished, type 'go' to go to the next tutorial step or 'backward' to go back." . ;
 
 : len ( -- ) steps size ;
 
 : show-progress ( -- )
-  "\[%d/%d\]" counter len string.format/3 . cr ;
+  "Tutorial \(%d/%d\):" counter len string.format/3 . cr
+  "================" . cr ;
 
 : finished? counter len >= ;
 : current ( -- [] ) steps counter at ;
@@ -172,7 +199,7 @@ var steps
   counter swap + -> counter
   clamp ;
 
-: forward ( -- )
+: go ( -- )
   1 advance-by
   show ;
 
@@ -180,4 +207,4 @@ var steps
   -1 advance-by
   show ;
 
-forward
+go
