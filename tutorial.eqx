@@ -78,6 +78,15 @@ var steps
     "  drop"
   ]
   [
+    "'2dup' duplicates the top two items. It works the same as dup but treats two items as one."
+    ""
+    "Type:"
+    "  1"
+    "  2"
+    "  2dup"
+    "  clear"
+  ]
+  [
     "The colon (:) character is used to extend Forth's dictionary by defining new words."
     "Let's define a 'min' word to select the smaller of two numbers."
     "If the top of the stack is smaller, we need to nip the second item; otherwise, we need to drop the top."
@@ -122,8 +131,6 @@ var steps
     "1 2 over will result in 1 2 1."
     "tuck makes a copy of the top item and pushes it below the second item."
     "1 2 tuck will result in 2 1 2."
-    "2dup duplicates the top two items. It works the same as dup but treats two items as one."
-    "1 2 2dup will result in 1 2 1 2."
     "Many of these words are defined as combinations of others, like nip, which is the same as swap drop, and tuck, which is the same as swap over. 2dup is the same as over over."
     "Try these words out and observe how the stack changes."
   ]
