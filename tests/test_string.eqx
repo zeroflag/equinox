@@ -34,5 +34,10 @@ str:reverse/0 "cba" =assert
 
 str:len 5 =assert
 
+"string\twith \n escaped characters" string.len/1 32 =assert
+"str with \"quotes\"" string.len/1 17 =assert
+"\"" string.len/1 1 =assert
+"\"\"" string.len/1 2 =assert
+
 adepth 0 =assert
 depth 0 =assert

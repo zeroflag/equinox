@@ -46,7 +46,7 @@ end
 function Dict:word_list()
   local result, seen = {}, {}
   for i, each in ipairs(self.words) do
-    if not seen[each.forth_name] then
+    if not seen[each.forth_name] and each.callable then
       table.insert(result, each.forth_name)
       seen[each.forth_name] = true
     end

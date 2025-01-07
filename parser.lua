@@ -22,6 +22,10 @@ local function is_quote(chr)
   return chr:match('"')
 end
 
+local function is_escape(chr)
+  return chr:match("\\")
+end
+
 local function lua_func_call(token, res)
   return {
     token = token,
@@ -71,21 +75,28 @@ function Parser:next_item()
   local kind = "word"
   while not self:ended() and not stop do
     local chr = self:next_chr()
-    if is_quote(chr) then
-      if begin_str then
-        stop = true
-      else
-        kind = "string"
-        begin_str = true
-      end
-    end
-    if is_whitespace(chr) and not begin_str then
-      if #token > 0 then
-        self.index = self.index -1 -- don't consume next WS as it breaks single line comment
-        stop = true
-      end
+    if begin_str
+      and is_escape(chr)
+      and is_quote(self:peek_chr())
+    then
+      token = token .. chr .. self:next_chr()
     else
-      token = token .. chr
+      if is_quote(chr) then
+        if begin_str then
+          stop = true
+        else
+          kind = "string"
+          begin_str = true
+        end
+      end
+      if is_whitespace(chr) and not begin_str then
+        if #token > 0 then
+          self.index = self.index -1 -- don't consume next WS as it breaks single line comment
+          stop = true
+        end
+      else
+        token = token .. chr
+      end
     end
   end
   if token == "" then
@@ -99,6 +110,10 @@ function Parser:next_chr()
   local chr = self.source:sub(self.index, self.index)
   self.index = self.index + 1
   return chr
+end
+
+function Parser:peek_chr()
+  return self.source:sub(self.index, self.index)
 end
 
 function Parser:parse_word(token, kind)

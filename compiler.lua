@@ -5,9 +5,10 @@
 -- var with dash generates error
 -- line numbers + errors
 -- a[i] syntax test
--- string escape
+-- string escape \"
 -- 14 -> var x syntax ?
--- bug: define trim / override repl
+-- basic syntax check
+-- local words
 
 local stack = require("stack")
 local macros = require("macros")
