@@ -184,6 +184,34 @@ var steps
     "  depth ."
     "  clear"
     "  depth ."
+    ""
+    "The newly defined 'fib' word is not part of the Forth dictionary yet. You can check all available words by typing words."
+    ""
+    "Type:"
+    "  words"
+  ]
+  [
+    "Equinox is a hosted language that doesn't have its own standard library but relies on Lua functions."
+    "When calling a Lua function, you need to indicate its arity (number of parameters)."
+    ""
+    "Type:"
+    "  2 8 math.pow/2 ."
+    ""
+    "This will print out 256."
+    "The /2 instructs Equinox to compile code that consumes two parameters from the stack when calling the Lua function."
+    "You can omit the final part when calling a function with no parameters."
+    ""
+    "Type:"
+    "  os.time ."
+  ]
+  [
+    "Some Lua functions don't return anything, or you deliberately want to ignore the return value."
+    "In such cases, you can use the same synax, but instead of '/' you need to use '!' character."
+    ""
+    "Type:"
+    "  123 io.write!1"
+    ""
+    "io.write/1 leaves a boolean value on the stack, while io.write!1 doesn't."
   ]
   [ "Congratulations, you finished the basic Equinox Forth tutorial." ]
 ] -> steps

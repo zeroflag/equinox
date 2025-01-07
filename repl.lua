@@ -32,7 +32,7 @@ end
 local messages = {
   "The Prime Directive: Preserve Stack Integrity at All Costs.",
   "Engage warp speed and may your stack never overflow.",
-  "Welcome aboard Commander. The stack is ready for your orders.",
+  "Welcome Commander. The stack is ready for your orders.",
   "Our mission is to explore new words and seek out new stack operations.",
   "Welcome, Officer. May your debugging skills be as sharp as a phaser.",
   "Your mission is to PUSH the boundaries of programming.",
