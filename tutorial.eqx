@@ -189,7 +189,7 @@ var steps
 ] -> steps
 
 : show-instructions ( -- )
-  "After you finished, type 'go' to go to the next tutorial step or 'backward' to go back." . ;
+  "After you finished, type 'go' to go to the next tutorial step or 'back' to go back." . ;
 
 : len ( -- ) steps size ;
 
@@ -214,16 +214,16 @@ var steps
   counter 1 math.max/2 -> counter
   counter len math.min/2 -> counter ;
 
-: advance-by ( n -- )
+: step-by ( n -- )
   counter swap + -> counter
   clamp ;
 
 : go ( -- )
-  1 advance-by
+  1 step-by
   show ;
 
 : back ( -- )
-  -1 advance-by
+  -1 step-by
   show ;
 
 go
