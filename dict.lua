@@ -17,6 +17,19 @@ local function entry(forth_name, lua_name, immediate, callable, is_lua_alias)
   }
 end
 
+local function is_valid_lua_identifier(name)
+  local keywords = {
+      ["and"] = true, ["break"] = true, ["do"] = true, ["else"] = true, ["elseif"] = true,
+      ["end"] = true, ["false"] = true, ["for"] = true, ["function"] = true, ["goto"] = true,
+      ["if"] = true, ["in"] = true, ["local"] = true, ["nil"] = true, ["not"] = true,
+      ["or"] = true, ["repeat"] = true, ["return"] = true, ["then"] = true, ["true"] = true,
+      ["until"] = true, ["while"] = true }
+  if keywords[name] then
+      return false
+  end
+  return name:match("^[a-zA-Z_][a-zA-Z0-9_]*$") ~= nil
+end
+
 function Dict:def_word(forth_name, lua_name, immediate)
   table.insert(self.words, entry(forth_name, lua_name, immediate, true, false))
 end
@@ -30,7 +43,15 @@ function Dict:def_lua_alias(lua_name, forth_name)
 end
 
 function Dict:def_var(forth_name, lua_name)
-  table.insert(self.words, entry(forth_name, lua_name, immediate, false, false))
+  if is_valid_lua_identifier(lua_name) then
+    self:def_var_unsafe(forth_name, lua_name)
+  else
+    error(lua_name .. " is not a valid variable name. Avoid reserved keywords and special characters.")
+  end
+end
+
+function Dict:def_var_unsafe(forth_name, lua_name)
+  table.insert(self.words, entry(forth_name, lua_name, false, false, false))
 end
 
 function Dict:find(forth_name)
@@ -118,9 +139,9 @@ function Dict:init()
   self:def_macro(":", "macros.colon")
   self:def_macro(";", "macros._end")
   self:def_macro("end", "macros._end")
-  self:def_var("true", "true")
-  self:def_var("false", "false")
-  self:def_var("nil", "NIL")
+  self:def_var_unsafe("true", "true")
+  self:def_var_unsafe("false", "false")
+  self:def_var_unsafe("nil", "NIL")
 end
 
 return Dict

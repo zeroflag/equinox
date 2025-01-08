@@ -2,8 +2,20 @@ local interop = require("interop")
 
 local Parser = {}
 
+local function lines_of(input)
+  local lines = {}
+  for line in input:gmatch("([^\r\n]*)\r?\n?") do
+    table.insert(lines, line)
+  end
+  return lines
+end
+
 function Parser.new(source, dict)
-  local obj = {index = 1, source = source, dict = dict}
+  local obj = {index = 1,
+               line_number = 1,
+               source = source,
+               lines = lines_of(source),
+               dict = dict}
   setmetatable(obj, {__index = Parser})
   return obj
 end
@@ -68,6 +80,9 @@ local function is_whitespace(chr)
   return chr:match("%s")
 end
 
+function Parser:check_line_ending(chr)
+end
+
 function Parser:next_item()
   local token = ""
   local begin_str = false
@@ -75,35 +90,41 @@ function Parser:next_item()
   local kind = "word"
   while not self:ended() and not stop do
     local chr = self:next_chr()
-    if begin_str
-      and is_escape(chr)
-      and is_quote(self:peek_chr())
-    then
-      token = token .. chr .. self:next_chr()
-    else
-      if is_quote(chr) then
-        if begin_str then
-          stop = true
-        else
-          kind = "string"
-          begin_str = true
-        end
-      end
-      if is_whitespace(chr) and not begin_str then
-        if #token > 0 then
-          self.index = self.index -1 -- don't consume next WS as it breaks single line comment
-          stop = true
-        end
+    if is_quote(chr) then
+      if begin_str then
+        stop = true
       else
-        token = token .. chr
+        kind = "string"
+        begin_str = true
       end
+      token = token .. chr
+    elseif begin_str
+      and is_escape(chr)
+      and is_quote(self:peek_chr()) then
+      token = token .. chr .. self:next_chr() -- consume \"
+    elseif is_whitespace(chr) and not begin_str then -- TODO how does this handle multiline strings
+      if #token > 0 then
+        self.index = self.index -1 -- don't consume next WS as it breaks single line comment
+        stop = true
+      else
+        if chr == '\r' then
+          if self:peek_chr() == '\n' then self:next_chr() end
+          self.line_number = self.line_number +1
+        elseif chr == '\n' then
+          self.line_number = self.line_number +1
+        end
+      end
+    else
+      token = token .. chr
     end
   end
   if token == "" then
     return nil
   end
   if token:match("^&.+") then kind = "symbol" end
-  return self:parse_word(token, kind)
+  local result = self:parse_word(token, kind)
+  result.line_number = self.line_number -- TODO comments breaks line number as they consume the input
+  return result
 end
 
 function Parser:next_chr()

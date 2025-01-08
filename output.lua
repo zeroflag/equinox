@@ -1,7 +1,7 @@
 local Output = {}
 
 function Output.new()
-  local obj = {lines = {""}}
+  local obj = {lines = {""}, line_number = 1}
   setmetatable(obj, {__index = Output})
   return obj
 end
@@ -11,6 +11,7 @@ function Output:append(str)
 end
 
 function Output:new_line()
+  self.line_number = self.line_number +1
   table.insert(self.lines, "")
 end
 

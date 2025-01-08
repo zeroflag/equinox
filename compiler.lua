@@ -2,19 +2,21 @@
 -- hyperstatic glob
 -- fix Lua's accidental global
 -- tab auto complete repl
--- var with dash generates error
 -- line numbers + errors
 -- a[i] syntax test
--- string escape \"
 -- 14 -> var x syntax ?
 -- basic syntax check
 -- local words
+-- comment breaks linenumbers
+-- debuginfo level
+-- codeseq line number population is ugly
 
 local stack = require("stack")
 local macros = require("macros")
 local Stack = require("stack_def")
 local Dict = require("dict")
 local Parser = require("parser")
+local LineMapping = require("line_mapping")
 local Output = require("output")
 local interop = require("interop")
 local ast = require("ast")
@@ -27,18 +29,19 @@ function Compiler.new(codegen, optimizer)
     parser = nil,
     output = nil,
     code_start = 1,
+    line_mapping = nil,
     optimizer = codegen,
     codegen = optimizer,
     dict = Dict.new()
   }
   setmetatable(obj, {__index = Compiler})
-  obj:init()
   return obj
 end
 
 function Compiler:init(text)
   self.parser = Parser.new(text, self.dict)
   self.output = Output.new()
+  self.line_mapping = LineMapping.new()
   self.output:append("local stack = require(\"stack\")")
   self.output:new_line()
   self.output:append("local aux = require(\"aux\")")
@@ -147,12 +150,15 @@ function Compiler:compile(text)
   local item = self.parser:next_item()
   while item do
     if item.kind == "macro" then
-      local result = self:exec_macro(item.token)
-      if result then
-        table.insert(self.ast, result)
+      local node = self:exec_macro(item.token)
+      if node then
+        node.forth_line_number = item.line_number -- TOOD can be codeseq
+        table.insert(self.ast, node)
       end
     else
-      table.insert(self.ast, self:compile_token(item))
+      local node = self:compile_token(item)
+      node.forth_line_number = item.line_number -- TODO can be codeseq
+      table.insert(self.ast, node)
     end
     item = self.parser:next_item()
   end
@@ -162,15 +168,44 @@ end
 
 function Compiler:generate_code()
   for i, ast in ipairs(self.ast) do
-    self.output:append(self.codegen:gen(ast))
+    local code = self.codegen:gen(ast)
+    if ast.forth_line_number then
+      self.line_mapping:set_target_source(
+        ast.forth_line_number,
+        self.output.line_number)
+    end
+    self.output:append(code)
     self.output:new_line()
   end
   return self.output
 end
 
+function Compiler:error_handler(err)
+  local info = debug.getinfo(3, "l") -- TODO how many levels up?
+  if info then
+    local src_line_num = self.line_mapping:resolve_target(info.currentline)
+    print(string.format("Error occurred at line: %d (%d)", src_line_num, info.currentline))
+    for i = src_line_num -2, src_line_num +2 do
+      local line = self.parser.lines[i]
+      local mark = "  "
+      if i == src_line_num then mark = "=>" end
+      print(string.format("%s%03d.  %s", mark, i , line))
+    end
+    print()
+    print("Original Error:")
+    print(debug.traceback())
+  end
+  return err
+end
+
 function Compiler:eval(text, log_result)
-  self:compile_and_load(text, log_result)()
-  return stack
+  local code = self:compile_and_load(text, log_result)
+  local success, err = xpcall(code, function() self:error_handler() end)
+  if success then
+    return stack
+  else
+    error(err)
+  end
 end
 
 function Compiler:compile_and_load(text, log_result)
