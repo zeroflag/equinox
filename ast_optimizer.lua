@@ -45,7 +45,7 @@ function Optimizer:flatten(ast)
   for _, node in ipairs(ast) do
     if "code_seq" == node.name then
       for _, code in ipairs(node.code) do
-        code.forth_line_number = node.forth_line_number -- TODO
+        code.forth_line_number = node.forth_line_number -- TODO remove this whole thing
         table.insert(result, code)
       end
     else
