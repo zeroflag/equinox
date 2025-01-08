@@ -174,9 +174,10 @@ function macros.pick()
 end
 
 function macros.dot()
-  return ast.code_seq(
+  return {
     ast.func_call("io.write", ast.func_call("tostring", ast.pop())),
-    ast.func_call("io.write", ast.literal("string", " ")))
+    ast.func_call("io.write", ast.literal("string", " "))
+  }
 end
 
 function macros.cr()
@@ -228,9 +229,10 @@ function macros._begin()
 end
 
 function macros._until()
-  return ast.code_seq(
+  return {
     ast._if(ast.pop(), ast.keyword("break")),
-    ast.keyword("end"))
+    ast.keyword("end")
+  }
 end
 
 function macros._while()
@@ -242,15 +244,15 @@ function macros._case() -- simulate goto with break, in pre lua5.2 since GOTO wa
 end
 
 function macros._of()
-  return ast.code_seq(
+  return {
     ast.stack_op("over"),
     ast._if(ast.bin_op("==", ast.pop(), ast.pop())),
     ast.pop() -- drop selector
-  )
+  }
 end
 
 function macros._endof() -- GOTO endcase
-  return ast.code_seq(ast.keyword("break"), ast.keyword("end"))
+  return { ast.keyword("break"), ast.keyword("end") }
 end
 
 function macros._endcase()

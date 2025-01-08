@@ -24,10 +24,6 @@ function ast.func_call(func_name, ...)
   }
 end
 
-function ast.code_seq(...)
-  return {name = "code_seq", code = {...}}
-end
-
 function ast.pop()
   return {name = "stack_access", op  = "pop"}
 end

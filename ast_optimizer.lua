@@ -29,7 +29,6 @@ end
 function Optimizer:optimize_iteratively(ast)
   if not self.enabled then return ast end
   local num_of_optimizations, iterations = 0, 0
-  ast = self:flatten(ast)
   repeat
     ast, num_of_optimizations = self:optimize(ast)
     iterations = iterations + 1
@@ -38,21 +37,6 @@ function Optimizer:optimize_iteratively(ast)
           iterations, num_of_optimizations))
   until num_of_optimizations == 0
   return ast
-end
-
-function Optimizer:flatten(ast)
-  local result = {}
-  for _, node in ipairs(ast) do
-    if "code_seq" == node.name then
-      for _, code in ipairs(node.code) do
-        code.forth_line_number = node.forth_line_number -- TODO remove this whole thing
-        table.insert(result, code)
-      end
-    else
-      table.insert(result, node)
-    end
-  end
-  return result
 end
 
 function Optimizer:optimize(ast)

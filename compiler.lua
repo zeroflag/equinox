@@ -9,7 +9,6 @@
 -- local words
 -- comment breaks linenumbers
 -- debuginfo level
--- codeseq line number population is ugly
 
 local stack = require("stack")
 local macros = require("macros")
@@ -90,7 +89,7 @@ function Compiler:lua_call(name, arity, vararg, void)
     table.insert(stmts, ast.push_many(
                    ast.func_call(name, unpack(params))))
   end
-  return ast.code_seq(unpack(stmts))
+  return stmts
 end
 
 function Compiler:compile_token(item)
@@ -145,20 +144,28 @@ function Compiler:exec_macro(word)
   end
 end
 
+function Compiler:add_ast_nodes(nodes, item)
+  if #nodes > 0 then
+    for i, each in ipairs(nodes) do
+      each.forth_line_number = item.line_number
+      table.insert(self.ast, each)
+    end
+  else
+    nodes.forth_line_number = item.line_number
+    table.insert(self.ast, nodes) -- single node
+  end
+end
+
 function Compiler:compile(text)
   self:init(text) -- TODO CALL once
   local item = self.parser:next_item()
   while item do
     if item.kind == "macro" then
-      local node = self:exec_macro(item.token)
-      if node then
-        node.forth_line_number = item.line_number -- TOOD can be codeseq
-        table.insert(self.ast, node)
-      end
+      local nodes = self:exec_macro(item.token)
+      if nodes then self:add_ast_nodes(nodes, item) end
     else
-      local node = self:compile_token(item)
-      node.forth_line_number = item.line_number -- TODO can be codeseq
-      table.insert(self.ast, node)
+      local nodes = self:compile_token(item)
+      self:add_ast_nodes(nodes, item)
     end
     item = self.parser:next_item()
   end
