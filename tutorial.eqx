@@ -18,7 +18,7 @@ var steps
     ""
     "Type:"
     "  ."
-    "The dot (.) word will print out the top of the stack, and you should see 3."
+    "The dot (.) word will pop and print out the top of the stack, and you should see 3."
   ]
   [
     "You can print out the stack anytime in the REPL by typing '.s'."
@@ -30,7 +30,7 @@ var steps
     "You can type 'clear' anytime to remove all items from the stack."
   ]
   [
-    "Now let's type these number again, one by one and see how they're arranged on the stack."
+    "Now let's type these numbers again, one by one and see how they're arranged on the stack."
     ""
     "Type:"
     "  1"
@@ -45,7 +45,7 @@ var steps
     "  ."
   ]
   [
-    "Words '+' or '*' expect two items on the stack, and their order doesn't matter."
+    "Words like '+' or '*' expect two items on the stack, and their order doesn't matter."
     "But the word '-' will subtract the top item from the one below. So, if you type 1 2 -, the result will be negative one."
     "There are words in Forth for rearranging the stack. One of the simplest ones is 'swap', which swaps the top two items."
     ""
@@ -107,7 +107,7 @@ var steps
     "  2"
     "  min"
     "  ."
-    "If you did it correctly, you will see 2 on the top of the stack."
+    "If you did it correctly, you will see 2."
     ""
     "Now you can try defining the word 'max' on your own to select the maximum between two numbers."
   ]
@@ -219,20 +219,20 @@ var steps
 : len ( -- ) steps size ;
 
 : show-progress ( -- )
-  "Lecture \(%d/%d\):" counter len string.format/3 . cr
+  "Lesson \(%d/%d\):" counter len string.format/3 . cr
   "================" . cr ;
 
 : finished? counter len >= ;
 : current ( -- [] ) steps counter at ;
 
-: show-step ( -- )
+: show-lesson ( -- )
   current ipairs: i line
     line . cr
   end ;
 
 : show ( -- )
   show-progress
-  show-step cr
+  show-lesson cr
   finished? not if show-instructions cr then ;
 
 : clamp ( -- )
