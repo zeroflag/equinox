@@ -198,11 +198,17 @@ function macros.colon(compiler)
 end
 
 function macros.comment(compiler)
-  repeat until ")" == compiler:next()
+  repeat until ")" == compiler:next_chr()
 end
 
 function macros.single_line_comment(compiler)
-  repeat until "\n" == compiler:next()
+  local ch
+  repeat
+    ch = compiler:next_chr()
+  until "\n" == ch or "\r" == ch
+  if ch == "\r" and compiler:peek_chr() == "\n" then
+    compiler:next_chr()
+  end
 end
 
 function macros.var(compiler)

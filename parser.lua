@@ -89,7 +89,7 @@ function Parser:next_item()
   local stop = false
   local kind = "word"
   while not self:ended() and not stop do
-    local chr = self:next_chr()
+    local chr = self:read_chr()
     if is_quote(chr) then
       if begin_str then
         stop = true
@@ -101,18 +101,13 @@ function Parser:next_item()
     elseif begin_str
       and is_escape(chr)
       and is_quote(self:peek_chr()) then
-      token = token .. chr .. self:next_chr() -- consume \"
+      token = token .. chr .. self:read_chr() -- consume \"
     elseif is_whitespace(chr) and not begin_str then -- TODO how does this handle multiline strings
       if #token > 0 then
         self.index = self.index -1 -- don't consume next WS as it breaks single line comment
         stop = true
       else
-        if chr == '\r' then
-          if self:peek_chr() == '\n' then self:next_chr() end
-          self.line_number = self.line_number +1
-        elseif chr == '\n' then
-          self.line_number = self.line_number +1
-        end
+        self:update_line_number(chr)
       end
     else
       token = token .. chr
@@ -127,8 +122,23 @@ function Parser:next_item()
   return result
 end
 
+function Parser:update_line_number(chr)
+  if chr == '\r' then
+    if self:peek_chr() == '\n' then self:read_chr() end
+    self.line_number = self.line_number +1
+  elseif chr == '\n' then
+    self.line_number = self.line_number +1
+  end
+end
+
 function Parser:next_chr()
-  local chr = self.source:sub(self.index, self.index)
+  local chr = self:read_chr()
+  self:update_line_number(chr)
+  return chr
+end
+
+function Parser:read_chr()
+  local chr = self:peek_chr()
   self.index = self.index + 1
   return chr
 end

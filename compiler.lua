@@ -7,7 +7,6 @@
 -- 14 -> var x syntax ?
 -- basic syntax check
 -- local words
--- comment breaks linenumbers
 -- debuginfo level
 
 local stack = require("stack")
@@ -53,8 +52,12 @@ function Compiler:word()
   return self.parser:next_item().token
 end
 
-function Compiler:next()
+function Compiler:next_chr()
   return self.parser:next_chr()
+end
+
+function Compiler:peek_chr()
+  return self.parser:peek_chr()
 end
 
 function Compiler:word_list()
