@@ -190,17 +190,21 @@ function Compiler:generate_code()
 end
 
 function Compiler:error_handler(err)
-  local info = debug.getinfo(3, "l") -- TODO how many levels up?
+  local info = debug.getinfo(3, "l")
   if info then
     local src_line_num = self.line_mapping:resolve_target(info.currentline)
-    print(string.format("Error occurred at line: %d", src_line_num))
-    for i = src_line_num -2, src_line_num +2 do
-      local line = self.parser.lines[i]
-      local mark = "  "
-      if i == src_line_num then mark = "=>" end
-      print(string.format("%s%03d.  %s", mark, i , line))
+    if src_line_num then
+      print(string.format("Error occurred at line: %d", src_line_num))
+      for i = src_line_num -2, src_line_num +2 do
+        local line = self.parser.lines[i]
+        if line then
+          local mark = "  "
+          if i == src_line_num then mark = "=>" end
+          print(string.format("%s%03d.  %s", mark, i , line))
+        end
+      end
+      print()
     end
-    print()
     print(string.format("Original Error: %d", info.currentline))
     print(debug.traceback())
   end
