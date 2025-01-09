@@ -225,7 +225,7 @@ function DupUnaryInline:optimize(ast, i, result)
   self:log("inlining dup before unary operator")
   local p1, op = ast[i], ast[i + 1]
   op.item.p1.op = "tos"
-  op.item.p1.name = "stack_op" -- replace stack_consume to stack_os, to prevent further inlining
+  op.item.p1.name = "stack_peek"
   table.insert(result, op)
 end
 
@@ -238,7 +238,7 @@ function OverUnaryInline:optimize(ast, i, result)
   self:log("inlining over before unary operator")
   local p1, op = ast[i], ast[i + 1]
   op.item.p1.op = "tos2"
-  op.item.p1.name = "stack_op" -- replace stack_consume to stack_os, to prevent further inlining
+  op.item.p1.name = "stack_peek"
   table.insert(result, op)
 end
 
@@ -251,7 +251,7 @@ function DupBinaryInline:optimize(ast, i, result)
   self:log("inlining dup before binary operator")
   local p1, p2, op = ast[i], ast[i + 1], ast[i + 2]
   op.item.p1.op = "tos"
-  op.item.p1.name = "stack_op" -- replace stack_consume to stack_os, to prevent further inlining
+  op.item.p1.name = "stack_peek"
   table.insert(result, p1)
   table.insert(result, op)
 end
@@ -267,12 +267,12 @@ function OverBinaryInline:optimize(ast, i, result)
   local over, op = ast[i], ast[i + 1]
   --if op.item.p1.op == "pop2nd" then
     op.item.p1.op = "pop"
-    op.item.p1.name = "stack_op"
+    op.item.p1.name = "stack_peek"
     op.item.p2.op = "tos"
-    op.item.p2.name = "stack_op"
+    op.item.p2.name = "stack_peek"
   --else -- results the same
   --  op.item.p1.op = "tos2"
-  --  op.item.p1.name = "stack_op"
+  --  op.item.p1.name = "stack_peek"
   --end
   table.insert(result, op)
 end
@@ -287,8 +287,8 @@ function DupDupBinaryInline:optimize(ast, i, result)
   local p1, p2, op = ast[i], ast[i + 1], ast[i + 2]
   op.item.p1.op = "tos"
   op.item.p2.op = "tos"
-  op.item.p1.name = "stack_op" -- replace stack_consume to stack_os, to prevent further inlining
-  op.item.p2.name = "stack_op" -- replace stack_consume to stack_os, to prevent further inlining
+  op.item.p1.name = "stack_peek"
+  op.item.p2.name = "stack_peek"
   table.insert(result, op)
 end
 
@@ -301,7 +301,7 @@ function DupIfInline:optimize(ast, i, result)
   self:log("inlining dup before if")
   local dup, _if = ast[i], ast[i + 1]
   _if.cond.op = "tos"
-  _if.cond.name = "stack_op" -- replace stack_consume to stack_os, to prevent further inlining
+  _if.cond.name = "stack_peek"
   table.insert(result, _if)
 end
 
@@ -314,7 +314,7 @@ function OverIfInline:optimize(ast, i, result)
   self:log("inlining over before if")
   local over, _if = ast[i], ast[i + 1]
   _if.cond.op = "tos2"
-  _if.cond.name = "stack_op" -- replace stack_consume to stack_os, to prevent further inlining
+  _if.cond.name = "stack_peek"
   table.insert(result, _if)
 end
 
@@ -349,6 +349,7 @@ function BinaryInlineP2:optimize(ast, i, result)
     end
     if is_stack_op("dup")(p1) then
       op.item.p1.op = "tos" -- inline if dup
+      op.item.p1.name = "stack_peek"
     end
   end
   op.item.p2 = p2.item -- inline const param
