@@ -29,6 +29,7 @@ function Compiler.new(codegen, optimizer)
     line_mapping = nil,
     optimizer = codegen,
     codegen = optimizer,
+    chunk_name = "<<compiled eqx code>>",
     dict = Dict.new()
   }
   setmetatable(obj, {__index = Compiler})
@@ -37,7 +38,7 @@ end
 
 function Compiler:init(text)
   self.parser = Parser.new(text, self.dict)
-  self.output = Output.new()
+  self.output = Output.new(self.chunk_name)
   self.line_mapping = LineMapping.new()
   self.output:append("local stack = require(\"stack\")")
   self.output:new_line()
@@ -190,11 +191,16 @@ function Compiler:generate_code()
 end
 
 function Compiler:error_handler(err)
-  local info = debug.getinfo(3, "l")
+  local info = debug.getinfo(3, "lS")
+  if info and info.source ~= self.chunk_name then
+    info = debug.getinfo(4, "lS") -- if it was error/1
+  end
   if info then
-    local src_line_num = self.line_mapping:resolve_target(info.currentline)
+    local src_line_num =
+      self.line_mapping:resolve_target(info.currentline)
     if src_line_num then
-      print(string.format("Error occurred at line: %d", src_line_num))
+      print(string.format(
+              "Error occurred at line: %d", src_line_num))
       for i = src_line_num -2, src_line_num +2 do
         local line = self.parser.lines[i]
         if line then

@@ -1,7 +1,7 @@
 local Output = {}
 
-function Output.new()
-  local obj = {lines = {""}, line_number = 1}
+function Output.new(name)
+  local obj = {lines = {""}, line_number = 1, name = name}
   setmetatable(obj, {__index = Output})
   return obj
 end
@@ -26,9 +26,9 @@ end
 function Output:load()
   local text = self:text()
   if loadstring then
-    return loadstring(text)
+    return loadstring(text, self.name)
   else -- Since Lua 5.2, loadstring has been replaced by load.
-    return load(text)
+    return load(text, self.name)
   end
 end
 
