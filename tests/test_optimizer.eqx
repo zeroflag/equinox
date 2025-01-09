@@ -69,6 +69,23 @@ dup if "yes" then
 "yes" =assert
 assert-true
 
+true 3 over if then
+3 =assert
+assert-true
+
+3 7 over - ( 3 7 3 -)
+4 =assert
+3 =assert
+
+3 7 over + ( 3 7 3 + )
+10 =assert
+3  =assert
+
+true false over not ( true false true not )
+assert-false
+assert-false
+assert-true
+
 9999 =assert
 depth 0 =assert
 adepth 0 =assert

@@ -126,9 +126,12 @@ IfCondInline = AstMatcher:new()
 AssignmentInline = AstMatcher:new()
 UnaryInline = AstMatcher:new()
 DupUnaryInline = AstMatcher:new()
+OverUnaryInline = AstMatcher:new()
 DupBinaryInline = AstMatcher:new()
+OverBinaryInline = AstMatcher:new()
 DupDupBinaryInline = AstMatcher:new()
 DupIfInline = AstMatcher:new()
+OverIfInline = AstMatcher:new()
 BinaryInline = AstMatcher:new()
 BinaryInlineP2 = AstMatcher:new()
 InlineInitLocalConst = AstMatcher:new()
@@ -227,6 +230,19 @@ function DupUnaryInline:optimize(ast, i, result)
 end
 
 --[[
+ Inline OVER followed by unary operator
+
+  1.) true false over not => PUSH(NOT TOS2)
+]]--
+function OverUnaryInline:optimize(ast, i, result)
+  self:log("inlining over before unary operator")
+  local p1, op = ast[i], ast[i + 1]
+  op.item.p1.op = "tos2"
+  op.item.p1.name = "stack_op" -- replace stack_access to stack_os, to prevent further inlining
+  table.insert(result, op)
+end
+
+--[[
  Inline DUP followed by binary operator
 
   1.) 3 DUP *   =>   PUSH(TOS * POP)
@@ -237,6 +253,27 @@ function DupBinaryInline:optimize(ast, i, result)
   op.item.p1.op = "tos"
   op.item.p1.name = "stack_op" -- replace stack_access to stack_os, to prevent further inlining
   table.insert(result, p1)
+  table.insert(result, op)
+end
+
+--[[
+ Inline OVER followed by binary operator
+
+  1.) 3 7 OVER +   =>   PUSH(TOS2 + POP)
+  2.) 3 7 OVER -   =>   PUSH(POP  - TOS)
+]]--
+function OverBinaryInline:optimize(ast, i, result)
+  self:log("inlining over before binary operator")
+  local over, op = ast[i], ast[i + 1]
+  --if op.item.p1.op == "pop2nd" then
+    op.item.p1.op = "pop"
+    op.item.p1.name = "stack_op"
+    op.item.p2.op = "tos"
+    op.item.p2.name = "stack_op"
+  --else -- results the same
+  --  op.item.p1.op = "tos2"
+  --  op.item.p1.name = "stack_op"
+  --end
   table.insert(result, op)
 end
 
@@ -264,6 +301,19 @@ function DupIfInline:optimize(ast, i, result)
   self:log("inlining dup before if")
   local dup, _if = ast[i], ast[i + 1]
   _if.cond.op = "tos"
+  _if.cond.name = "stack_op" -- replace stack_access to stack_os, to prevent further inlining
+  table.insert(result, _if)
+end
+
+--[[
+ Inline OVER followed by IF
+
+  1.) OVER IF .. THEN   =>   TOS2 IF .. THEN
+]]--
+function OverIfInline:optimize(ast, i, result)
+  self:log("inlining over before if")
+  local over, _if = ast[i], ast[i + 1]
+  _if.cond.op = "tos2"
   _if.cond.name = "stack_op" -- replace stack_access to stack_os, to prevent further inlining
   table.insert(result, _if)
 end
@@ -348,6 +398,10 @@ return {
     "dup unary inline",
     {is_stack_op("dup"), is_push_unop_pop}),
 
+  OverUnaryInline:new(
+    "over unary inline",
+    {is_stack_op("over"), is_push_unop_pop}),
+
   DupDupBinaryInline:new(
     "dup dup binary inline",
     {is_stack_op("dup"), is_stack_op("dup"), is_push_binop_pop}),
@@ -356,9 +410,17 @@ return {
     "dup binary inline",
     {NOT(is_stack_op("dup")), is_stack_op("dup"), is_push_binop_pop}),
 
+  OverBinaryInline:new(
+    "over binary inline",
+    {is_stack_op("over"), is_push_binop_pop}),
+
   DupIfInline:new(
     "dup if inline",
     {is_stack_op("dup"), is_if}),
+
+  OverIfInline:new(
+    "over if inline",
+    {is_stack_op("over"), is_if}),
 
   AssignmentInline:new(
     "assignment inline",
