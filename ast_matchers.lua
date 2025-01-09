@@ -3,7 +3,7 @@ local AstMatcher = {}
 local function is(ast, name) return ast.name == name end
 local function is_literal(ast) return is(ast, "literal") end
 local function is_identifier(ast) return is(ast, "identifier") end
-local function is_stack_access(ast) return is(ast, "stack_access") end
+local function is_stack_consume(ast) return is(ast, "stack_consume") end
 
 local function is_literal_tbl_at(ast)
   return is(ast, "table_at")
@@ -45,7 +45,7 @@ local function is_stack_op(op)
 end
 
 local function is_init_local(ast)
-  return is(ast, "init_local") and is_stack_access(ast.val)
+  return is(ast, "init_local") and is_stack_consume(ast.val)
 end
 
 local function is_push_binop(ast)
@@ -54,8 +54,8 @@ end
 
 local function is_push_binop_pop(ast)
   return is_push_binop(ast)
-    and is_stack_access(ast.item.p1)
-    and is_stack_access(ast.item.p2)
+    and is_stack_consume(ast.item.p1)
+    and is_stack_consume(ast.item.p2)
 end
 
 local function is_push_unop(ast)
@@ -63,28 +63,28 @@ local function is_push_unop(ast)
 end
 
 local function is_push_unop_pop(ast)
-  return is_push_unop(ast) and is_stack_access(ast.item.p1)
+  return is_push_unop(ast) and is_stack_consume(ast.item.p1)
 end
 
 local function is_tbl_at(ast)
   return is(ast, "push")
     and is(ast.item, "table_at")
-    and is_stack_access(ast.item.tbl)
-    and is_stack_access(ast.item.key)
+    and is_stack_consume(ast.item.tbl)
+    and is_stack_consume(ast.item.key)
 end
 
 local function is_tbl_put(ast)
   return is(ast, "table_put") -- no push here
-    and is_stack_access(ast.tbl)
-    and is_stack_access(ast.key)
+    and is_stack_consume(ast.tbl)
+    and is_stack_consume(ast.key)
 end
 
 local function is_assignment(ast)
-  return is(ast, "assignment") and is_stack_access(ast.exp)
+  return is(ast, "assignment") and is_stack_consume(ast.exp)
 end
 
 local function is_if(ast)
-  return is(ast, "if") and is_stack_access(ast.cond)
+  return is(ast, "if") and is_stack_consume(ast.cond)
 end
 
 function AstMatcher:new(name, parts)
@@ -155,7 +155,7 @@ end
 function AtParamsInlineP2:optimize(ast, i, result)
   self:log("inlining tbl at 2nd param")
   local tbl, idx, op = ast[i], ast[i + 1], ast[i + 2]
-  if op.item.tbl.name == "stack_access" and
+  if op.item.tbl.name == "stack_consume" and
      op.item.tbl.op == "pop2nd"
   then
     op.item.tbl.op = "pop"
@@ -225,7 +225,7 @@ function DupUnaryInline:optimize(ast, i, result)
   self:log("inlining dup before unary operator")
   local p1, op = ast[i], ast[i + 1]
   op.item.p1.op = "tos"
-  op.item.p1.name = "stack_op" -- replace stack_access to stack_os, to prevent further inlining
+  op.item.p1.name = "stack_op" -- replace stack_consume to stack_os, to prevent further inlining
   table.insert(result, op)
 end
 
@@ -238,7 +238,7 @@ function OverUnaryInline:optimize(ast, i, result)
   self:log("inlining over before unary operator")
   local p1, op = ast[i], ast[i + 1]
   op.item.p1.op = "tos2"
-  op.item.p1.name = "stack_op" -- replace stack_access to stack_os, to prevent further inlining
+  op.item.p1.name = "stack_op" -- replace stack_consume to stack_os, to prevent further inlining
   table.insert(result, op)
 end
 
@@ -251,7 +251,7 @@ function DupBinaryInline:optimize(ast, i, result)
   self:log("inlining dup before binary operator")
   local p1, p2, op = ast[i], ast[i + 1], ast[i + 2]
   op.item.p1.op = "tos"
-  op.item.p1.name = "stack_op" -- replace stack_access to stack_os, to prevent further inlining
+  op.item.p1.name = "stack_op" -- replace stack_consume to stack_os, to prevent further inlining
   table.insert(result, p1)
   table.insert(result, op)
 end
@@ -287,8 +287,8 @@ function DupDupBinaryInline:optimize(ast, i, result)
   local p1, p2, op = ast[i], ast[i + 1], ast[i + 2]
   op.item.p1.op = "tos"
   op.item.p2.op = "tos"
-  op.item.p1.name = "stack_op" -- replace stack_access to stack_os, to prevent further inlining
-  op.item.p2.name = "stack_op" -- replace stack_access to stack_os, to prevent further inlining
+  op.item.p1.name = "stack_op" -- replace stack_consume to stack_os, to prevent further inlining
+  op.item.p2.name = "stack_op" -- replace stack_consume to stack_os, to prevent further inlining
   table.insert(result, op)
 end
 
@@ -301,7 +301,7 @@ function DupIfInline:optimize(ast, i, result)
   self:log("inlining dup before if")
   local dup, _if = ast[i], ast[i + 1]
   _if.cond.op = "tos"
-  _if.cond.name = "stack_op" -- replace stack_access to stack_os, to prevent further inlining
+  _if.cond.name = "stack_op" -- replace stack_consume to stack_os, to prevent further inlining
   table.insert(result, _if)
 end
 
@@ -314,7 +314,7 @@ function OverIfInline:optimize(ast, i, result)
   self:log("inlining over before if")
   local over, _if = ast[i], ast[i + 1]
   _if.cond.op = "tos2"
-  _if.cond.name = "stack_op" -- replace stack_access to stack_os, to prevent further inlining
+  _if.cond.name = "stack_op" -- replace stack_consume to stack_os, to prevent further inlining
   table.insert(result, _if)
 end
 
@@ -343,7 +343,7 @@ end
 function BinaryInlineP2:optimize(ast, i, result)
   self:log("inlining binary operator's 2nd param")
   local p1, p2, op = ast[i], ast[i + 1], ast[i + 2]
-  if op.item.p1.name == "stack_access" then
+  if op.item.p1.name == "stack_consume" then
     if op.item.p1.op == "pop2nd" then
       op.item.p1.op = "pop"
     end

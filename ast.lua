@@ -25,15 +25,15 @@ function ast.func_call(func_name, ...)
 end
 
 function ast.pop()
-  return {name = "stack_access", op  = "pop"}
+  return {name = "stack_consume", op  = "pop"}
 end
 
 function ast.pop2nd()
-  return {name = "stack_access", op  = "pop2nd"}
+  return {name = "stack_consume", op  = "pop2nd"}
 end
 
 function ast.pop3rd()
-  return {name = "stack_access", op  = "pop3rd"}
+  return {name = "stack_consume", op  = "pop3rd"}
 end
 
 function ast.stack_op(operation)
