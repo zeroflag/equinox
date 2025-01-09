@@ -1,7 +1,7 @@
 Error occurred at line: 4
   002.  : nested3
   003.    ( errror comes here)
-=>004.    nil "Invalid concat" .. ;
+=>004.    nil "invalid concat" .. ;
   005.  
   006.  : nested2 nested3 ;
 

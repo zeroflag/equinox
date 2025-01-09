@@ -111,7 +111,7 @@ assert_table({
   }, parse("\n\n123 456\n\n\n678"))
 
 assert_table({
-    { token = '"a\nb c"', kind = "literal", subtype = "string", line_number=3},
+    { token = '"a\\nb c"', kind = "literal", subtype = "string", line_number=3},
     { token = '"d e f"', kind = "literal", subtype = "string",  line_number=3},
     { token = "678", kind = "literal", subtype = "number",  line_number=6},
-  }, parse("\n\n \"a\nb c\" \"d e f\" \n\n\n678"))
+  }, parse("\n\n \"a\\nb c\" \"d e f\" \n\n\n678"))

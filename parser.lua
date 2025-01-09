@@ -102,7 +102,10 @@ function Parser:next_item()
       and is_escape(chr)
       and is_quote(self:peek_chr()) then
       token = token .. chr .. self:read_chr() -- consume \"
-    elseif is_whitespace(chr) and not begin_str then -- TODO how does this handle multiline strings
+    elseif begin_str and ("\r" == chr or "\n" == chr) then
+      error(string.format(
+           "Unterminated string: %s at line: %d", token, self.line_number))
+    elseif is_whitespace(chr) and not begin_str then
       if #token > 0 then
         self.index = self.index -1 -- don't consume next WS as it breaks single line comment
         stop = true
@@ -118,7 +121,7 @@ function Parser:next_item()
   end
   if token:match("^&.+") then kind = "symbol" end
   local result = self:parse_word(token, kind)
-  result.line_number = self.line_number -- TODO comments breaks line number as they consume the input
+  result.line_number = self.line_number
   return result
 end
 

@@ -2,7 +2,6 @@
 -- hyperstatic glob
 -- fix Lua's accidental global
 -- tab auto complete repl
--- line numbers + errors
 -- a[i] syntax test
 -- 14 -> var x syntax ?
 -- basic syntax check
@@ -160,7 +159,7 @@ function Compiler:add_ast_nodes(nodes, item)
 end
 
 function Compiler:compile(text)
-  self:init(text) -- TODO CALL once
+  self:init(text)
   local item = self.parser:next_item()
   while item do
     if item.kind == "macro" then
