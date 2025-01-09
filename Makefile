@@ -21,7 +21,7 @@ lua_tests:
 	@echo "Running Lua tests ($(luaver))"; \
 	for file in $(TEST_LUA_FILES); do \
 		echo " - $$file..."; \
-		$(luaver) $$file || exit 1; \
+		$$luaver $$file || exit 1; \
 	done
 
 eqx_tests:
@@ -57,7 +57,7 @@ test:
       $(MAKE) -s out_tests luaver=$$luaver opt=-o1 || exit 1; \
 			$(MAKE) -s opt_tests luaver=$$luaver || exit 1; \
 		fi; \
-	done
+	done ;
 	@echo "$(GREEN)All tests passed!$(NC)"
 
 version:
@@ -78,4 +78,4 @@ clean:
 	rm -f $(BUNDLE)
 
 # Add a phony directive to prevent file conflicts
-.PHONY: all test clean bundle repl version
+.PHONY: all test clean bundle repl version lua_tests eqx_tests opt_tests out_tests
