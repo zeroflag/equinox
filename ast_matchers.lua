@@ -123,8 +123,7 @@ end
 AtParamsInline = AstMatcher:new()
 AtParamsInlineP2 = AstMatcher:new()
 PutParamsInline = AstMatcher:new()
-DupBinaryInline = AstMatcher:new()
-OverBinaryInline = AstMatcher:new()
+StackOpBinaryInline = AstMatcher:new()
 BinaryInline = AstMatcher:new()
 BinaryInlineP2 = AstMatcher:new()
 InlineGeneralUnary = AstMatcher:new()
@@ -215,10 +214,12 @@ end
 
   1.) 3 DUP *   =>   PUSH(TOS * POP)
   2.) DUP DUP *   =>   PUSH(TOS * TOS)
+  3.) 3 7 OVER +   =>   PUSH(TOS2 + POP)
+  4.) 3 7 OVER -   =>   PUSH(POP  - TOS)
 ]]--
-function DupBinaryInline:optimize(ast, i, result)
-  local p1, dup, op = ast[i], ast[i + 1], ast[i + 2]
-  if is_stack_op("dup")(p1) then
+function StackOpBinaryInline:optimize(ast, i, result)
+  local p1, p2, op = ast[i], ast[i + 1], ast[i + 2]
+  if is_stack_op("dup")(p1) and is_stack_op("dup")(p2) then
     -- double dup
     self:log("dup dup")
     op.item.p1.op = "tos"
@@ -226,35 +227,25 @@ function DupBinaryInline:optimize(ast, i, result)
     op.item.p1.name = "stack_peek"
     op.item.p2.name = "stack_peek"
     table.insert(result, op)
-  else
+  elseif is_stack_op("dup")(p2) then
     -- single dup
     self:log("single dup")
     op.item.p1.op = "tos"
     op.item.p1.name = "stack_peek"
     table.insert(result, p1)
     table.insert(result, op)
-  end
-end
-
---[[
- Inline OVER followed by binary operator
-
-  1.) 3 7 OVER +   =>   PUSH(TOS2 + POP)
-  2.) 3 7 OVER -   =>   PUSH(POP  - TOS)
-]]--
-function OverBinaryInline:optimize(ast, i, result)
-  self:log("inlining over before binary operator")
-  local over, op = ast[i], ast[i + 1]
-  --if op.item.p1.op == "pop2nd" then
+  elseif is_stack_op("over")(p2) then
+    -- single over
+    self:log("over")
     op.item.p1.op = "pop"
     op.item.p1.name = "stack_peek"
     op.item.p2.op = "tos"
     op.item.p2.name = "stack_peek"
-  --else -- results the same
-  --  op.item.p1.op = "tos2"
-  --  op.item.p1.name = "stack_peek"
-  --end
-  table.insert(result, op)
+    table.insert(result, p1)
+    table.insert(result, op)
+  else
+    error("Unexpected p2: " .. tostring(p2.name))
+  end
 end
 
 --[[
@@ -320,13 +311,10 @@ return {
     "binary p2 inline",
     {NOT(is_push_const), is_push_const, is_push_binop_pop}),
 
-  DupBinaryInline:new(
-    "dup binary inline",
-    {any, is_stack_op("dup"), is_push_binop_pop}),
-
-  OverBinaryInline:new(
-    "over binary inline",
-    {is_stack_op("over"), is_push_binop_pop}),
+  StackOpBinaryInline:new(
+    "stackop binary inline",
+    {any, OR(is_stack_op("dup"),
+             is_stack_op("over")), is_push_binop_pop}),
 
   InlineGeneralUnary:new(
     "inline general unary",
