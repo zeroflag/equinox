@@ -212,10 +212,11 @@ end
 --[[
  Inline DUP followed by binary operator
 
-  1.) 3 DUP *   =>   PUSH(TOS * POP)
-  2.) DUP DUP *   =>   PUSH(TOS * TOS)
+  1.) 3 DUP *      =>   PUSH(TOS * POP)
+  2.) DUP DUP *    =>   PUSH(TOS * TOS)
   3.) 3 7 OVER +   =>   PUSH(TOS2 + POP)
   4.) 3 7 OVER -   =>   PUSH(POP  - TOS)
+  5.) 1 2 2DUP +   =>   PUSH(TOS + TOS)
 ]]--
 function StackOpBinaryInline:optimize(ast, i, result)
   local p1, p2, op = ast[i], ast[i + 1], ast[i + 2]
@@ -226,6 +227,14 @@ function StackOpBinaryInline:optimize(ast, i, result)
     op.item.p2.op = "tos"
     op.item.p1.name = "stack_peek"
     op.item.p2.name = "stack_peek"
+    table.insert(result, op)
+  elseif is_stack_op("dup2")(p2) then
+    self:log("2dup")
+    op.item.p1.op = "tos2"
+    op.item.p2.op = "tos"
+    op.item.p1.name = "stack_peek"
+    op.item.p2.name = "stack_peek"
+    table.insert(result, p1)
     table.insert(result, op)
   elseif is_stack_op("dup")(p2) then
     -- single dup
@@ -314,6 +323,7 @@ return {
   StackOpBinaryInline:new(
     "stackop binary inline",
     {any, OR(is_stack_op("dup"),
+             is_stack_op("dup2"), -- 2dup
              is_stack_op("over")), is_push_binop_pop}),
 
   InlineGeneralUnary:new(

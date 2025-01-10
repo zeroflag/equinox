@@ -20,6 +20,7 @@
 [OPTI] binary p2 inline: inlining binary operator's 2nd param
 [OPTI] stackop binary inline: single dup
 [OPTI] stackop binary inline: dup dup
+[OPTI] stackop binary inline: 2dup
 [OPTI] inline general unary: push
 [OPTI] inline general unary: push
 [OPTI] inline general unary: if
@@ -39,7 +40,7 @@
 [OPTI] stackop binary inline: over
 [OPTI] stackop binary inline: over
 [OPTI] inline general unary: push (over)
-[OPTI] Iteration: 1 finished. Number of optimizations: 33
+[OPTI] Iteration: 1 finished. Number of optimizations: 34
 [OPTI] inline general unary: if
 [OPTI] inline general unary: if
 [OPTI] inline general unary: if

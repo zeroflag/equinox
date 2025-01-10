@@ -35,6 +35,10 @@ c d - 3   =assert
 3 dup dup * 9 =assert
 3 =assert
 
+10 7 2dup - 3 =assert
+7 =assert
+10 =assert
+
 \ unary op inline
 true
 false not assert-true
