@@ -31,7 +31,7 @@
 [OPTI] inline put params : inlining tbl put params
 [OPTI] inline at params: inlining tbl at params
 [OPTI] inline at p2: inlining tbl at 2nd param
-[OPTI] dup unary inline: inlining dup before unary operator
+[OPTI] inline general unary: push (dup)
 [OPTI] inline general unary: if (dup)
 [OPTI] inline general unary: if (over)
 [OPTI] over binary inline: inlining over before binary operator

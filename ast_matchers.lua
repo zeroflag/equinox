@@ -122,7 +122,6 @@ end
 AtParamsInline = AstMatcher:new()
 AtParamsInlineP2 = AstMatcher:new()
 PutParamsInline = AstMatcher:new()
-DupUnaryInline = AstMatcher:new()
 OverUnaryInline = AstMatcher:new()
 DupBinaryInline = AstMatcher:new()
 OverBinaryInline = AstMatcher:new()
@@ -183,6 +182,7 @@ end
   5.)    v      IF ... THEN   =>   IF v         THEN ... END
   6.) DUP IF .. THEN   =>   TOS IF .. THEN
   7.) OVER IF .. THEN   =>   TOS2 IF .. THEN
+  8.) [ 1 2 3 ] DUP size   =>   PUSH(#TOS)
 ]]--
 function InlineGeneralUnary:optimize(ast, i, result)
   local p1, operator = ast[i], ast[i + 1]
@@ -208,19 +208,6 @@ function InlineGeneralUnary:optimize(ast, i, result)
   end
 
   table.insert(result, operator)
-end
-
---[[
- Inline DUP followed by unary operator
-
-  1.) [ 1 2 3 ] DUP size   =>   PUSH(#TOS)
-]]--
-function DupUnaryInline:optimize(ast, i, result)
-  self:log("inlining dup before unary operator")
-  local p1, op = ast[i], ast[i + 1]
-  op.item.exp.op = "tos"
-  op.item.exp.name = "stack_peek"
-  table.insert(result, op)
 end
 
 --[[
@@ -348,10 +335,6 @@ return {
   BinaryInlineP2:new(
     "binary p2 inline",
     {NOT(is_push_const), is_push_const, is_push_binop_pop}),
-
-  DupUnaryInline:new(
-    "dup unary inline",
-    {is_stack_op("dup"), is_push_unop_pop}),
 
   OverUnaryInline:new(
     "over unary inline",
