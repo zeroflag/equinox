@@ -186,20 +186,24 @@ end
 ]]--
 function InlineGeneralUnary:optimize(ast, i, result)
   local p1, operator = ast[i], ast[i + 1]
+  local target = operator
+  if is_push_unop_pop(operator) then -- unary is embedded into a push
+    target = operator.item
+  end
 
   if is_push_unop_pop(operator) then -- unary is embedded into a push
-    operator.item.exp = p1.item
+    target.exp = p1.item
     self:log(operator.name)
   elseif is_stack_op("dup")(p1) then
-    operator.exp.op = "tos"
-    operator.exp.name ="stack_peek"
+    target.exp.op = "tos"
+    target.exp.name ="stack_peek"
     self:log(operator.name .. " (dup)")
   elseif is_stack_op("over")(p1) then
-    operator.exp.op = "tos2"
-    operator.exp.name ="stack_peek"
+    target.exp.op = "tos2"
+    target.exp.name ="stack_peek"
     self:log(operator.name .. " (over)")
   else
-    operator.exp = p1.item
+    target.exp = p1.item
     self:log(operator.name)
   end
 
