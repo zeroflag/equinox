@@ -121,6 +121,8 @@ function Compiler:compile_token(item)
     else
       error("Unkown literal: " .. item.kind)
     end
+  elseif item.kind == "forth_module_call" then
+    return ast.identifier(item.token .. "()")
   elseif item.kind == "lua_table_lookup" or
          item.kind == "lua_array_lookup" then
     if item.resolved then

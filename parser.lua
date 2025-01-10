@@ -64,6 +64,10 @@ local function lua_table_lookup(token, resolved)
   return {token = token, kind = "lua_table_lookup", resolved = resolved}
 end
 
+local function forth_module_call(token)
+  return {token = token, kind = "forth_module_call"}
+end
+
 local function lua_array_lookup(token, resolved)
   return {token = token, kind = "lua_array_lookup", resolved = resolved}
 end
@@ -188,12 +192,19 @@ function Parser:parse_word(token, kind)
   end
   if interop.is_lua_prop_lookup(token) then
     -- Table lookup
-    local lua_obj = interop.resolve_lua_obj(token)
-    -- best effort to check if it's valid lookup
-    if lua_obj or self.dict:find(token:match("^[^.]+")) then
-      return lua_table_lookup(token, true)
+    if string.match(token, "@$") then
+      token = token:sub(1, -2)
+      local lua_obj = interop.resolve_lua_obj(token)
+      -- best effort to check if it's valid lookup
+      if lua_obj or self.dict:find(token:match("^[^.]+")) then
+        return lua_table_lookup(token, true)
+      else
+        return lua_table_lookup(token, false)
+      end
     else
-      return lua_table_lookup(token, false)
+      -- TODO resolve
+      -- TODO move out
+      return forth_module_call(token)
     end
   end
   if interop.is_lua_array_lookup(token) then

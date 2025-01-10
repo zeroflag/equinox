@@ -54,17 +54,17 @@ assert_table(
 
 assert_table(
   {{token = "tbl1.key1", kind = "lua_table_lookup", resolved = false, line_number=1}},
-  parse("tbl1.key1"))
+  parse("tbl1.key1@"))
 
 dict:def_var("tbl1", "tbl1")
 
 assert_table(
   {{token = "tbl1.key1", kind = "lua_table_lookup", resolved = true, line_number=1}},
-  parse("tbl1.key1"))
+  parse("tbl1.key1@"))
 
 assert_table(
   {{token = "math.pi", kind = "lua_table_lookup", resolved = true, line_number=1}},
-  parse("math.pi"))
+  parse("math.pi@"))
 
 dict:def_word("myword", "myword")
 assert_table(
