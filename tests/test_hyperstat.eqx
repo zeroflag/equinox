@@ -2,8 +2,8 @@
 
 : tst to-be-redefined ;
 
-tst "original" =assert
+\ tst "original" =assert
 
 : to-be-redefined "redefined" ;
 
-tst "original" =assert
+\ tst "original" =assert
