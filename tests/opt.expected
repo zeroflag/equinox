@@ -1,14 +1,14 @@
 [OPTI] binary p2 inline: inlining binary operator's 2nd param
 [OPTI] binary p2 inline: inlining binary operator's 2nd param
 [OPTI] binary p2 inline: inlining binary operator's 2nd param
-[OPTI] inline local assignment: if
-[OPTI] inline local assignment: init_local
+[OPTI] inline general unary: if
+[OPTI] inline general unary: init_local
 [OPTI] binary p2 inline: inlining binary operator's 2nd param
 [OPTI] Iteration: 1 finished. Number of optimizations: 6
 [OPTI] Iteration: 2 finished. Number of optimizations: 0
-[OPTI] inline local assignment: assignment
-[OPTI] inline local assignment: assignment
-[OPTI] inline local assignment: assignment
+[OPTI] inline general unary: assignment
+[OPTI] inline general unary: assignment
+[OPTI] inline general unary: assignment
 [OPTI] binary inline: inlining binary operator params
 [OPTI] binary inline: inlining binary operator params
 [OPTI] binary inline: inlining binary operator params
@@ -18,15 +18,15 @@
 [OPTI] binary inline: inlining binary operator params
 [OPTI] binary inline: inlining binary operator params
 [OPTI] binary p2 inline: inlining binary operator's 2nd param
-[OPTI] inline local assignment: push
-[OPTI] inline local assignment: push
-[OPTI] inline local assignment: if
-[OPTI] inline local assignment: if
+[OPTI] inline general unary: push
+[OPTI] inline general unary: push
+[OPTI] inline general unary: if
+[OPTI] inline general unary: if
 [OPTI] binary inline: inlining binary operator params
 [OPTI] binary inline: inlining binary operator params
 [OPTI] dup if inline: inlining dup before if
 [OPTI] inline at params: inlining tbl at params
-[OPTI] inline local assignment: push
+[OPTI] inline general unary: push
 [OPTI] inline at params: inlining tbl at params
 [OPTI] inline put params : inlining tbl put params
 [OPTI] inline at params: inlining tbl at params
@@ -38,8 +38,8 @@
 [OPTI] over binary inline: inlining over before binary operator
 [OPTI] over unary inline: inlining over before unary operator
 [OPTI] Iteration: 1 finished. Number of optimizations: 31
-[OPTI] inline local assignment: if
-[OPTI] inline local assignment: if
-[OPTI] inline local assignment: if
+[OPTI] inline general unary: if
+[OPTI] inline general unary: if
+[OPTI] inline general unary: if
 [OPTI] Iteration: 2 finished. Number of optimizations: 3
 [OPTI] Iteration: 3 finished. Number of optimizations: 0

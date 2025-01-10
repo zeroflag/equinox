@@ -131,7 +131,7 @@ DupIfInline = AstMatcher:new()
 OverIfInline = AstMatcher:new()
 BinaryInline = AstMatcher:new()
 BinaryInlineP2 = AstMatcher:new()
-InlineLocalAssignment = AstMatcher:new()
+InlineGeneralUnary = AstMatcher:new()
 
 --[[
  Inline table at parameters
@@ -184,7 +184,7 @@ end
   4.) 10 v  <   IF ... THEN   =>   IF 10 < v    THEN ... END
   5.)    v      IF ... THEN   =>   IF v         THEN ... END
 ]]--
-function InlineLocalAssignment:optimize(ast, i, result)
+function InlineGeneralUnary:optimize(ast, i, result)
   local p1, operator = ast[i], ast[i + 1]
   self:log(operator.name)
   if is_push_unop_pop(operator) then
@@ -388,8 +388,8 @@ return {
     "over if inline",
     {is_stack_op("over"), is_if}),
 
-  InlineLocalAssignment:new(
-    "inline local assignment", -- init-local only optimizes one parameter
+  InlineGeneralUnary:new(
+    "inline general unary", -- init-local only optimizes one parameter
     {OR(is_push_const,
         is_push_unop,
         is_push_binop), OR(is_init_local,
