@@ -1,11 +1,12 @@
 local Compiler = require("compiler")
 local Optimizer = require("ast_optimizer")
 local CodeGen = require("codegen")
+local stack = require("stack")
 
 local compiler = Compiler.new(Optimizer.new(), CodeGen.new())
 
 function assert_tos(result, code)
-  local stack = compiler:eval(code)
+  compiler:eval(code)
   assert(stack:depth() == 1,
          "'" .. code .. "' depth: " .. stack:depth())
   assert(stack:tos() == result,

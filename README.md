@@ -10,6 +10,7 @@ Work in progress.
 * Uses Lua call semantics, no return stack
 * Lua table and array support 
 * Seamless Love2D integration
+* Self-hosted compiler (eventually)
 
 <img src="logo/logo.png" alt="logo" width="300"/>
 

@@ -225,9 +225,9 @@ end
 
 function Compiler:eval(text, log_result)
   local code = self:compile_and_load(text, log_result)
-  local success, err = xpcall(code, function() self:error_handler() end)
+  local success, result = xpcall(code, function() self:error_handler() end)
   if success then
-    return stack
+    return result
   else
     error(err)
   end
