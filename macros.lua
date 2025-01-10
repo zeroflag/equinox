@@ -177,7 +177,7 @@ end
 function macros.dot()
   return {
     ast.func_call("io.write", ast.func_call("tostring", ast.pop())),
-    ast.func_call("io.write", ast.literal("string", " "))
+    ast.func_call("io.write", ast.str(" "))
   }
 end
 
@@ -197,6 +197,23 @@ function macros.colon(compiler)
   sequence = sequence + 1
   compiler:def_word(forth_name, lua_name, false)
   return ast.func_header(lua_name, arity, void, true)
+end
+
+function macros.tick(compiler)
+  local name = compiler:word()
+  local word = compiler:find(name)
+  if not word then
+    error(name .. " is not found in dictionary")
+  elseif not word.callable then
+    error(name .. " is not callable")
+  elseif word.immediate then
+    error(name .. " is a macro")
+  end
+  return ast.push(ast.identifier(word.lua_name))
+end
+
+function macros.exec(compiler)
+  return ast.func_call("stack:pop()")
 end
 
 function macros.comment(compiler)

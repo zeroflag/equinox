@@ -1,3 +1,6 @@
+depth 0 =assert
+adepth 0 =assert
+
 : to-be-redefined "original" ;
 
 : tst to-be-redefined ;
@@ -12,3 +15,6 @@ tst "original" =assert
 
 tst "original" =assert
 tst2 "redefined" =assert
+
+depth 0 =assert
+adepth 0 =assert

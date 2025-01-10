@@ -83,6 +83,10 @@ function ast.literal(kind, value)
   }
 end
 
+function ast.str(val)
+  return ast.literal("string", val)
+end
+
 function ast.bin_op(operator, param1, param2)
   return {
     name = "bin_op",

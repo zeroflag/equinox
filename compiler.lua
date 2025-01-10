@@ -54,6 +54,10 @@ function Compiler:word()
   return self.parser:next_item().token
 end
 
+function Compiler:find(forth_name)
+  return self.dict:find(forth_name)
+end
+
 function Compiler:next_chr()
   return self.parser:next_chr()
 end
