@@ -219,6 +219,11 @@ function macros.exec(compiler)
   return ast.func_call("stack:pop()")
 end
 
+function macros.ret(compiler)
+  local name = compiler:word() -- return from Lua (module)
+  return ast._return(ast.identifier(name))
+end
+
 function macros.comment(compiler)
   repeat until ")" == compiler:next_chr()
 end
@@ -288,7 +293,7 @@ function macros._endcase()
 end
 
 function macros._exit()
-  return ast._return()
+  return ast._return(nil) -- exit from Forth word
 end
 
 local do_loop_nesting = 0

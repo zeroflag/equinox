@@ -86,9 +86,15 @@ function CodeGen:gen(ast)
       return "if " .. self:gen(ast.exp) .. " then"
     end
   end
+  if "return" == ast.name then
+    if ast.arg then
+      return "return " .. self:gen(ast.arg)
+    else
+      return "do return end"
+    end
+  end
   if "keyword" == ast.name then return ast.keyword end
   if "identifier" == ast.name then return ast.id end
-  if "return" == ast.name then return "do return end" end
   if "table_new" == ast.name then return "stack:push({})" end
   if "table_at" == ast.name then
     return string.format("%s[%s]",

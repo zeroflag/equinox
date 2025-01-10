@@ -141,8 +141,8 @@ function ast.identifier(id)
   return {name = "identifier", id = id}
 end
 
-function ast._return()
-  return {name = "return"}
+function ast._return(opt_arg)
+  return {name = "return", arg = opt_arg}
 end
 
 function ast._for(loop_var, start, stop, step)
