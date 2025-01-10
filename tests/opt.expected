@@ -36,7 +36,7 @@
 [OPTI] inline general unary: if (over)
 [OPTI] over binary inline: inlining over before binary operator
 [OPTI] over binary inline: inlining over before binary operator
-[OPTI] over unary inline: inlining over before unary operator
+[OPTI] inline general unary: push (over)
 [OPTI] Iteration: 1 finished. Number of optimizations: 31
 [OPTI] inline general unary: if
 [OPTI] inline general unary: if
