@@ -8,7 +8,6 @@
 -- local words
 -- false is mapped to nil
 -- debuginfo level (assert)
--- ' tick
 
 local stack = require("stack")
 local macros = require("macros")
