@@ -336,14 +336,15 @@ return {
     {is_stack_op("over"), is_push_binop_pop}),
 
   InlineGeneralUnary:new(
-    "inline general unary", -- init-local only optimizes one parameter
+    "inline general unary",
     {OR(is_stack_op("dup"),
         is_stack_op("over"),
         is_push_const,
         is_push_unop,
-        is_push_binop), OR(is_init_local,
-                           is_assignment,
-                           is_if,
-                           is_push_unop_pop)}),
+        is_push_binop),
+     OR(is_init_local,  -- init-local only optimizes one parameter
+        is_assignment,
+        is_if,
+        is_push_unop_pop)}),
 
 }
