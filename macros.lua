@@ -4,6 +4,7 @@ local interop = require("interop")
 local ast = require("ast")
 
 local macros = {}
+local sequence = 1
 
 local function sanitize(str)
   str = str:gsub("-", "_mi_")
@@ -192,7 +193,8 @@ end
 
 function macros.colon(compiler)
   local forth_name, arity, void = interop.parse_signature(compiler:word())
-  local lua_name = sanitize(forth_name)
+  local lua_name = sanitize(forth_name) .. "__s" .. sequence
+  sequence = sequence + 1
   compiler:def_word(forth_name, lua_name, false)
   return ast.func_header(lua_name, arity, void, true)
 end
