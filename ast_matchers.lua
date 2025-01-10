@@ -127,7 +127,6 @@ OverUnaryInline = AstMatcher:new()
 DupBinaryInline = AstMatcher:new()
 OverBinaryInline = AstMatcher:new()
 DupDupBinaryInline = AstMatcher:new()
-DupIfInline = AstMatcher:new()
 OverIfInline = AstMatcher:new()
 BinaryInline = AstMatcher:new()
 BinaryInlineP2 = AstMatcher:new()
@@ -183,15 +182,23 @@ end
   3.) false not IF ... THEN   =>   IF not false THEN ... END
   4.) 10 v  <   IF ... THEN   =>   IF 10 < v    THEN ... END
   5.)    v      IF ... THEN   =>   IF v         THEN ... END
+  6.) DUP IF .. THEN   =>   TOS IF .. THEN
 ]]--
 function InlineGeneralUnary:optimize(ast, i, result)
   local p1, operator = ast[i], ast[i + 1]
-  self:log(operator.name)
+
   if is_push_unop_pop(operator) then
     operator.item.p1 = p1.item
+    self:log(operator.name)
+  elseif is_stack_op("dup")(p1) then
+    operator.exp.op = "tos"
+    operator.exp.name ="stack_peek"
+    self:log(operator.name .. " (dup)")
   else
     operator.exp = p1.item
+    self:log(operator.name)
   end
+
   table.insert(result, operator)
 end
 
@@ -269,19 +276,6 @@ function DupDupBinaryInline:optimize(ast, i, result)
   op.item.p1.name = "stack_peek"
   op.item.p2.name = "stack_peek"
   table.insert(result, op)
-end
-
---[[
- Inline DUP followed by IF
-
-  1.) DUP IF .. THEN   =>   TOS IF .. THEN
-]]--
-function DupIfInline:optimize(ast, i, result)
-  self:log("inlining dup before if")
-  local dup, _if = ast[i], ast[i + 1]
-  _if.exp.op = "tos"
-  _if.exp.name = "stack_peek"
-  table.insert(result, _if)
 end
 
 --[[
@@ -380,17 +374,14 @@ return {
     "over binary inline",
     {is_stack_op("over"), is_push_binop_pop}),
 
-  DupIfInline:new(
-    "dup if inline",
-    {is_stack_op("dup"), is_if}),
-
   OverIfInline:new(
     "over if inline",
     {is_stack_op("over"), is_if}),
 
   InlineGeneralUnary:new(
     "inline general unary", -- init-local only optimizes one parameter
-    {OR(is_push_const,
+    {OR(is_stack_op("dup"),
+        is_push_const,
         is_push_unop,
         is_push_binop), OR(is_init_local,
                            is_assignment,

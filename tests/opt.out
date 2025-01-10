@@ -24,7 +24,7 @@
 [OPTI] inline general unary: if
 [OPTI] binary inline: inlining binary operator params
 [OPTI] binary inline: inlining binary operator params
-[OPTI] dup if inline: inlining dup before if
+[OPTI] inline general unary: if (dup)
 [OPTI] inline at params: inlining tbl at params
 [OPTI] inline general unary: push
 [OPTI] inline at params: inlining tbl at params
@@ -32,7 +32,7 @@
 [OPTI] inline at params: inlining tbl at params
 [OPTI] inline at p2: inlining tbl at 2nd param
 [OPTI] dup unary inline: inlining dup before unary operator
-[OPTI] dup if inline: inlining dup before if
+[OPTI] inline general unary: if (dup)
 [OPTI] over if inline: inlining over before if
 [OPTI] over binary inline: inlining over before binary operator
 [OPTI] over binary inline: inlining over before binary operator
