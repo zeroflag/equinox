@@ -7,6 +7,7 @@
 -- basic syntax check
 -- local words
 -- false is mapped to nil
+-- modules
 -- debuginfo level (assert)
 
 local stack = require("stack")

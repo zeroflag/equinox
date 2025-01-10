@@ -193,7 +193,10 @@ end
 
 function macros.colon(compiler)
   local forth_name, arity, void = interop.parse_signature(compiler:word())
-  local lua_name = sanitize(forth_name) .. "__s" .. sequence
+  local lua_name = sanitize(forth_name)
+  if compiler:find(forth_name) then
+      lua_name = lua_name .. "__s" .. sequence
+  end
   sequence = sequence + 1
   compiler:def_word(forth_name, lua_name, false)
   return ast.func_header(lua_name, arity, void, true)
@@ -207,7 +210,7 @@ function macros.tick(compiler)
   elseif not word.callable then
     error(name .. " is not callable")
   elseif word.immediate then
-    error(name .. " is a macro")
+    error("' cannot be used on a macro: " .. name)
   end
   return ast.push(ast.identifier(word.lua_name))
 end
