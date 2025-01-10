@@ -218,6 +218,14 @@ end
 function DupBinaryInline:optimize(ast, i, result)
   self:log("inlining dup before binary operator")
   local p1, p2, op = ast[i], ast[i + 1], ast[i + 2]
+
+
+  --op.item.p1.op = "tos"
+  --op.item.p2.op = "tos"
+  --op.item.p1.name = "stack_peek"
+  --op.item.p2.name = "stack_peek"
+
+
   op.item.p1.op = "tos"
   op.item.p1.name = "stack_peek"
   table.insert(result, p1)

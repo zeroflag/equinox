@@ -28,6 +28,13 @@ c d - 3   =assert
 10 dup 7 - 3 =assert
 10 =assert
 
+\ dup binop
+4 dup * 16 =assert
+
+\ dup dup binop
+3 dup dup * 9 =assert
+3 =assert
+
 \ unary op inline
 true
 false not assert-true
