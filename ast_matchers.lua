@@ -127,7 +127,6 @@ OverUnaryInline = AstMatcher:new()
 DupBinaryInline = AstMatcher:new()
 OverBinaryInline = AstMatcher:new()
 DupDupBinaryInline = AstMatcher:new()
-OverIfInline = AstMatcher:new()
 BinaryInline = AstMatcher:new()
 BinaryInlineP2 = AstMatcher:new()
 InlineGeneralUnary = AstMatcher:new()
@@ -183,17 +182,22 @@ end
   4.) 10 v  <   IF ... THEN   =>   IF 10 < v    THEN ... END
   5.)    v      IF ... THEN   =>   IF v         THEN ... END
   6.) DUP IF .. THEN   =>   TOS IF .. THEN
+  7.) OVER IF .. THEN   =>   TOS2 IF .. THEN
 ]]--
 function InlineGeneralUnary:optimize(ast, i, result)
   local p1, operator = ast[i], ast[i + 1]
 
-  if is_push_unop_pop(operator) then
+  if is_push_unop_pop(operator) then -- unary is embedded into a push
     operator.item.p1 = p1.item
     self:log(operator.name)
   elseif is_stack_op("dup")(p1) then
     operator.exp.op = "tos"
     operator.exp.name ="stack_peek"
     self:log(operator.name .. " (dup)")
+  elseif is_stack_op("over")(p1) then
+    operator.exp.op = "tos2"
+    operator.exp.name ="stack_peek"
+    self:log(operator.name .. " (over)")
   else
     operator.exp = p1.item
     self:log(operator.name)
@@ -279,19 +283,6 @@ function DupDupBinaryInline:optimize(ast, i, result)
 end
 
 --[[
- Inline OVER followed by IF
-
-  1.) OVER IF .. THEN   =>   TOS2 IF .. THEN
-]]--
-function OverIfInline:optimize(ast, i, result)
-  self:log("inlining over before if")
-  local over, _if = ast[i], ast[i + 1]
-  _if.exp.op = "tos2"
-  _if.exp.name = "stack_peek"
-  table.insert(result, _if)
-end
-
---[[
  Inline binary operator's ALL constant operands
 
   1.) 12      45 +   =>   PUSH(12   + 45)
@@ -374,13 +365,10 @@ return {
     "over binary inline",
     {is_stack_op("over"), is_push_binop_pop}),
 
-  OverIfInline:new(
-    "over if inline",
-    {is_stack_op("over"), is_if}),
-
   InlineGeneralUnary:new(
     "inline general unary", -- init-local only optimizes one parameter
     {OR(is_stack_op("dup"),
+        is_stack_op("over"),
         is_push_const,
         is_push_unop,
         is_push_binop), OR(is_init_local,
