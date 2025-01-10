@@ -35,7 +35,7 @@ function CodeGen:gen(ast)
     return "local " .. ast.var
   end
   if "init_local" == ast.name then
-    return "local " .. ast.var .. "=" .. self:gen(ast.val)
+    return "local " .. ast.var .. "=" .. self:gen(ast.exp)
   end
   if "assignment" == ast.name then
     return ast.var .. " = " .. self:gen(ast.exp)
@@ -81,9 +81,9 @@ function CodeGen:gen(ast)
   end
   if "if" == ast.name then
     if ast.body then
-      return "if " .. self:gen(ast.cond) .. " then " .. self:gen(ast.body) .. " end"
+      return "if " .. self:gen(ast.exp) .. " then " .. self:gen(ast.body) .. " end"
     else
-      return "if " .. self:gen(ast.cond) .. " then"
+      return "if " .. self:gen(ast.exp) .. " then"
     end
   end
   if "keyword" == ast.name then return ast.keyword end

@@ -44,10 +44,6 @@ local function is_stack_op(op)
   end
 end
 
-local function is_init_local(ast)
-  return is(ast, "init_local") and is_stack_consume(ast.val)
-end
-
 local function is_push_binop(ast)
   return is(ast, "push") and is(ast.item, "bin_op")
 end
@@ -84,7 +80,11 @@ local function is_assignment(ast)
 end
 
 local function is_if(ast)
-  return is(ast, "if") and is_stack_consume(ast.cond)
+  return is(ast, "if") and is_stack_consume(ast.exp)
+end
+
+local function is_init_local(ast)
+  return is(ast, "init_local") and is_stack_consume(ast.exp)
 end
 
 function AstMatcher:new(name, parts)
@@ -122,9 +122,6 @@ end
 AtParamsInline = AstMatcher:new()
 AtParamsInlineP2 = AstMatcher:new()
 PutParamsInline = AstMatcher:new()
-IfCondInline = AstMatcher:new()
-AssignmentInline = AstMatcher:new()
-UnaryInline = AstMatcher:new()
 DupUnaryInline = AstMatcher:new()
 OverUnaryInline = AstMatcher:new()
 DupBinaryInline = AstMatcher:new()
@@ -134,7 +131,7 @@ DupIfInline = AstMatcher:new()
 OverIfInline = AstMatcher:new()
 BinaryInline = AstMatcher:new()
 BinaryInlineP2 = AstMatcher:new()
-InlineInitLocalConst = AstMatcher:new()
+InlineLocalAssignment = AstMatcher:new()
 
 --[[
  Inline table at parameters
@@ -179,41 +176,23 @@ function PutParamsInline:optimize(ast, i, result)
 end
 
 --[[
- Inline IF conditional
-
-  1.) false not IF ... THEN   =>   IF not false THEN ... END
-  2.) 10 v  <   IF ... THEN   =>   IF 10 < v    THEN ... END
-  3.)    v      IF ... THEN   =>   IF v         THEN ... END
-]]--
-function IfCondInline:optimize(ast, i, result)
-  self:log("inlining if condition")
-  local cond, _if = ast[i], ast[i + 1]
-  _if.cond = cond.item
-  table.insert(result, _if)
-end
-
---[[
- Inline assignment operator's value operand
+ Inline assignment/init-local(used internal) operator's value operand
 
   1.) 123 -> v   =>   v = 123
+  2.) false not   =>   PUSH(not false)
+  3.) false not IF ... THEN   =>   IF not false THEN ... END
+  4.) 10 v  <   IF ... THEN   =>   IF 10 < v    THEN ... END
+  5.)    v      IF ... THEN   =>   IF v         THEN ... END
 ]]--
-function AssignmentInline:optimize(ast, i, result)
-  self:log("inlining assignment operator's param")
-  local p1, op = ast[i], ast[i + 1]
-  op.exp = p1.item
-  table.insert(result, op)
-end
-
---[[
- Inline unary operator's constant param
-
-  1.) false not   =>   PUSH(not false)
-]]--
-function UnaryInline:optimize(ast, i, result)
-  self:log("inlining unary operator's param")
-  local p1, op = ast[i], ast[i + 1]
-  op.item.p1 = p1.item
-  table.insert(result, op)
+function InlineLocalAssignment:optimize(ast, i, result)
+  local p1, operator = ast[i], ast[i + 1]
+  self:log(operator.name)
+  if is_push_unop_pop(operator) then
+    operator.item.p1 = p1.item
+  else
+    operator.exp = p1.item
+  end
+  table.insert(result, operator)
 end
 
 --[[
@@ -300,8 +279,8 @@ end
 function DupIfInline:optimize(ast, i, result)
   self:log("inlining dup before if")
   local dup, _if = ast[i], ast[i + 1]
-  _if.cond.op = "tos"
-  _if.cond.name = "stack_peek"
+  _if.exp.op = "tos"
+  _if.exp.name = "stack_peek"
   table.insert(result, _if)
 end
 
@@ -313,8 +292,8 @@ end
 function OverIfInline:optimize(ast, i, result)
   self:log("inlining over before if")
   local over, _if = ast[i], ast[i + 1]
-  _if.cond.op = "tos2"
-  _if.cond.name = "stack_peek"
+  _if.exp.op = "tos2"
+  _if.exp.name = "stack_peek"
   table.insert(result, _if)
 end
 
@@ -359,16 +338,6 @@ function BinaryInlineP2:optimize(ast, i, result)
   table.insert(result, op)
 end
 
---[[
-  Used internally
-]]--
-function InlineInitLocalConst:optimize(ast, i, result)
-  self:log("inlining init local constant")
-  local p1, init_local = ast[i], ast[i + 1]
-  init_local.val = p1.item
-  table.insert(result, init_local)
-end
-
 return {
 
   PutParamsInline:new(
@@ -390,10 +359,6 @@ return {
   BinaryInlineP2:new(
     "binary p2 inline",
     {NOT(is_push_const), is_push_const, is_push_binop_pop}),
-
-  UnaryInline:new(
-    "unary inline",
-    {is_push_const, is_push_unop_pop}),
 
   DupUnaryInline:new(
     "dup unary inline",
@@ -423,18 +388,13 @@ return {
     "over if inline",
     {is_stack_op("over"), is_if}),
 
-  AssignmentInline:new(
-    "assignment inline",
-    {is_push_const, is_assignment}),
-
-  IfCondInline:new(
-    "if cond inline",
+  InlineLocalAssignment:new(
+    "inline local assignment", -- init-local only optimizes one parameter
     {OR(is_push_const,
         is_push_unop,
-        is_push_binop), is_if}), -- TODO 10 3 over < if
-
-  InlineInitLocalConst:new(
-    "inline init local const", -- only optimizes one parameter
-    {is_push_const, is_init_local}),
+        is_push_binop), OR(is_init_local,
+                           is_assignment,
+                           is_if,
+                           is_push_unop_pop)}),
 
 }

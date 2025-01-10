@@ -99,12 +99,16 @@ function ast.assignment(var, exp)
   return {name = "assignment", var  = var, exp  = exp}
 end
 
-function ast.def_local(var)
-  return {name = "local", var = var}
+function ast.init_local(var, exp)
+  return {name = "init_local", var = var, exp = exp}
 end
 
-function ast.init_local(var, val)
-  return {name = "init_local", var = var, val = val}
+function ast._if(cond, body)
+  return {name = "if", exp = cond, body = body}
+end
+
+function ast.def_local(var)
+  return {name = "local", var = var}
 end
 
 function ast.new_table()
@@ -122,10 +126,6 @@ function ast.table_put(tbl, key, value)
     key = key,
     value = value
   }
-end
-
-function ast._if(cond, body)
-  return {name = "if", cond = cond, body = body}
 end
 
 function ast.keyword(keyword)
