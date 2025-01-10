@@ -6,7 +6,9 @@
 -- 14 -> var x syntax ?
 -- basic syntax check
 -- local words
--- debuginfo level
+-- false is mapped to nil
+-- debuginfo level (assert)
+-- ' tick
 
 local stack = require("stack")
 local macros = require("macros")

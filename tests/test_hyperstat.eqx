@@ -1,0 +1,9 @@
+: to-be-redefined "original" ;
+
+: tst to-be-redefined ;
+
+tst "original" =assert
+
+: to-be-redefined "redefined" ;
+
+tst "original" =assert

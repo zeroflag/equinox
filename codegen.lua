@@ -120,10 +120,12 @@ function CodeGen:gen(ast)
     return result
   end
   if "func_header" == ast.name then
+    local prefix = ""
+    if not ast.global then prefix = "local " end
     if ast.arity == 0 then
-      return "function " .. ast.func_name .. "()"
+      return string.format("%sfunction %s()", prefix, ast.func_name)
     else
-      local result = "function " .. ast.func_name .. "("
+      local result = string.format("%sfunction %s(", prefix, ast.func_name)
       for i = 1, ast.arity do
         result = result .. "__a" .. i
         if i < ast.arity then result = result .. "," end

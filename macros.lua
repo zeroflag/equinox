@@ -194,7 +194,7 @@ function macros.colon(compiler)
   local forth_name, arity, void = interop.parse_signature(compiler:word())
   local lua_name = sanitize(forth_name)
   compiler:def_word(forth_name, lua_name, false)
-  return ast.func_header(lua_name, arity, void)
+  return ast.func_header(lua_name, arity, void, false)
 end
 
 function macros.comment(compiler)
