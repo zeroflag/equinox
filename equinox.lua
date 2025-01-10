@@ -32,7 +32,7 @@ lua-alias: tostring/1 >string
 
 : [ depth >a ;
 : ]
-  <table>
+  []
   depth a> - 1 - 0
   do
     dup >a
@@ -42,7 +42,7 @@ lua-alias: tostring/1 >string
 
 : { depth >a ;
 : }
-    <table>
+    {}
     depth a> - 1 -
     dup 2 % 0 != if
       "Table should be created with even number of items" error/1
