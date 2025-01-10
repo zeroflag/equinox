@@ -59,7 +59,7 @@ local function is_push_unop(ast)
 end
 
 local function is_push_unop_pop(ast)
-  return is_push_unop(ast) and is_stack_consume(ast.item.p1)
+  return is_push_unop(ast) and is_stack_consume(ast.item.exp)
 end
 
 local function is_tbl_at(ast)
@@ -188,7 +188,7 @@ function InlineGeneralUnary:optimize(ast, i, result)
   local p1, operator = ast[i], ast[i + 1]
 
   if is_push_unop_pop(operator) then -- unary is embedded into a push
-    operator.item.p1 = p1.item
+    operator.item.exp = p1.item
     self:log(operator.name)
   elseif is_stack_op("dup")(p1) then
     operator.exp.op = "tos"
@@ -214,8 +214,8 @@ end
 function DupUnaryInline:optimize(ast, i, result)
   self:log("inlining dup before unary operator")
   local p1, op = ast[i], ast[i + 1]
-  op.item.p1.op = "tos"
-  op.item.p1.name = "stack_peek"
+  op.item.exp.op = "tos"
+  op.item.exp.name = "stack_peek"
   table.insert(result, op)
 end
 
@@ -227,8 +227,8 @@ end
 function OverUnaryInline:optimize(ast, i, result)
   self:log("inlining over before unary operator")
   local p1, op = ast[i], ast[i + 1]
-  op.item.p1.op = "tos2"
-  op.item.p1.name = "stack_peek"
+  op.item.exp.op = "tos2"
+  op.item.exp.name = "stack_peek"
   table.insert(result, op)
 end
 

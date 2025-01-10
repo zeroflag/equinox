@@ -25,7 +25,7 @@ function CodeGen:gen(ast)
     return string.format("aux:push(%s)", self:gen(ast.item))
   end
   if "unary_op" == ast.name then
-    return string.format("%s %s", ast.op, self:gen(ast.p1))
+    return string.format("%s %s", ast.op, self:gen(ast.exp))
   end
   if "bin_op" == ast.name then
     return string.format(

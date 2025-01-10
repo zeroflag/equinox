@@ -92,7 +92,7 @@ function ast.bin_op(operator, param1, param2)
 end
 
 function ast.unary_op(operator, operand)
-  return {name = "unary_op", op = operator, p1 = operand}
+  return {name = "unary_op", op = operator, exp = operand}
 end
 
 function ast.assignment(var, exp)
