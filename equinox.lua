@@ -11,6 +11,18 @@ local optimizer = Optimizer.new()
 local compiler = Compiler.new(optimizer, CodeGen.new())
 local repl = Repl.new(compiler, optimizer)
 
+local lua_require = require
+
+function require(module_name)
+  if module_name:lower():match("%.eqx$") then
+    -- TODO nem adja vissza a modullet-
+    -- eval a stackel ter vissza ez meg semmivel
+    return equinox.eval_files({module_name}, false)
+  else
+    return lua_require(module_name)
+  end
+end
+
 local lib = [[
 lua-alias: table.insert!2 append
 lua-alias: table.insert!3 insert
@@ -59,7 +71,7 @@ local function start_repl()
   repl:start()
 end
 
-local function eval_files(files, log_result)
+function equinox.eval_files(files, log_result)
   compiler:eval(lib)
   for i, filename in ipairs(files) do
     if log_result then
@@ -90,7 +102,7 @@ function equinox.main()
         table.insert(files, param)
       end
     end
-    eval_files(files, log_result)
+    equinox.eval_files(files, log_result)
     if repl then start_repl() end
   end
 end
