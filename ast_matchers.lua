@@ -4,6 +4,7 @@ local function is(ast, name) return ast.name == name end
 local function is_literal(ast) return is(ast, "literal") end
 local function is_identifier(ast) return is(ast, "identifier") end
 local function is_stack_consume(ast) return is(ast, "stack_consume") end
+local function any(ast) return ast ~= nil end
 
 local function is_literal_tbl_at(ast)
   return is(ast, "table_at")
@@ -124,7 +125,6 @@ AtParamsInlineP2 = AstMatcher:new()
 PutParamsInline = AstMatcher:new()
 DupBinaryInline = AstMatcher:new()
 OverBinaryInline = AstMatcher:new()
-DupDupBinaryInline = AstMatcher:new()
 BinaryInline = AstMatcher:new()
 BinaryInlineP2 = AstMatcher:new()
 InlineGeneralUnary = AstMatcher:new()
@@ -214,22 +214,26 @@ end
  Inline DUP followed by binary operator
 
   1.) 3 DUP *   =>   PUSH(TOS * POP)
+  2.) DUP DUP *   =>   PUSH(TOS * TOS)
 ]]--
 function DupBinaryInline:optimize(ast, i, result)
-  self:log("inlining dup before binary operator")
-  local p1, p2, op = ast[i], ast[i + 1], ast[i + 2]
-
-
-  --op.item.p1.op = "tos"
-  --op.item.p2.op = "tos"
-  --op.item.p1.name = "stack_peek"
-  --op.item.p2.name = "stack_peek"
-
-
-  op.item.p1.op = "tos"
-  op.item.p1.name = "stack_peek"
-  table.insert(result, p1)
-  table.insert(result, op)
+  local p1, dup, op = ast[i], ast[i + 1], ast[i + 2]
+  if is_stack_op("dup")(p1) then
+    -- double dup
+    self:log("dup dup")
+    op.item.p1.op = "tos"
+    op.item.p2.op = "tos"
+    op.item.p1.name = "stack_peek"
+    op.item.p2.name = "stack_peek"
+    table.insert(result, op)
+  else
+    -- single dup
+    self:log("single dup")
+    op.item.p1.op = "tos"
+    op.item.p1.name = "stack_peek"
+    table.insert(result, p1)
+    table.insert(result, op)
+  end
 end
 
 --[[
@@ -250,21 +254,6 @@ function OverBinaryInline:optimize(ast, i, result)
   --  op.item.p1.op = "tos2"
   --  op.item.p1.name = "stack_peek"
   --end
-  table.insert(result, op)
-end
-
---[[
- Inline DUPs followed by binary operator
-
-  1.) DUP DUP *   =>   PUSH(TOS * TOS)
-]]--
-function DupDupBinaryInline:optimize(ast, i, result)
-  self:log("inlining dup dup before binary operator")
-  local p1, p2, op = ast[i], ast[i + 1], ast[i + 2]
-  op.item.p1.op = "tos"
-  op.item.p2.op = "tos"
-  op.item.p1.name = "stack_peek"
-  op.item.p2.name = "stack_peek"
   table.insert(result, op)
 end
 
@@ -331,13 +320,9 @@ return {
     "binary p2 inline",
     {NOT(is_push_const), is_push_const, is_push_binop_pop}),
 
-  DupDupBinaryInline:new(
-    "dup dup binary inline",
-    {is_stack_op("dup"), is_stack_op("dup"), is_push_binop_pop}),
-
   DupBinaryInline:new(
     "dup binary inline",
-    {NOT(is_stack_op("dup")), is_stack_op("dup"), is_push_binop_pop}),
+    {any, is_stack_op("dup"), is_push_binop_pop}),
 
   OverBinaryInline:new(
     "over binary inline",

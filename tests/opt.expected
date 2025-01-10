@@ -18,8 +18,8 @@
 [OPTI] binary inline: inlining binary operator params
 [OPTI] binary inline: inlining binary operator params
 [OPTI] binary p2 inline: inlining binary operator's 2nd param
-[OPTI] dup binary inline: inlining dup before binary operator
-[OPTI] dup dup binary inline: inlining dup dup before binary operator
+[OPTI] dup binary inline: single dup
+[OPTI] dup binary inline: dup dup
 [OPTI] inline general unary: push
 [OPTI] inline general unary: push
 [OPTI] inline general unary: if
