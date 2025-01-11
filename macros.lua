@@ -220,8 +220,7 @@ function macros.exec(compiler)
 end
 
 function macros.ret(compiler)
-  local name = compiler:word() -- return from Lua (module)
-  return ast._return(ast.identifier(name))
+  return ast._return(ast.pop())
 end
 
 function macros.comment(compiler)
