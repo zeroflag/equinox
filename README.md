@@ -14,7 +14,7 @@ Work in progress.
 
 <img src="logo/logo.png" alt="logo" width="300"/>
 
-Lua table operations
+#### Lua table operations
 
 | Operation       | Array                  | Table             |
 |-----------------|------------------------|-------------------|
@@ -26,5 +26,14 @@ Lua table operations
 | Remove          | tbl idx remove         | tbl key nil put   |
 | Remove & Return | tbl idx table.remove/2 |                   |
 | Size            | tbl size               |                   |
+
+#### Lua interop
+
+| Operation                                 | Syntax               |
+|-------------------------------------------|----------------------|
+| Call Lua function (2 parameters)          | 2 8 math.pow/2       |
+| Call nullary Lua function (no parameters) | os.time              |
+| Call Lua function and ignore return value | tbl 2 table.remove!2 |
+| Property lookup                           | math.pi@             |
 
 ![{master}](https://github.com/zeroflag/equinox/actions/workflows/makefile.yml/badge.svg) 
