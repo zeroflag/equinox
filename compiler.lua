@@ -2,7 +2,6 @@
 -- hyperstatic glob
 -- fix Lua's accidental global
 -- tab auto complete repl
--- 14 -> var x syntax ?
 -- basic syntax check
 -- local words
 -- modules

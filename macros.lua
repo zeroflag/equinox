@@ -245,8 +245,16 @@ function macros.var(compiler)
 end
 
 function macros.assignment(compiler)
-  local variable = compiler:word()
-  return ast.assignment(variable, ast.pop())
+  local name = compiler:word()
+  if name == "var" then
+    -- declare and assign of a new var
+    name = compiler:word()
+    compiler:def_var(name, name)
+    return ast.init_local(name, ast.pop())
+  else
+    -- assignment of existing var
+    return ast.assignment(name, ast.pop())
+  end
 end
 
 function macros._if()

@@ -21,5 +21,10 @@ var x
 20 =assert
 10 =assert
 
+\ create and init in one step
+
+44 -> var n
+n 44 =assert
+
 depth 0 =assert
 adepth 0 =assert
