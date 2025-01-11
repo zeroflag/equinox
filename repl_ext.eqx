@@ -1,0 +1,62 @@
+10 -> var width
+
+
+: line ( --  )
+  " +"
+  "-" width 2 + string.rep/2
+  .. "+"
+  .. . cr ;
+
+: trunc ( s -- s )
+  dup size width > if
+    1 width 2 - string.sub/3 ".." ..
+  else
+    1 width string.sub/3
+  then ;
+
+: pad-len ( s -- n ) size width swap - ;
+: padding ( s -- s ) pad-len " " swap string.rep/2 ;
+: pad ( str -- str ) dup padding swap .. ;
+
+: clear depth 0 do drop loop ;
+: table? type/1 "table" = ;
+: number? type/1 "number" = ;
+: .str "\"%s\"" swap string.format/2 . ;
+
+: seq? ( tbl -- bool )
+  dup table? not if
+    drop ( tbl )
+    false exit
+  then
+  0 ( count )
+  over ( tbl ) pairs: key val
+    key number? not if
+      drop ( tbl ) drop ( count )
+      false exit
+    then
+    1 +
+  end
+  swap ( tbl ) size = ;
+
+: inspect ( obj -- )
+  dup type/1
+  case
+    "string" of .str endof
+    "number" of .    endof
+    "table"  of
+      dup seq? if
+        "[" . ipairs: i elem elem inspect end "]" .
+      else
+        "{" . pairs: key val key inspect val inspect end "}" .
+      then
+    endof
+    drop >str . ( default )
+  endcase ;
+
+: .s ( -- )
+  depth 0 = if exit then
+  line
+  depth 0 do
+    " |" . i pick >str trunc pad . "|" . cr
+    line
+  loop ;
