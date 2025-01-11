@@ -24,7 +24,7 @@ local lib = [[
 lua-alias: table.insert!2 append
 lua-alias: table.insert!3 insert
 lua-alias: table.remove!2 remove
-lua-alias: tostring/1 >string
+lua-alias: tostring/1 >str
 
 : assert-true assert!1 ;
 : assert-false not assert-true ;
@@ -45,7 +45,7 @@ lua-alias: tostring/1 >string
     {}
     depth a> - 1 -
     dup 2 % 0 != if
-      "Table should be created with even number of items" error/1
+      "Table needs even number of items" error/1
     then
     2 / 0 do
       dup >a -rot put a>
@@ -78,9 +78,13 @@ function equinox.eval_files(files, log_result)
   return result
 end
 
+function equinox.init()
+  compiler:eval(lib)
+end
+
 function equinox.main()
   if #arg < 1 then
-    compiler:eval(lib)
+    equinox.init()
     start_repl()
   else
     local log_result, repl = false, false
@@ -100,7 +104,7 @@ function equinox.main()
         table.insert(files, param)
       end
     end
-    compiler:eval(lib)
+    equinox.init()
     equinox.eval_files(files, log_result)
     if repl then start_repl() end
   end

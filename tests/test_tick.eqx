@@ -1,0 +1,34 @@
+depth 0 =assert
+adepth 0 =assert
+
+: even 2 % 0 = ;
+: odd even not ;
+
+2 even assert-true
+2 odd assert-false
+5 even assert-false
+5 odd assert-true
+
+: filter ( pred array -- c )
+  var result
+  [  ] -> result
+  ipairs: i elem
+    elem over exec if result elem append then
+  end
+  drop
+  result ;
+
+var a
+
+' odd [ 1 2 3 4 ] filter -> a
+a size 2 =assert
+a 1 at 1 =assert
+a 2 at 3 =assert
+
+' even [ 1 2 3 4 ] filter -> a
+a size 2 =assert
+a 1 at 2 =assert
+a 2 at 4 =assert
+
+depth 0 =assert
+adepth 0 =assert

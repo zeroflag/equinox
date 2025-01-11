@@ -5,7 +5,7 @@ local MULTI_LINE = 2
 
 local Repl = {}
 
-local repl_helper = "repl_helper.eqx"
+local repl_ext = "repl_ext.eqx"
 
 local function file_exists(filename)
   local file = io.open(filename, "r")
@@ -22,7 +22,7 @@ function Repl.new(compiler, optimizer)
                optimizer = optimizer,
                mode = SINGLE_LINE,
                always_show_stack = false,
-               repl_helper_loaded = false,
+               repl_ext_loaded = false,
                input = "",
                log_result = false }
   setmetatable(obj, {__index = Repl})
@@ -131,11 +131,11 @@ function Repl:process_commands()
     return true
   end
   if command == "stack-on" then
-    if self.repl_helper_loaded then
+    if self.repl_ext_loaded then
       self.always_show_stack = true
       print("Show stack after input is on")
     else
-      print("Requires " .. repl_helper)
+      print("Requires " .. repl_ext)
     end
     return true
   end
@@ -176,7 +176,7 @@ end
 function Repl:print_ok()
   if stack:depth() > 0 then
     print("\27[92m" .. "OK(".. stack:depth()  .. ")" .. "\27[0m")
-    if self.always_show_stack and self.repl_helper_loaded then
+    if self.always_show_stack and self.repl_ext_loaded then
       self.compiler:eval(".s")
     end
   else
@@ -194,9 +194,9 @@ function Repl:safe_call(func)
 end
 
 function Repl:start()
-  if file_exists(repl_helper) then
-    self.compiler:eval_file(repl_helper)
-    self.repl_helper_loaded = true
+  if file_exists(repl_ext) then
+    self.compiler:eval_file(repl_ext)
+    self.repl_ext_loaded = true
   end
   local prompt = "#"
   while true do
