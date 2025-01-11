@@ -64,12 +64,8 @@ local function lua_table_lookup(token, resolved)
   return {token = token, kind = "lua_table_lookup", resolved = resolved}
 end
 
-local function forth_module_call(token)
-  return {token = token, kind = "forth_module_call"}
-end
-
-local function lua_array_lookup(token, resolved)
-  return {token = token, kind = "lua_array_lookup", resolved = resolved}
+local function forth_module_call(token, resolved)
+  return {token = token, kind = "forth_module_call", resolved = resolved}
 end
 
 local function literal(token, subtype)
@@ -182,34 +178,26 @@ function Parser:parse_word(token, kind)
   end
   local res = interop.resolve_lua_method_call(token)
   if res then
-    -- Lua method call such as obj:method/3
+    -- Lua method call like: obj:method/3
     return lua_method_call(token, res)
+  end
+  if interop.is_lua_prop_lookup(token) then
+    -- Lua/Forth table lookup like: math.pi@ or tbl.key@
+    token = token:sub(1, -2) -- strip "@"
+    local tbl = token:match("^[^.]+")
+    return lua_table_lookup(token, not not
+                            (interop.resolve_lua_obj(token)
+                             or self.dict:find(tbl)))
   end
   local res = interop.resolve_lua_func_with_arity(token)
   if res then
-    -- Lua function call such as math.max/2
+    -- Lua function call like: math.max/2 or os.time
     return lua_func_call(token, res)
   end
-  if interop.is_lua_prop_lookup(token) then
-    -- Table lookup
-    if string.match(token, "@$") then
-      token = token:sub(1, -2)
-      local lua_obj = interop.resolve_lua_obj(token)
-      -- best effort to check if it's valid lookup
-      if lua_obj or self.dict:find(token:match("^[^.]+")) then
-        return lua_table_lookup(token, true)
-      else
-        return lua_table_lookup(token, false)
-      end
-    else
-      -- TODO resolve
-      -- TODO move out
-      return forth_module_call(token)
-    end
-  end
-  if interop.is_lua_array_lookup(token) then
-    -- TODO try to resolve
-    return lua_array_lookup(token, true)
+  if interop.is_module_call(token) then
+    -- Forth module call like my-module.myword
+    local tbl = token:match("^[^.]+")
+    return forth_module_call(token, not not self.dict:find(tbl))
   end
   return unknown(token)
 end

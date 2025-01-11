@@ -2,7 +2,6 @@
 -- hyperstatic glob
 -- fix Lua's accidental global
 -- tab auto complete repl
--- a[i] syntax test
 -- 14 -> var x syntax ?
 -- basic syntax check
 -- local words
@@ -123,8 +122,8 @@ function Compiler:compile_token(item)
     end
   elseif item.kind == "forth_module_call" then
     return ast.identifier(item.token .. "()")
-  elseif item.kind == "lua_table_lookup" or
-         item.kind == "lua_array_lookup" then
+  elseif item.kind == "lua_table_lookup" then
+    -- math.pi@
     if item.resolved then
       return ast.push(ast.identifier(item.token))
     else

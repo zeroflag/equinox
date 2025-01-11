@@ -52,11 +52,12 @@ function interop.resolve_lua_method_call(signature)
 end
 
 function interop.is_lua_prop_lookup(token)
-  return string.match(token, ".+%..+")
+  return string.match(token, ".+%..+@$")
 end
 
-function interop.is_lua_array_lookup(token)
-  return string.match(token, ".+%[.+%]")
+function interop.is_module_call(token)
+  return string.match(token, ".+%..+")
+    and not string.match(token, "@$")
 end
 
 return interop
