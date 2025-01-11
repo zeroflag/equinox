@@ -1,11 +1,11 @@
 -- TODO
--- hyperstatic glob
 -- fix Lua's accidental global
 -- tab auto complete repl
 -- basic syntax check
 -- local words
--- modules
+-- self / lua callbacks
 -- debuginfo level (assert)
+-- (: a b c :)
 
 local stack = require("stack")
 local macros = require("macros")

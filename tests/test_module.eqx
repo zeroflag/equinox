@@ -1,0 +1,11 @@
+depth 0 =assert
+adepth 0 =assert
+
+"tests/mymodule.eqx" require/1 -> var mymodule
+
+mymodule.word1 42 =assert
+mymodule.const1@ 1337 =assert
+mymodule.const2@ 1991  =assert
+
+depth 0 =assert
+adepth 0 =assert
