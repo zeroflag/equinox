@@ -14,7 +14,7 @@ local lua_require = require
 
 function require(module_name)
   if module_name:lower():match("%.eqx$") then
-    return equinox.eval_files({module_name}, false)
+    return equinox.eval_file(module_name, false)
   else
     return lua_require(module_name)
   end
@@ -63,13 +63,11 @@ local function version()
 end
 
 local function start_repl()
-  compiler:eval(lib)
   repl:welcome(version())
   repl:start()
 end
 
 function equinox.eval_files(files, log_result)
-  compiler:eval(lib) -- TODO only this loads lib
   local result = nil
   for i, filename in ipairs(files) do
     if log_result then
@@ -82,6 +80,7 @@ end
 
 function equinox.main()
   if #arg < 1 then
+    compiler:eval(lib)
     start_repl()
   else
     local log_result, repl = false, false
@@ -101,6 +100,7 @@ function equinox.main()
         table.insert(files, param)
       end
     end
+    compiler:eval(lib)
     equinox.eval_files(files, log_result)
     if repl then start_repl() end
   end

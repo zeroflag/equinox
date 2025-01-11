@@ -121,7 +121,12 @@ function Compiler:compile_token(item)
       error("Unkown literal: " .. item.kind)
     end
   elseif item.kind == "forth_module_call" then
-    return ast.identifier(item.token .. "()")
+    -- mymod.myword
+    if item.resolved then
+      return ast.identifier(item.token .. "()")
+    else
+      error("Unknown table lookup: " .. item.token)
+    end
   elseif item.kind == "lua_table_lookup" then
     -- math.pi@
     if item.resolved then
