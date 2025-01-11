@@ -1,27 +1,27 @@
 10 -> var width
 
 
-: line ( --  )
+:: line ( --  )
   " +"
   "-" width 2 + string.rep/2
   .. "+"
   .. . cr ;
 
-: trunc ( s -- s )
+:: trunc ( s -- s )
   dup size width > if
     1 width 2 - string.sub/3 ".." ..
   else
     1 width string.sub/3
   then ;
 
-: pad-len ( s -- n ) size width swap - ;
-: padding ( s -- s ) pad-len " " swap string.rep/2 ;
-: pad ( str -- str ) dup padding swap .. ;
+:: pad-len ( s -- n ) size width swap - ;
+:: padding ( s -- s ) pad-len " " swap string.rep/2 ;
+:: pad ( str -- str ) dup padding swap .. ;
+:: .str "\"%s\"" swap string.format/2 . ;
 
 : clear depth 0 do drop loop ;
 : table? type/1 "table" = ;
 : number? type/1 "number" = ;
-: .str "\"%s\"" swap string.format/2 . ;
 
 : seq? ( tbl -- bool )
   dup table? not if

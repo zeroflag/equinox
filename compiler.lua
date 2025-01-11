@@ -2,7 +2,6 @@
 -- fix Lua's accidental global
 -- tab auto complete repl
 -- basic syntax check
--- local words
 -- self / lua callbacks
 -- debuginfo level (assert)
 -- (: a b c :)

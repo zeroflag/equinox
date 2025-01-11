@@ -191,15 +191,23 @@ function macros.def_lua_alias(compiler)
   compiler:alias(lua_name, forth_alias)
 end
 
-function macros.colon(compiler)
+local function def_word(compiler, is_global)
   local forth_name, arity, void = interop.parse_signature(compiler:word())
   local lua_name = sanitize(forth_name)
   if compiler:find(forth_name) then
-      lua_name = lua_name .. "__s" .. sequence
+    lua_name = lua_name .. "__s" .. sequence
   end
   sequence = sequence + 1
   compiler:def_word(forth_name, lua_name, false)
-  return ast.func_header(lua_name, arity, void, true)
+  return ast.func_header(lua_name, arity, void, is_global)
+end
+
+function macros.colon(compiler)
+  return def_word(compiler, true)
+end
+
+function macros.local_colon(compiler)
+  return def_word(compiler, false)
 end
 
 function macros.tick(compiler)
