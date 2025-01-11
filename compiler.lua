@@ -5,7 +5,6 @@
 -- 14 -> var x syntax ?
 -- basic syntax check
 -- local words
--- false is mapped to nil
 -- modules
 -- debuginfo level (assert)
 

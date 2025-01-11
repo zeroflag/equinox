@@ -9,7 +9,11 @@ function Stack.new(name)
 end
 
 function Stack:push(e)
-  self.stack[#self.stack + 1] = (e ~= nil and e or NIL)
+  if e ~= nil then
+    self.stack[#self.stack + 1] = e
+  else
+    self.stack[#self.stack + 1] = NIL
+  end
 end
 
 function Stack:push_many(...)
@@ -17,7 +21,11 @@ function Stack:push_many(...)
   local stack = self.stack
   local n = #stack
   for i = 1, #args do
-    stack[n + i] = (args[i] ~= nil and args[i] or NIL)
+    if args[i] ~= nil then
+      stack[n + i] = args[i]
+    else
+      stack[n + i] = NIL
+    end
   end
 end
 
@@ -29,7 +37,7 @@ function Stack:pop()
   end
   local item = stack[size]
   stack[size] = nil
-  return item ~= NIL and item or nil
+  if item ~= NIL then return item else return nil end
 end
 
 function Stack:pop2nd()
@@ -41,7 +49,7 @@ function Stack:pop2nd()
   local item = stack[n - 1]
   stack[n -1] = stack[n]
   stack[n] = nil
-  return item ~= NIL and item or nil
+  if item ~= NIL then return item else return nil end
 end
 
 function Stack:pop3rd()
@@ -50,7 +58,7 @@ function Stack:pop3rd()
     error("Stack underflow: " .. self.name)
   end
   local item = table.remove(self.stack, n - 2)
-  return item ~= NIL and item or nil
+  if item ~= NIL then return item else return nil end
 end
 
 function Stack:swap()
@@ -134,18 +142,18 @@ end
 
 function Stack:tos()
   local item = self.stack[#self.stack]
-  if not item then
+  if item == nil then
     error("Stack underflow: " .. self.name)
   end
-  return item ~= NIL and item or nil
+  if item ~= NIL then return item else return nil end
 end
 
 function Stack:tos2()
   local item = self.stack[#self.stack - 1]
-  if not item then
+  if item == nil then
     error("Stack underflow: " .. self.name)
   end
-  return item ~= NIL and item or nil
+  if item ~= NIL then return item else return nil end
 end
 
 function Stack:_and()
@@ -164,10 +172,10 @@ end
 
 function Stack:at(index)
   local item = self.stack[#self.stack - index]
-  if not item then
+  if item == nil then
     error("Stack underflow: " .. self.name)
   end
-  return item ~= NIL and item or nil
+  if item ~= NIL then return item else return nil end
 end
 
 return Stack
