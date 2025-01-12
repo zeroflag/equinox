@@ -372,6 +372,14 @@ function macros._end()
   return ast.keyword("end")
 end
 
+function macros.keyval(compiler)
+  local name = compiler:word()
+  return {
+    ast.push(ast.str(name)),
+    ast.push(ast.identifier(name))
+  }
+end
+
 function macros.words(compiler)
   for i, each in ipairs(compiler:word_list()) do
     io.write(each .. " ")

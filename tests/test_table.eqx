@@ -128,5 +128,14 @@ tbl 2 at "z" =assert
 40 =assert
 30 =assert
 
+"apple" -> var abc
+"orange" -> var def
+
+{ & abc & def } -> tbl
+
+tbl &abc at "apple" =assert
+tbl.def@ "orange" =assert
+
+
 depth 0 =assert
 adepth 0 =assert
