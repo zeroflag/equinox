@@ -1,10 +1,12 @@
 -- TODO
 -- fix Lua's accidental global
--- tab auto complete repl
+-- tab auto complete repl (linenoise/readline)
 -- basic syntax check
 -- self / lua callbacks
 -- debuginfo level (assert)
 -- (: a b c :)
+-- inline
+-- img.ship@:getWidth
 
 local stack = require("stack")
 local macros = require("macros")

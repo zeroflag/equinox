@@ -1,0 +1,17 @@
+depth 0 =assert
+adepth 0 =assert
+
+10 -> var x
+20 -> var y
+
+block
+  30 -> var x
+  x 30 =assert
+  y 20 =assert
+end
+
+x 10 =assert
+y 20 =assert
+
+depth 0 =assert
+adepth 0 =assert

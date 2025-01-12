@@ -283,6 +283,10 @@ function macros._until()
   }
 end
 
+function macros.block()
+  return ast.keyword("do")
+end
+
 function macros._while()
   return ast._if(ast.unary_op("not", ast.pop()), ast.keyword("break"))
 end
