@@ -4,6 +4,7 @@
 -- basic syntax check
 -- self / lua callbacks
 -- debuginfo level (assert)
+-- synonym or alias to @
 -- (: a b c :)
 -- inline
 -- img.ship@:getWidth
