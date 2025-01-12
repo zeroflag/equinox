@@ -119,7 +119,7 @@ function Parser:next_item()
   if token == "" then
     return nil
   end
-  if token:match("^&.+") then kind = "symbol" end
+  if token:match("^$.+") then kind = "symbol" end
   local result = self:parse_word(token, kind)
   result.line_number = self.line_number
   return result

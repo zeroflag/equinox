@@ -1,5 +1,5 @@
-{ &const1 1337
-  &const2 1991 } -> var my
+{ $const1 1337
+  $const2 1991 } -> var my
 
 : my.word1 42 ;
 

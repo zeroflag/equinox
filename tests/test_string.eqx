@@ -1,7 +1,7 @@
 adepth 0 =assert
 depth 0 =assert
 
-&xyz string.len/1 3 =assert
+$xyz string.len/1 3 =assert
 
 "asdf" string.len/1 4 =assert
 "asdf jkle" string.len/1 9 =assert
