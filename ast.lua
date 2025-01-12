@@ -7,12 +7,11 @@ function ast.gen_id(prefix)
   return prefix .. id_counter
 end
 
-function ast.func_header(func_name, arity, void, global)
+function ast.func_header(func_name, global)
   return {
     name = "func_header",
     func_name = func_name,
-    arity = arity,
-    void = void,
+    params = {},
     global = global
   }
 end

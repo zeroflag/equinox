@@ -2,5 +2,6 @@
   $const2 1991 } -> var my
 
 : my.word1 42 ;
+: my.word2 (: self :) self.const1@ ;
 
 my return

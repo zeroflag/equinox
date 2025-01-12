@@ -192,14 +192,16 @@ function macros.def_lua_alias(compiler)
 end
 
 local function def_word(compiler, is_global)
-  local forth_name, arity, void = interop.parse_signature(compiler:word())
+  local forth_name = compiler:word()
   local lua_name = sanitize(forth_name)
   if compiler:find(forth_name) then
     lua_name = lua_name .. "__s" .. sequence
   end
   sequence = sequence + 1
   compiler:def_word(forth_name, lua_name, false)
-  return ast.func_header(lua_name, arity, void, is_global)
+  local header = ast.func_header(lua_name, is_global)
+  stack:push(header)
+  return header
 end
 
 function macros.colon(compiler)
@@ -372,12 +374,40 @@ function macros._end()
   return ast.keyword("end")
 end
 
+function macros.end_word()
+  if stack:depth() == 0 or
+     stack:tos().name ~= "func_header"
+  then
+    error("Unexpected semicolon") -- TODO line num
+  end
+  stack:pop()
+  return macros._end()
+end
+
 function macros.keyval(compiler)
   local name = compiler:word()
   return {
     ast.push(ast.str(name)),
     ast.push(ast.identifier(name))
   }
+end
+
+-- TODO modify func_header's arity and add formal params
+function macros.formal_params(compiler)
+  if stack:depth() == 0 or
+     stack:tos().name ~= "func_header"
+  then
+    error("Unexpected (:") -- TODO line num
+  end
+  local func_header = stack:tos()
+  local param_name = compiler:word()
+  while param_name ~= ":)" do
+    -- TODO scoping
+    compiler:def_var(param_name, param_name)
+    table.insert(func_header.params, param_name)
+    param_name = compiler:word()
+  end
+  return result
 end
 
 function macros.words(compiler)

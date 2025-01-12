@@ -29,27 +29,27 @@ assert_table(
   parse('$sym'))
 
 assert_table(
-  {{token = "math.min/2", kind = "lua_func_call", name = "math.min", arity = 2, vararg = false, void = false, line_number=1}},
+  {{token = "math.min/2", kind = "lua_func_call", name = "math.min", arity = 2, void = false, line_number=1}},
   parse("math.min/2"))
 
 assert_table(
-  {{token = "math.min!2", kind = "lua_func_call", name = "math.min", arity = 2, vararg = false, void = true, line_number=1}},
+  {{token = "math.min!2", kind = "lua_func_call", name = "math.min", arity = 2, void = true, line_number=1}},
   parse("math.min!2"))
 
 assert_table(
-  {{token = "math.min", kind = "lua_func_call", name = "math.min", arity = 0, vararg = false, void = false, line_number=1}},
+  {{token = "math.min", kind = "lua_func_call", name = "math.min", arity = 0, void = false, line_number=1}},
   parse("math.min"))
 
 assert_table(
-  {{token = "obj:method/3", kind = "lua_method_call", name = "obj:method", arity = 3, vararg = false, void = false, line_number=1}},
+  {{token = "obj:method/3", kind = "lua_func_call", name = "obj:method", arity = 3, void = false, line_number=1}},
   parse("obj:method/3"))
 
 assert_table(
-  {{token = "obj:method!3", kind = "lua_method_call", name = "obj:method", arity = 3, vararg = false, void = true, line_number=1}},
+  {{token = "obj:method!3", kind = "lua_func_call", name = "obj:method", arity = 3, void = true, line_number=1}},
   parse("obj:method!3"))
 
 assert_table(
-  {{token = "obj:method", kind = "lua_method_call", name = "obj:method", arity = 0, vararg = false, void = false, line_number=1}},
+  {{token = "obj:method", kind = "lua_func_call", name = "obj:method", arity = 0, void = false, line_number=1}},
   parse("obj:method"))
 
 assert_table(
@@ -79,7 +79,7 @@ assert_table({
 
 assert_table({
     { token = ":", kind = "macro", line_number=1 },
-    { token = "double", kind = "unknown", line_number=1 },
+    { token = "double", kind = "lua_func_call", name="double", arity = 0, void = false, line_number=1 },
     { token = "dup", kind = "macro", line_number=1 },
     { token = "+", kind = "macro", line_number=1 },
     { token = ";", kind = "macro", line_number=1 }

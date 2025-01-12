@@ -1,3 +1,5 @@
+local interop = require("interop")
+
 local Dict = {}
 
 function Dict.new()
@@ -68,7 +70,9 @@ function Dict:word_list()
   local result, seen = {}, {}
   for i, each in ipairs(self.words) do
     if not seen[each.forth_name] and each.callable then
-      if _G[each.lua_name] or each.immediate then
+      if interop.resolve_lua_func(each.lua_name) or
+         each.immediate
+      then
         table.insert(result, each.forth_name)
       end
       seen[each.forth_name] = true
@@ -144,10 +148,11 @@ function Dict:init()
   self:def_macro("lua-alias:", "macros.def_lua_alias")
   self:def_macro(":", "macros.colon")
   self:def_macro("::", "macros.local_colon")
-  self:def_macro(";", "macros._end")
+  self:def_macro(";", "macros.end_word")
   self:def_macro("exec", "macros.exec")
   self:def_macro("'", "macros.tick")
   self:def_macro("$", "macros.keyval")
+  self:def_macro("(:", "macros.formal_params")
   self:def_macro("block", "macros.block")
   self:def_macro("end", "macros._end")
   self:def_var_unsafe("true", "true")

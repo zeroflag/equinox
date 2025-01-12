@@ -44,28 +44,12 @@ local function lua_func_call(token, res)
     kind = "lua_func_call",
     name = res.name,
     arity = res.arity,
-    vararg = res.vararg,
-    void = res.void
-  }
-end
-
-local function lua_method_call(token, res)
-  return {
-    token = token,
-    kind = "lua_method_call",
-    name = res.name,
-    arity = res.arity,
-    vararg = res.vararg,
     void = res.void
   }
 end
 
 local function lua_table_lookup(token, resolved)
   return {token = token, kind = "lua_table_lookup", resolved = resolved}
-end
-
-local function forth_module_call(token, resolved)
-  return {token = token, kind = "forth_module_call", resolved = resolved}
 end
 
 local function literal(token, subtype)
@@ -120,6 +104,7 @@ function Parser:next_item()
     return nil
   end
   if token:match("^$.+") then kind = "symbol" end
+  if tonumber(token) then kind = "number" end
   local result = self:parse_word(token, kind)
   result.line_number = self.line_number
   return result
@@ -151,53 +136,38 @@ function Parser:peek_chr()
 end
 
 function Parser:parse_word(token, kind)
-  local word = self.dict:find(token)
-  if kind == "word" and word and word.immediate
+  if kind == "string" or
+     kind == "symbol" or
+     kind == "number"
   then
-    return {token = token, kind = "macro"}
+    return literal(token, kind)
   end
-  if kind == "string" then
-    return literal(token, "string")
-  end
-  if kind == "symbol" then
-    return literal(token, "symbol")
-  end
-  if word then
-    if word.is_lua_alias then
-      -- Known lua alias
-      local res = interop.resolve_lua_func_with_arity(word.lua_name)
-      return lua_func_call(token, res)
-    else
-      -- Known Forth word
-      return {token = token, kind = "word"}
+  if kind == "word" then
+    local word = self.dict:find(token)
+    if word and word.immediate then
+      return {token = token, kind = "macro"}
     end
-  end
-  local num = tonumber(token)
-  if num then
-    return literal(token, "number")
-  end
-  local res = interop.resolve_lua_method_call(token)
-  if res then
-    -- Lua method call like: obj:method/3
-    return lua_method_call(token, res)
-  end
-  if interop.is_lua_prop_lookup(token) then
-    -- Lua/Forth table lookup like: math.pi@ or tbl.key@
-    token = token:sub(1, -2) -- strip "@"
-    local tbl = token:match("^[^.]+")
-    return lua_table_lookup(token, not not
-                            (interop.resolve_lua_obj(token)
-                             or self.dict:find(tbl)))
-  end
-  local res = interop.resolve_lua_func_with_arity(token)
-  if res then
-    -- Lua function call like: math.max/2 or os.time
-    return lua_func_call(token, res)
-  end
-  if interop.is_module_call(token) then
-    -- Forth module call like my-module.myword
-    local tbl = token:match("^[^.]+")
-    return forth_module_call(token, not not self.dict:find(tbl))
+    if word then
+      if word.is_lua_alias then
+        -- Known lua alias
+        local name, arity, void = interop.parse_signature(word.lua_name)
+        return lua_func_call(token, {name = name, arity = arity, void = void})
+      else
+        -- Known Forth word
+        return {token = token, kind = "word"}
+      end
+    end
+    if interop.is_lua_prop_lookup(token) then
+      -- Lua/Forth table lookup like: math.pi@ or tbl.key@
+      token = token:sub(1, -2) -- strip "@"
+      local tbl = token:match("^[^.]+")
+      return lua_table_lookup(token, not not
+                              (interop.resolve_lua_obj(token)
+                              or self.dict:find(tbl)))
+    end
+    local name, arity, void = interop.parse_signature(token)
+      -- Lua function call like: math.max/2 or os.time
+    return lua_func_call(token, {name = name, arity = arity, void = void})
   end
   return unknown(token)
 end

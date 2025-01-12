@@ -128,20 +128,12 @@ function CodeGen:gen(ast)
   if "func_header" == ast.name then
     local prefix = ""
     if not ast.global then prefix = "local " end
-    if ast.arity == 0 then
-      return string.format("%sfunction %s()", prefix, ast.func_name)
-    else
-      local result = string.format("%sfunction %s(", prefix, ast.func_name)
-      for i = 1, ast.arity do
-        result = result .. "__a" .. i
-        if i < ast.arity then result = result .. "," end
-      end
-      result = result .. ")\n"
-      for i = 1, ast.arity do
-        result = result .. "stack:push(__a" .. i .. ")\n"
-      end
-      return result
+    local result = string.format("%sfunction %s(", prefix, ast.func_name)
+    for i, p in ipairs(ast.params) do
+      result = result .. p
+      if i < #ast.params then result = result .. "," end
     end
+    return result .. ")\n"
   end
   error("Unknown AST: " .. tostring(ast) ..
         " with name: " .. tostring(ast.name))

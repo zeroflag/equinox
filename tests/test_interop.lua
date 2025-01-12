@@ -8,10 +8,12 @@ assert(not interop.resolve_lua_func("non_existent"))
 
 local result
 
-result = interop.resolve_lua_func_with_arity("math.max/2")
-assert(result.name == "math.max")
-assert(result.arity == 2)
-assert(result.vararg == false)
+name, arity, void = interop.parse_signature("math.max/2")
+assert(name == "math.max")
+assert(arity == 2)
+assert(void == false)
 
-function test_func(a, b, c) end
-function test_func_vararg(...) end
+name, arity, void = interop.parse_signature("io.write!1")
+assert(name == "io.write")
+assert(arity == 1)
+assert(void == true)

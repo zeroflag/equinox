@@ -2,12 +2,10 @@
 -- fix Lua's accidental global
 -- tab auto complete repl (linenoise/readline)
 -- basic syntax check
--- self / lua callbacks
 -- debuginfo level (assert)
--- synonym or alias to @
--- (: a b c :)
 -- inline
--- img.ship@:getWidth
+-- math $pi @ 
+-- imgs.ship@:getWidth
 
 local stack = require("stack")
 local macros = require("macros")
@@ -73,12 +71,7 @@ function Compiler:alias(lua_name, forth_alias)
   return self.dict:def_lua_alias(lua_name, forth_alias)
 end
 
-function Compiler:lua_call(name, arity, vararg, void)
-  if vararg then
-    error(name .. " has variable/unknown number of arguments. " ..
-          "Use " .. name .. "/n" .. " to specify arity. " ..
-          "For example " .. name .. "/1")
-  end
+function Compiler:lua_call(name, arity, void)
   local params = {}
   local stmts = {}
   if arity > 0 then
@@ -120,13 +113,6 @@ function Compiler:compile_token(item)
     else
       error("Unkown literal: " .. item.kind)
     end
-  elseif item.kind == "forth_module_call" then
-    -- mymod.myword
-    if item.resolved then
-      return ast.identifier(item.token .. "()")
-    else
-      error("Unknown table lookup: " .. item.token)
-    end
   elseif item.kind == "lua_table_lookup" then
     -- math.pi@
     if item.resolved then
@@ -134,9 +120,8 @@ function Compiler:compile_token(item)
     else
       error("Unknown table lookup: " .. item.token)
     end
-  elseif item.kind == "lua_func_call" or
-         item.kind == "lua_method_call" then
-    return self:lua_call(item.name, item.arity, item.vararg, item.void)
+  elseif item.kind == "lua_func_call" then
+    return self:lua_call(item.name, item.arity, item.void)
   else
     error("Word not found: '" .. item.token .. "'" .. " kind: " .. item.kind)
   end
