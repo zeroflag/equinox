@@ -49,7 +49,7 @@ tbl 1 at "a" =assert
 tbl 2 at "b" =assert
 
 tbl 1 "x" put
-tbl 2 "y" put
+tbl 2 "y" !
 
 tbl 1 at "x" =assert
 tbl 2 at "y" =assert
@@ -123,7 +123,7 @@ tbl.k1.k2.k3.k4@ 42 =assert \ TODO only at the end?
 10 =assert
 
 30 40
-tbl 2 "z" put
+tbl 2 "z" !
 tbl 2 at "z" =assert
 40 =assert
 30 =assert

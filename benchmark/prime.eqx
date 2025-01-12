@@ -2,12 +2,12 @@
   var primes
   { } -> primes
   2 over ( limit ) to: i
-    primes i i put
+    primes i i !
   end
   2 over ( limit ) math.sqrt/1 to: i
     primes i @ if
       i i * over ( limit ) i step: j
-        primes j false put
+        primes j false !
       end
     then
   end
