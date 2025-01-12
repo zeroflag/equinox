@@ -217,8 +217,6 @@ function macros.tick(compiler)
   local word = compiler:find(name)
   if not word then
     error(name .. " is not found in dictionary")
-  elseif not word.callable then
-    error(name .. " is not callable")
   elseif word.immediate then
     error("' cannot be used on a macro: " .. name)
   end

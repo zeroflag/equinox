@@ -9,12 +9,11 @@ function Dict.new()
   return obj
 end
 
-local function entry(forth_name, lua_name, immediate, callable, is_lua_alias)
+local function entry(forth_name, lua_name, immediate, is_lua_alias)
   return {
     forth_name = forth_name,
     lua_name = lua_name,
     immediate = immediate,
-    callable = callable,
     is_lua_alias = is_lua_alias
   }
 end
@@ -33,7 +32,7 @@ local function is_valid_lua_identifier(name)
 end
 
 function Dict:def_word(forth_name, lua_name, immediate)
-  table.insert(self.words, entry(forth_name, lua_name, immediate, true, false))
+  table.insert(self.words, entry(forth_name, lua_name, immediate, false))
 end
 
 function Dict:def_macro(forth_name, lua_name)
@@ -41,19 +40,7 @@ function Dict:def_macro(forth_name, lua_name)
 end
 
 function Dict:def_lua_alias(lua_name, forth_name)
-  table.insert(self.words, entry(forth_name, lua_name, immediate, false, true))
-end
-
-function Dict:def_var(forth_name, lua_name)
-  if is_valid_lua_identifier(lua_name) then
-    self:def_var_unsafe(forth_name, lua_name)
-  else
-    error(lua_name .. " is not a valid variable name. Avoid reserved keywords and special characters.")
-  end
-end
-
-function Dict:def_var_unsafe(forth_name, lua_name)
-  table.insert(self.words, entry(forth_name, lua_name, false, false, false))
+  table.insert(self.words, entry(forth_name, lua_name, immediate, true))
 end
 
 function Dict:find(forth_name)
@@ -69,7 +56,7 @@ end
 function Dict:word_list()
   local result, seen = {}, {}
   for i, each in ipairs(self.words) do
-    if not seen[each.forth_name] and each.callable then
+    if not seen[each.forth_name] then
       if interop.resolve_lua_func(each.lua_name) or
          each.immediate
       then
@@ -155,9 +142,6 @@ function Dict:init()
   self:def_macro("(:", "macros.formal_params")
   self:def_macro("block", "macros.block")
   self:def_macro("end", "macros._end")
-  self:def_var_unsafe("true", "true")
-  self:def_var_unsafe("false", "false")
-  self:def_var_unsafe("nil", "NIL")
 end
 
 return Dict

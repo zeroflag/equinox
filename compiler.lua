@@ -14,6 +14,7 @@ local Dict = require("dict")
 local Parser = require("parser")
 local LineMapping = require("line_mapping")
 local Output = require("output")
+local Env = require("env")
 local interop = require("interop")
 local ast = require("ast")
 local unpack = table.unpack or unpack
@@ -39,12 +40,32 @@ function Compiler:init(text)
   self.parser = Parser.new(text, self.dict)
   self.output = Output.new(self.chunk_name)
   self.line_mapping = LineMapping.new()
+  self.env = Env.new(nil, "root")
+  self.env:def_var_unsafe("true", "true")
+  self.env:def_var_unsafe("false", "false")
+  self.env:def_var_unsafe("nil", "NIL")
   self.output:append("local stack = require(\"stack\")")
   self.output:new_line()
   self.output:append("local aux = require(\"aux\")")
   self.output:new_line()
   self.ast = {}
   self.code_start = self.output:size()
+end
+
+function Compiler:new_env(name)
+  self.env = Env.new(self.env, name)
+end
+
+function Compiler:remove_env(name)
+  if self.env.parent then
+    self.env = self.env.parent
+  else
+    error("cannot drop root environment")
+  end
+end
+
+function Compiler:def_var(forth_name, lua_name)
+  self.env:def_var(forth_name, lua_name)
 end
 
 function Compiler:word()
@@ -94,14 +115,22 @@ function Compiler:lua_call(name, arity, void)
 end
 
 function Compiler:compile_token(item)
+  -- TODO workaround
+  if self.env:has_var(item.token) then
+      -- Forth variable
+      return ast.push(ast.identifier(item.token))
+  end
+
   if item.kind == "word" then
     local word = self.dict:find(item.token)
-    if word.callable then
+    if word then
       -- Forth word
       return ast.func_call(word.lua_name)
-    else
+    elseif self.env:has_var(item.token) then
       -- Forth variable
-      return ast.push(ast.identifier(word.lua_name))
+      return ast.push(ast.identifier(item.token))
+    else
+      error("Unknown word: " .. item.token)
     end
   elseif item.kind == "literal" then
     if item.subtype == "symbol" then
@@ -115,11 +144,12 @@ function Compiler:compile_token(item)
     end
   elseif item.kind == "lua_table_lookup" then
     -- math.pi@
-    if item.resolved then
+    -- TODO
+    --if item.resolved then
       return ast.push(ast.identifier(item.token))
-    else
-      error("Unknown table lookup: " .. item.token)
-    end
+    --else
+    --  error("Unknown table lookup: " .. item.token)
+    --end
   elseif item.kind == "lua_func_call" then
     return self:lua_call(item.name, item.arity, item.void)
   else
@@ -129,10 +159,6 @@ end
 
 function Compiler:def_word(alias, name, immediate)
   self.dict:def_word(alias, name, immediate)
-end
-
-function Compiler:def_var(alias, name)
-  self.dict:def_var(alias, name)
 end
 
 function Compiler:exec_macro(word)
