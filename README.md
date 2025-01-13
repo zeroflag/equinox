@@ -30,12 +30,13 @@ Work in progress.
 
 #### Lua interop
 
-| Operation                                 | Syntax               |
-|-------------------------------------------|----------------------|
-| Call Lua function (2 parameters)          | 2 8 math.pow/2       |
-| Call nullary Lua function (no parameters) | os.time              |
-| Call Lua function and ignore return value | tbl 2 table.remove!2 |
-| Call Lua object method                    | 2 astr:sub/1         |
-| Property lookup                           | math.pi@             |
+| Operation                                 | Syntax                |
+|-------------------------------------------|-----------------------|
+| Call Lua function (2 parameters)          | 2 8 math.pow/2        |
+| Call nullary Lua function (no parameters) | os.time/0 or os.time/ |
+| Call Lua function and ignore return value | tbl 2 table.remove~2  |
+| Call Lua object method                    | 2 astr:sub/1          |
+| Property lookup                           | math.pi               |
+|                                           |                       |
 
 ![{master}](https://github.com/zeroflag/equinox/actions/workflows/makefile.yml/badge.svg) 

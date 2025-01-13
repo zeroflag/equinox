@@ -11,7 +11,7 @@ assert(res.name == "math.max")
 assert(res.arity == 2)
 assert(res.void == false)
 
-local res = interop.parse_signature("io.write!1")
+local res = interop.parse_signature("io.write~1")
 assert(res.name == "io.write")
 assert(res.arity == 1)
 assert(res.void == true)
@@ -21,7 +21,7 @@ assert(res.name == "io.write")
 assert(res.arity == 0)
 assert(res.void == false)
 
-local res = interop.parse_signature("io.write!") -- TODO choose something else than !
+local res = interop.parse_signature("io.write~")
 assert(res.name == "io.write")
 assert(res.arity == 0)
 assert(res.void == true)

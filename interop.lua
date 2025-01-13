@@ -31,7 +31,7 @@ function interop.parse_signature(signature)
   if name then
     return {name=name, arity=parse_arity(arity), void=false}
   end
-  local name, arity = string.match(signature, "([^%/]+)%!(%d*)")
+  local name, arity = string.match(signature, "([^%/]+)%~(%d*)")
   if name then
     return {name=name, arity=parse_arity(arity), void=true}
   end
@@ -40,7 +40,7 @@ end
 
 function interop.is_lua_prop_lookup(token)
   return string.match(token, ".+%..+") and
-    not string.match(token, "([/!]%d*)$")
+    not string.match(token, "([/~]%d*)$")
 end
 
 return interop

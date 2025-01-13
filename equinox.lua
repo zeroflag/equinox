@@ -21,12 +21,12 @@ function require(module_name)
 end
 
 local lib = [[
-lua-alias: table.insert!2 append
-lua-alias: table.insert!3 insert
-lua-alias: table.remove!2 remove
+lua-alias: table.insert~2 append
+lua-alias: table.insert~3 insert
+lua-alias: table.remove~2 remove
 lua-alias: tostring/1 >str
 
-: assert-true assert!1 ;
+: assert-true assert~1 ;
 : assert-false not assert-true ;
 : =assert = assert-true ;
 
@@ -36,7 +36,7 @@ lua-alias: tostring/1 >str
   depth a> - 1 - 0
   do
     dup >a
-    1 rot table.insert!3 ( tbl idx value )
+    1 rot insert ( tbl idx value )
     a>
   loop ;
 
