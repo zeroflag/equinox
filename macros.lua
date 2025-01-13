@@ -248,7 +248,7 @@ end
 
 function macros.var(compiler)
   local name = compiler:word()
-  compiler:def_var(name, name)
+  compiler:def_var(name)
   return ast.def_local(name)
 end
 
@@ -257,7 +257,7 @@ function macros.assignment(compiler)
   if name == "var" then
     -- declare and assign of a new var
     name = compiler:word()
-    compiler:def_var(name, name)
+    compiler:def_var(name)
     return ast.init_local(name, ast.pop())
   else
     -- assignment of existing var
@@ -333,7 +333,7 @@ function macros._do(compiler)
   do_loop_nesting = do_loop_nesting + 1
   local loop_var = do_loop_vars[((do_loop_nesting -1) % #do_loop_vars) +1]
   compiler:new_env('DO_LOOP')
-  compiler:def_var(loop_var, loop_var)
+  compiler:def_var(loop_var)
   return ast._for(
       loop_var,
       ast.pop(),
@@ -351,8 +351,8 @@ function macros.for_ipairs(compiler)
   local var_name1 = compiler:word()
   local var_name2 = compiler:word()
   compiler:new_env('IPAIRS_LOOP')
-  compiler:def_var(var_name1, var_name1)
-  compiler:def_var(var_name2, var_name2)
+  compiler:def_var(var_name1)
+  compiler:def_var(var_name2)
   return ast._foreach(var_name1, var_name2, ast._ipairs(ast.pop()))
 end
 
@@ -360,22 +360,22 @@ function macros.for_pairs(compiler)
   local var_name1 = compiler:word()
   local var_name2 = compiler:word()
   compiler:new_env('PAIRS_LOOP')
-  compiler:def_var(var_name1, var_name1)
-  compiler:def_var(var_name2, var_name2)
+  compiler:def_var(var_name1)
+  compiler:def_var(var_name2)
   return ast._foreach(var_name1, var_name2, ast._pairs(ast.pop()))
 end
 
 function macros._to(compiler)
   local loop_var = compiler:word()
   compiler:new_env('TO_LOOP')
-  compiler:def_var(loop_var, loop_var)
+  compiler:def_var(loop_var)
   return ast._for(loop_var, ast.pop2nd(), ast.pop(), nil)
 end
 
 function macros._step(compiler)
   local loop_var = compiler:word()
   compiler:new_env('STEP_LOOP')
-  compiler:def_var(loop_var, loop_var)
+  compiler:def_var(loop_var)
   return ast._for(loop_var, ast.pop3rd(), ast.pop2nd(), ast.pop(), nil)
 end
 
@@ -415,7 +415,7 @@ function macros.formal_params(compiler)
   local func_header = stack:tos()
   local param_name = compiler:word()
   while param_name ~= ":)" do
-    compiler:def_var(param_name, param_name)
+    compiler:def_var(param_name)
     table.insert(func_header.params, param_name)
     param_name = compiler:word()
   end

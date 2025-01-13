@@ -66,8 +66,8 @@ function Compiler:remove_env(name)
   end
 end
 
-function Compiler:def_var(forth_name, lua_name)
-  self.env:def_var(forth_name, lua_name)
+function Compiler:def_var(name)
+  self.env:def_var(name)
 end
 
 function Compiler:has_var(name)
