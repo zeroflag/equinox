@@ -26,6 +26,10 @@ local function parse_arity(arity)
   end
 end
 
+function interop.table_name(token)
+  return string.match(token, "^[^.]+")
+end
+
 function interop.parse_signature(signature)
   local name, arity = string.match(signature, "([^%/]+)%/(%d*)")
   if name then

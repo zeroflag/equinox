@@ -5,7 +5,6 @@
 -- debuginfo level (assert)
 -- inline
 -- math $pi @ 
--- imgs.ship@:getWidth
 
 local stack = require("stack")
 local macros = require("macros")
@@ -176,11 +175,23 @@ function Compiler:compile_token(item)
     end
     if interop.is_lua_prop_lookup(item.token) then
       -- Lua/Forth table lookup like: math.pi or tbl.key
-      return ast.push(ast.identifier(item.token))
+      local tbl = interop.table_name(item.token)
+      if self.env:has_var(tbl) or
+         interop.resolve_lua_obj(item.token)
+      then
+        return ast.push(ast.identifier(item.token))
+      else
+        error("Unkown variable: " .. tbl .. " at: " .. item.token)
+      end
     end
     local res = interop.parse_signature(item.token)
     if res then
+      -- Lua call with spec. signature such as math.pow/2 or io.write~
       return self:lua_call(res.name, res.arity, res.void)
+    end
+    if interop.resolve_lua_obj(item.token) then
+      -- Lua globals from _G, such as math, table, io
+      return ast.push(ast.identifier(item.token))
     end
   end
   error("Unknown token: " .. item.token .. " kind: " .. item.kind)
