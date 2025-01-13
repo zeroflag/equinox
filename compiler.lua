@@ -4,7 +4,6 @@
 -- basic syntax check
 -- debuginfo level (assert)
 -- inline
--- math $pi @ 
 
 local stack = require("stack")
 local macros = require("macros")
@@ -162,10 +161,11 @@ function Compiler:compile_token(item)
     end
     if word and word.is_lua_alias then
       local res = interop.parse_signature(word.lua_name)
-      if not res then
-        error("Invalid alias signature: " .. word.lua_name)
+      if res then -- lua alias
+        return self:lua_call(res.name, res.arity, res.void)
+      else        -- normal alias
+        return ast.func_call(word.lua_name)
       end
-      return self:lua_call(res.name, res.arity, res.void)
     end
     if self.env:has_var(item.token) then -- Forth variable
       return ast.push(ast.identifier(item.token))

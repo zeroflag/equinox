@@ -21,11 +21,11 @@ function require(module_name)
 end
 
 local lib = [[
-lua-alias: table.insert~2 append
-lua-alias: table.insert~3 insert
-lua-alias: table.remove~2 remove
-lua-alias: tostring/1 >str
-lua-alias: require/1 need
+alias: table.insert~2 append
+alias: table.insert~3 insert
+alias: table.remove~2 remove
+alias: tostring/1 >str
+alias: require/1 need
 
 : assert-true assert~1 ;
 : assert-false not assert-true ;

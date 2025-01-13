@@ -185,7 +185,7 @@ function macros.cr()
   return ast.func_call("print")
 end
 
-function macros.def_lua_alias(compiler)
+function macros.def_alias(compiler)
   local lua_name = compiler:word()
   forth_alias = compiler:word()
   compiler:alias(lua_name, forth_alias)
