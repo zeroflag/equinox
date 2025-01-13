@@ -71,6 +71,10 @@ function Compiler:def_var(forth_name, lua_name)
   self.env:def_var(forth_name, lua_name)
 end
 
+function Compiler:has_var(name)
+  return self.env:has_var(name)
+end
+
 function Compiler:word()
   return self.parser:next_item().token
 end

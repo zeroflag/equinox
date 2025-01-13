@@ -261,7 +261,13 @@ function macros.assignment(compiler)
     return ast.init_local(name, ast.pop())
   else
     -- assignment of existing var
-    return ast.assignment(name, ast.pop())
+    if compiler:has_var(name) or
+       interop.is_lua_prop_lookup(name) -- TODO check for this case too
+    then
+      return ast.assignment(name, ast.pop())
+    else
+      error("Undeclared variable: " .. name)
+    end
   end
 end
 

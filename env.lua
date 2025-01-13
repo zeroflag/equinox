@@ -21,6 +21,7 @@ local function is_valid_lua_identifier(name)
   return name:match("^[a-zA-Z_][a-zA-Z0-9_]*$") ~= nil
 end
 
+-- TODO 1 name?
 function Env:def_var_unsafe(forth_name, lua_name)
   table.insert(self.vars, {forth_name = forth_name,
                            lua_name = lua_name})
