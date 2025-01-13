@@ -192,6 +192,7 @@ function macros.def_lua_alias(compiler)
 end
 
 local function def_word(compiler, is_global)
+  compiler:new_env()
   local forth_name = compiler:word()
   local lua_name = sanitize(forth_name)
   if compiler:find(forth_name) then
@@ -272,18 +273,22 @@ function macros._else()
   return ast.keyword("else")
 end
 
-function macros._begin()
+function macros._begin(compiler)
+  -- begin..until / begin..again / begin..while..repeat
+  compiler:new_env('BEGIN_LOOP')
   return ast._while(ast.literal("boolean", "true"))
 end
 
-function macros._until()
+function macros._until(compiler)
+  compiler:remove_env('BEGIN_LOOP')
   return {
     ast._if(ast.pop(), ast.keyword("break")),
     ast.keyword("end")
   }
 end
 
-function macros.block()
+function macros.block(compiler)
+  compiler:new_env('BLOCK')
   return ast.keyword("do")
 end
 
@@ -321,7 +326,7 @@ local do_loop_vars = {"i", "j", "k"}
 function macros._do(compiler)
   do_loop_nesting = do_loop_nesting + 1
   local loop_var = do_loop_vars[((do_loop_nesting -1) % #do_loop_vars) +1]
-  -- TODO remove or maintain proper scoping
+  compiler:new_env('DO_LOOP')
   compiler:def_var(loop_var, loop_var)
   return ast._for(
       loop_var,
@@ -330,8 +335,8 @@ function macros._do(compiler)
       nil)
 end
 
-function macros._loop()
-  -- TODO detect incorrect nesting
+function macros._loop(compiler)
+  compiler:remove_env('DO_LOOP')
   do_loop_nesting = do_loop_nesting - 1
   return ast.keyword("end")
 end
@@ -339,7 +344,7 @@ end
 function macros.for_ipairs(compiler)
   local var_name1 = compiler:word()
   local var_name2 = compiler:word()
-  -- TODO should be removed or we should maintain proper scope
+  compiler:new_env('IPAIRS_LOOP')
   compiler:def_var(var_name1, var_name1)
   compiler:def_var(var_name2, var_name2)
   return ast._foreach(var_name1, var_name2, ast._ipairs(ast.pop()))
@@ -348,7 +353,7 @@ end
 function macros.for_pairs(compiler)
   local var_name1 = compiler:word()
   local var_name2 = compiler:word()
-  -- TODO should be removed or we should maintain proper scope
+  compiler:new_env('PAIRS_LOOP')
   compiler:def_var(var_name1, var_name1)
   compiler:def_var(var_name2, var_name2)
   return ast._foreach(var_name1, var_name2, ast._pairs(ast.pop()))
@@ -356,30 +361,35 @@ end
 
 function macros._to(compiler)
   local loop_var = compiler:word()
-  -- TODO should be removed or we should maintain proper scope
+  compiler:new_env('TO_LOOP')
   compiler:def_var(loop_var, loop_var)
   return ast._for(loop_var, ast.pop2nd(), ast.pop(), nil)
 end
 
 function macros._step(compiler)
   local loop_var = compiler:word()
-  -- TODO should be removed or we should maintain proper scope
+  compiler:new_env('STEP_LOOP')
   compiler:def_var(loop_var, loop_var)
   return ast._for(loop_var, ast.pop3rd(), ast.pop2nd(), ast.pop(), nil)
 end
 
-function macros._end()
+function macros._then(compiler)
   return ast.keyword("end")
 end
 
-function macros.end_word()
+function macros._end(compiler)
+  compiler:remove_env()
+  return ast.keyword("end")
+end
+
+function macros.end_word(compiler)
   if stack:depth() == 0 or
      stack:tos().name ~= "func_header"
   then
     error("Unexpected semicolon") -- TODO line num
   end
   stack:pop()
-  return macros._end()
+  return macros._end(compiler)
 end
 
 function macros.keyval(compiler)
@@ -399,7 +409,6 @@ function macros.formal_params(compiler)
   local func_header = stack:tos()
   local param_name = compiler:word()
   while param_name ~= ":)" do
-    -- TODO scoping
     compiler:def_var(param_name, param_name)
     table.insert(func_header.params, param_name)
     param_name = compiler:word()

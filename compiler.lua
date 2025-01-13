@@ -57,6 +57,9 @@ function Compiler:new_env(name)
 end
 
 function Compiler:remove_env(name)
+  if name and self.env.name ~= name then
+    error("Incorrect nesting: " .. name)
+  end
   if self.env.parent then
     self.env = self.env.parent
   else

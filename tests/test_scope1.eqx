@@ -1,0 +1,33 @@
+depth 0 =assert
+adepth 0 =assert
+
+10 -> var glob
+
+block
+  20 -> var blk1
+  50 -> var shadow
+  10 glob =assert
+  block
+    20 blk1 =assert
+    30 -> var blk2
+    60 -> var shadow
+    11 -> glob
+    2 2 to: i
+      3 3 -1 step: j
+        30 blk2 =assert
+        i j * -> blk1
+      end
+      ( nil j =assert <<error )
+    end
+    blk1 6 =assert
+    60 shadow =assert
+    ( nil i =assert <<error )
+  end
+  50 shadow =assert
+  ( nil blk2 =assert <<error )
+end
+
+11 glob =assert
+
+depth 0 =assert
+adepth 0 =assert
