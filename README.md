@@ -9,6 +9,7 @@ Work in progress.
 * Modeless with no interpretation mode
 * Uses Lua call semantics, no return stack
 * Lua table and array support 
+* Fix Lua's accidental global problem
 * Seamless Love2D integration
 * Self-hosted compiler (eventually)
 
