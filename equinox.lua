@@ -25,6 +25,7 @@ lua-alias: table.insert~2 append
 lua-alias: table.insert~3 insert
 lua-alias: table.remove~2 remove
 lua-alias: tostring/1 >str
+lua-alias: require/1 need
 
 : assert-true assert~1 ;
 : assert-false not assert-true ;
