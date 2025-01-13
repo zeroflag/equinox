@@ -37,7 +37,7 @@ function Compiler.new(codegen, optimizer)
 end
 
 function Compiler:init(text)
-  self.parser = Parser.new(text, self.dict)
+  self.parser = Parser.new(text)
   self.output = Output.new(self.chunk_name)
   self.line_mapping = LineMapping.new()
   self.env = Env.new(nil, "root")
@@ -114,49 +114,6 @@ function Compiler:lua_call(name, arity, void)
   return stmts
 end
 
-function Compiler:compile_token(item)
-  -- TODO workaround
-  if self.env:has_var(item.token) then
-      -- Forth variable
-      return ast.push(ast.identifier(item.token))
-  end
-
-  if item.kind == "word" then
-    local word = self.dict:find(item.token)
-    if word then
-      -- Forth word
-      return ast.func_call(word.lua_name)
-    elseif self.env:has_var(item.token) then
-      -- Forth variable
-      return ast.push(ast.identifier(item.token))
-    else
-      error("Unknown word: " .. item.token)
-    end
-  elseif item.kind == "literal" then
-    if item.subtype == "symbol" then
-      return ast.push(ast.literal("string", item.token:sub(2)))
-    elseif item.subtype == "number" then
-      return ast.push(ast.literal(item.subtype, tonumber(item.token)))
-    elseif item.subtype == "string" then
-      return ast.push(ast.literal(item.subtype, item.token:sub(2, -2)))
-    else
-      error("Unkown literal: " .. item.kind)
-    end
-  elseif item.kind == "lua_table_lookup" then
-    -- math.pi@
-    -- TODO
-    --if item.resolved then
-      return ast.push(ast.identifier(item.token))
-    --else
-    --  error("Unknown table lookup: " .. item.token)
-    --end
-  elseif item.kind == "lua_func_call" then
-    return self:lua_call(item.name, item.arity, item.void)
-  else
-    error("Word not found: '" .. item.token .. "'" .. " kind: " .. item.kind)
-  end
-end
-
 function Compiler:def_word(alias, name, immediate)
   self.dict:def_word(alias, name, immediate)
 end
@@ -182,17 +139,47 @@ function Compiler:add_ast_nodes(nodes, item)
   end
 end
 
+function Compiler:compile_token(item)
+  if item.kind == "symbol" then
+    return ast.push(ast.literal("string", item.token:sub(2)))
+  end
+  if item.kind == "number" then
+    return ast.push(ast.literal(item.kind, tonumber(item.token)))
+  end
+  if item.kind == "string" then
+    return ast.push(ast.literal(item.kind, item.token:sub(2, -2)))
+  end
+  if item.kind == "word" then
+    local word = self.dict:find(item.token)
+    if word and word.immediate then
+      return self:exec_macro(item.token)
+    end
+    if word and word.is_lua_alias then
+      local name, arity, void = interop.parse_signature(word.lua_name)
+      return self:lua_call(name, arity, void)
+    end
+    if word then -- regular Forth word
+      return ast.func_call(word.lua_name)
+    end
+    if self.env:has_var(item.token) then -- Forth variable
+      return ast.push(ast.identifier(item.token))
+    end
+    if interop.is_lua_prop_lookup(item.token) then
+      -- Lua/Forth table lookup like: math.pi@ or tbl.key@
+      return ast.push(ast.identifier(item.token:sub(1, -2)))
+    end
+    local name, arity, void = interop.parse_signature(item.token)
+    return self:lua_call(name, arity, void)
+  end
+  error("Unknown token: " .. item.token .. " kind: " .. item.kind)
+end
+
 function Compiler:compile(text)
   self:init(text)
   local item = self.parser:next_item()
   while item do
-    if item.kind == "macro" then
-      local nodes = self:exec_macro(item.token)
-      if nodes then self:add_ast_nodes(nodes, item) end
-    else
-      local nodes = self:compile_token(item)
-      self:add_ast_nodes(nodes, item)
-    end
+    local node = self:compile_token(item)
+    if node then self:add_ast_nodes(node, item) end
     item = self.parser:next_item()
   end
   self.ast = self.optimizer:optimize_iteratively(self.ast)

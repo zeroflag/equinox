@@ -390,7 +390,6 @@ function macros.keyval(compiler)
   }
 end
 
--- TODO modify func_header's arity and add formal params
 function macros.formal_params(compiler)
   if stack:depth() == 0 or
      stack:tos().name ~= "func_header"

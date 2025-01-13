@@ -10,12 +10,11 @@ local function lines_of(input)
   return lines
 end
 
-function Parser.new(source, dict)
+function Parser.new(source)
   local obj = {index = 1,
                line_number = 1,
                source = source,
-               lines = lines_of(source),
-               dict = dict}
+               lines = lines_of(source)}
   setmetatable(obj, {__index = Parser})
   return obj
 end
@@ -38,33 +37,8 @@ local function is_escape(chr)
   return chr:match("\\")
 end
 
-local function lua_func_call(token, res)
-  return {
-    token = token,
-    kind = "lua_func_call",
-    name = res.name,
-    arity = res.arity,
-    void = res.void
-  }
-end
-
-local function lua_table_lookup(token, resolved)
-  return {token = token, kind = "lua_table_lookup", resolved = resolved}
-end
-
-local function literal(token, subtype)
-  return {token = token, kind = "literal", subtype = subtype}
-end
-
-local function unknown(token)
-  return {token = token, kind = "unknown"}
-end
-
 local function is_whitespace(chr)
   return chr:match("%s")
-end
-
-function Parser:check_line_ending(chr)
 end
 
 function Parser:next_item()
@@ -101,13 +75,11 @@ function Parser:next_item()
     end
   end
   if token == "" then
-    return nil
+    return nil -- EOF
   end
   if token:match("^$.+") then kind = "symbol" end
   if tonumber(token) then kind = "number" end
-  local result = self:parse_word(token, kind)
-  result.line_number = self.line_number
-  return result
+  return {token=token, kind=kind, line_number=self.line_number}
 end
 
 function Parser:update_line_number(chr)
@@ -133,43 +105,6 @@ end
 
 function Parser:peek_chr()
   return self.source:sub(self.index, self.index)
-end
-
-function Parser:parse_word(token, kind)
-  if kind == "string" or
-     kind == "symbol" or
-     kind == "number"
-  then
-    return literal(token, kind)
-  end
-  if kind == "word" then
-    local word = self.dict:find(token)
-    if word and word.immediate then
-      return {token = token, kind = "macro"}
-    end
-    if word then
-      if word.is_lua_alias then
-        -- Known lua alias
-        local name, arity, void = interop.parse_signature(word.lua_name)
-        return lua_func_call(token, {name = name, arity = arity, void = void})
-      else
-        -- Known Forth word
-        return {token = token, kind = "word"}
-      end
-    end
-    if interop.is_lua_prop_lookup(token) then
-      -- Lua/Forth table lookup like: math.pi@ or tbl.key@
-      token = token:sub(1, -2) -- strip "@"
-      local tbl = token:match("^[^.]+")
-      return lua_table_lookup(token, not not
-                              (interop.resolve_lua_obj(token)
-                              or self.dict:find(tbl)))
-    end
-    local name, arity, void = interop.parse_signature(token)
-      -- Lua function call like: math.max/2 or os.time
-    return lua_func_call(token, {name = name, arity = arity, void = void})
-  end
-  return unknown(token)
 end
 
 function Parser:ended()

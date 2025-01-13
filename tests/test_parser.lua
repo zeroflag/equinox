@@ -1,11 +1,8 @@
-local Dict = require("dict")
 local json = require("tests/json")
 local Parser = require("parser")
 
-local dict = Dict.new()
-
 function parse(text)
-  local parser = Parser.new(text, dict)
+  local parser = Parser.new(text)
   return parser:parse_all()
 end
 
@@ -17,102 +14,98 @@ end
 
 assert_table({} , parse(""))
 
-assert_table({{token = "1", kind = "literal", subtype = "number", line_number=1}}, parse("1"))
-assert_table({{token = "dup", kind = "macro", line_number=1}}, parse("dup"))
+assert_table({{token = "1", kind = "number", line_number=1}}, parse("1"))
+assert_table({{token = "dup", kind = "word", line_number=1}}, parse("dup"))
 
 assert_table(
-  {{token = '"test string"', kind = "literal", subtype = "string", line_number=1}},
+  {{token = '"test string"', kind = "string", line_number=1}},
   parse('"test string"'))
 
 assert_table(
-  {{token = "$sym", kind = "literal", subtype = "symbol", line_number=1}},
+  {{token = "$sym", kind = "symbol", line_number=1}},
   parse('$sym'))
 
 assert_table(
-  {{token = "math.min/2", kind = "lua_func_call", name = "math.min", arity = 2, void = false, line_number=1}},
+  {{token = "math.min/2", kind = "word", line_number=1}},
   parse("math.min/2"))
 
 assert_table(
-  {{token = "math.min!2", kind = "lua_func_call", name = "math.min", arity = 2, void = true, line_number=1}},
+  {{token = "math.min!2", kind = "word", line_number=1}},
   parse("math.min!2"))
 
 assert_table(
-  {{token = "math.min", kind = "lua_func_call", name = "math.min", arity = 0, void = false, line_number=1}},
+  {{token = "math.min", kind = "word", line_number=1}},
   parse("math.min"))
 
 assert_table(
-  {{token = "obj:method/3", kind = "lua_func_call", name = "obj:method", arity = 3, void = false, line_number=1}},
+  {{token = "obj:method/3", kind = "word", line_number=1}},
   parse("obj:method/3"))
 
 assert_table(
-  {{token = "obj:method!3", kind = "lua_func_call", name = "obj:method", arity = 3, void = true, line_number=1}},
+  {{token = "obj:method!3", kind = "word", line_number=1}},
   parse("obj:method!3"))
 
 assert_table(
-  {{token = "obj:method", kind = "lua_func_call", name = "obj:method", arity = 0, void = false, line_number=1}},
+  {{token = "obj:method", kind = "word", line_number=1}},
   parse("obj:method"))
 
 assert_table(
-  {{token = "tbl1.key1", kind = "lua_table_lookup", resolved = false, line_number=1}},
+  {{token = "tbl1.key1@", kind = "word", line_number=1}},
   parse("tbl1.key1@"))
 
--- TODO
---dict:def_var("tbl1", "tbl1")
-
---assert_table(
---  {{token = "tbl1.key1", kind = "lua_table_lookup", resolved = true, line_number=1}},
---  parse("tbl1.key1@"))
+assert_table(
+  {{token = "tbl1.key1@", kind = "word", line_number=1}},
+  parse("tbl1.key1@"))
 
 assert_table(
-  {{token = "math.pi", kind = "lua_table_lookup", resolved = true, line_number=1}},
+  {{token = "math.pi@", kind = "word", line_number=1}},
   parse("math.pi@"))
 
-dict:def_word("myword", "myword")
 assert_table(
   {{token = "myword", kind = "word", line_number=1}},
   parse("myword"))
 
 assert_table({
-    { token = "1", kind = "literal", subtype = "number", line_number=1},
-    { token = "2", kind = "literal", subtype = "number",  line_number=1},
-    { token = "+", kind = "macro", line_number=1 }
+    { token = "1", kind = "number", line_number=1},
+    { token = "2", kind = "number", line_number=1},
+    { token = "+", kind = "word", line_number=1 }
   }, parse("1 2 +"))
 
 assert_table({
-    { token = ":", kind = "macro", line_number=1 },
-    { token = "double", kind = "lua_func_call", name="double", arity = 0, void = false, line_number=1 },
-    { token = "dup", kind = "macro", line_number=1 },
-    { token = "+", kind = "macro", line_number=1 },
-    { token = ";", kind = "macro", line_number=1 }
+    { token = ":", kind = "word", line_number=1 },
+    { token = "double", kind = "word", line_number=1 },
+    { token = "dup", kind = "word", line_number=1 },
+    { token = "+", kind = "word", line_number=1 },
+    { token = ";", kind = "word", line_number=1 }
   }, parse(": double dup + ;"))
 
 -- line number tests
 assert_table({
-    { token = "1", kind = "literal", subtype = "number", line_number=1},
-    { token = "2", kind = "literal", subtype = "number",  line_number=2},
-    { token = "+", kind = "macro", line_number=3 }
+    { token = "1", kind = "number", line_number=1},
+    { token = "2", kind = "number", line_number=2},
+    { token = "+", kind = "word", line_number=3 }
   }, parse("1\n2\n+"))
 
 assert_table({
-    { token = "1", kind = "literal", subtype = "number", line_number=1},
-    { token = "2", kind = "literal", subtype = "number",  line_number=2},
-    { token = "+", kind = "macro", line_number=3 }
+    { token = "1", kind = "number", line_number=1},
+    { token = "2", kind = "number", line_number=2},
+    { token = "+", kind = "word", line_number=3 }
   }, parse("1\n2\n+\n"))
 
 assert_table({
-    { token = "123", kind = "literal", subtype = "number", line_number=1},
-    { token = "456", kind = "literal", subtype = "number",  line_number=1},
-    { token = "678", kind = "literal", subtype = "number",  line_number=2},
+    { token = "123", kind = "number", line_number=1},
+    { token = "456", kind = "number", line_number=1},
+    { token = "678", kind = "number", line_number=2},
   }, parse("123 456\n678\n"))
 
 assert_table({
-    { token = "123", kind = "literal", subtype = "number", line_number=3},
-    { token = "456", kind = "literal", subtype = "number",  line_number=3},
-    { token = "678", kind = "literal", subtype = "number",  line_number=6},
+    { token = "123", kind = "number", line_number=3},
+    { token = "456", kind = "number", line_number=3},
+    { token = "678", kind = "number", line_number=6},
   }, parse("\n\n123 456\n\n\n678"))
 
 assert_table({
-    { token = '"a\\nb c"', kind = "literal", subtype = "string", line_number=3},
-    { token = '"d e f"', kind = "literal", subtype = "string",  line_number=3},
-    { token = "678", kind = "literal", subtype = "number",  line_number=6},
+    { token = '"a\\nb c"', kind = "string", line_number=3},
+    { token = '"d e f"', kind = "string", line_number=3},
+    { token = "678", kind = "number", line_number=6},
   }, parse("\n\n \"a\\nb c\" \"d e f\" \n\n\n678"))
