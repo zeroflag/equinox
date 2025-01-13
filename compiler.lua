@@ -1,6 +1,6 @@
 -- TODO
--- fix Lua's accidental global
 -- tab auto complete repl (linenoise/readline)
+-- tbl lookup check var name (t.x)
 -- basic syntax check
 -- debuginfo level (assert)
 -- inline
@@ -27,11 +27,15 @@ function Compiler.new(codegen, optimizer)
     output = nil,
     code_start = 1,
     line_mapping = nil,
+    env = Env.new(nil, "root"),
     optimizer = codegen,
     codegen = optimizer,
     chunk_name = "<<compiled eqx code>>",
     dict = Dict.new()
   }
+  obj.env:def_var_unsafe("true", "true")
+  obj.env:def_var_unsafe("false", "false")
+  obj.env:def_var_unsafe("nil", "NIL")
   setmetatable(obj, {__index = Compiler})
   return obj
 end
@@ -40,10 +44,6 @@ function Compiler:init(text)
   self.parser = Parser.new(text)
   self.output = Output.new(self.chunk_name)
   self.line_mapping = LineMapping.new()
-  self.env = Env.new(nil, "root")
-  self.env:def_var_unsafe("true", "true")
-  self.env:def_var_unsafe("false", "false")
-  self.env:def_var_unsafe("nil", "NIL")
   self.output:append("local stack = require(\"stack\")")
   self.output:new_line()
   self.output:append("local aux = require(\"aux\")")
