@@ -252,6 +252,15 @@ function macros.var(compiler)
   return ast.def_local(name)
 end
 
+local function valid_tbl_assignment(compiler, name)
+  if interop.is_lua_prop_lookup(name) then
+    local tbl = interop.table_name(name)
+    return compiler:has_var(tbl)
+      or interop.resolve_lua_obj(name)
+  end
+  return false
+end
+
 function macros.assignment(compiler)
   local name = compiler:word()
   if name == "var" then
@@ -262,7 +271,7 @@ function macros.assignment(compiler)
   else
     -- assignment of existing var
     if compiler:has_var(name) or
-       interop.is_lua_prop_lookup(name) -- TODO check for this case too
+       valid_tbl_assignment(compiler, name) -- 123 -> tbl.x
     then
       return ast.assignment(name, ast.pop())
     else
