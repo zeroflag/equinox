@@ -22,7 +22,7 @@ Work in progress.
 | Append          | tbl item append        |                                     |
 | Insert new      | tbl idx item insert    | value -> tbl.key or tbl key value ! |
 | Overwrite       | tbl idx item !         | value -> tbl.key or tbl key value ! |
-| Lookup          | tbl idx @              | tbl.key@ or tbl key @               |
+| Lookup          | tbl idx @              | tbl.key or tbl key @                |
 | Remove          | tbl idx remove         | tbl key nil !                       |
 | Remove & Return | tbl idx table.remove/2 |                                     |
 | Size            | tbl size               |                                     |

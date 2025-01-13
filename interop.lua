@@ -18,20 +18,29 @@ function interop.resolve_lua_func(name)
   end
 end
 
+local function parse_arity(arity)
+  if arity and #arity > 0 then
+    return tonumber(arity)
+  else
+    return 0
+  end
+end
+
 function interop.parse_signature(signature)
-  local name, arity = string.match(signature, "([^%/]+)(%/%d+)")
-  if name and arity then
-    return name, tonumber(arity:sub(2)), false
+  local name, arity = string.match(signature, "([^%/]+)%/(%d*)")
+  if name then
+    return {name=name, arity=parse_arity(arity), void=false}
   end
-  local name, arity = string.match(signature, "([^%/]+)(%!%d+)")
-  if name and arity then
-    return name, tonumber(arity:sub(2)), true
+  local name, arity = string.match(signature, "([^%/]+)%!(%d*)")
+  if name then
+    return {name=name, arity=parse_arity(arity), void=true}
   end
-  return signature, 0, false
+  return nil
 end
 
 function interop.is_lua_prop_lookup(token)
-  return string.match(token, ".+%..+@$")
+  return string.match(token, ".+%..+") and
+    not string.match(token, "([/!]%d*)$")
 end
 
 return interop

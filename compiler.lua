@@ -158,21 +158,26 @@ function Compiler:compile_token(item)
       return self:exec_macro(item.token)
     end
     if word and word.is_lua_alias then
-      local name, arity, void = interop.parse_signature(word.lua_name)
-      return self:lua_call(name, arity, void)
-    end
-    if word then -- regular Forth word
-      return ast.func_call(word.lua_name)
+      local res = interop.parse_signature(word.lua_name)
+      if not res then
+        error("Invalid alias signature: " .. word.lua_name)
+      end
+      return self:lua_call(res.name, res.arity, res.void)
     end
     if self.env:has_var(item.token) then -- Forth variable
       return ast.push(ast.identifier(item.token))
     end
-    if interop.is_lua_prop_lookup(item.token) then
-      -- Lua/Forth table lookup like: math.pi@ or tbl.key@
-      return ast.push(ast.identifier(item.token:sub(1, -2)))
+    if word then -- Regular Forth word
+      return ast.func_call(word.lua_name)
     end
-    local name, arity, void = interop.parse_signature(item.token)
-    return self:lua_call(name, arity, void)
+    if interop.is_lua_prop_lookup(item.token) then
+      -- Lua/Forth table lookup like: math.pi or tbl.key
+      return ast.push(ast.identifier(item.token))
+    end
+    local res = interop.parse_signature(item.token)
+    if res then
+      return self:lua_call(res.name, res.arity, res.void)
+    end
   end
   error("Unknown token: " .. item.token .. " kind: " .. item.kind)
 end

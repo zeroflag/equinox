@@ -104,18 +104,18 @@ tbl size 1 =assert
 
 \ key lookup with dot syntax
 { $k1 42 $k2 "apple" } -> tbl
-tbl.k1@ 42 =assert
-tbl.k2@ "apple" =assert
+tbl.k1 42 =assert
+tbl.k2 "apple" =assert
 
 \ assigment
 15 -> tbl.k1
-tbl.k1@ 15 =assert
+tbl.k1 15 =assert
 
 "orange" -> tbl.k2
-tbl.k2@ "orange" =assert
+tbl.k2 "orange" =assert
 
 { $k1 { $k2 { $k3 { $k4 42 } } } } -> tbl
-tbl.k1.k2.k3.k4@ 42 =assert \ TODO only at the end?
+tbl.k1.k2.k3.k4 42 =assert
 
 [ "x" "y" ] -> tbl
 10 20 tbl 2 at "y" =assert
@@ -134,7 +134,7 @@ tbl 2 at "z" =assert
 { $ abc $ def } -> tbl
 
 tbl $abc at "apple" =assert
-tbl.def@ "orange" =assert
+tbl.def "orange" =assert
 
 
 depth 0 =assert
