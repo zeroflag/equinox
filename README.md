@@ -10,7 +10,7 @@ Forth Programming Language, hosted by Lua.
 * Uses Lua call semantics, no return stack
 * Lua table and array support 
 * Fixes Lua's accidental global problem
-* Seamless Love2D and TIC-80 integration
+* Seamless [Love2D](https://love2d.org/) and [TIC-80](https://tic80.com/) integration
 * Self-hosted compiler (eventually)
 
 <img src="logo/logo.png" alt="logo" width="300"/>
