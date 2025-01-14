@@ -42,6 +42,10 @@ local function sanitize(str)
   return str
 end
 
+local function err(message, item)
+  error(message .. " at line: " .. item.line_number)
+end
+
 function macros.add()
   return ast.push(ast.bin_op("+", ast.pop(), ast.pop()))
 end
@@ -213,13 +217,13 @@ function macros.local_colon(compiler)
   return def_word(compiler, false)
 end
 
-function macros.tick(compiler)
+function macros.tick(compiler, item)
   local name = compiler:word()
   local word = compiler:find(name)
   if not word then
-    error(name .. " is not found in dictionary")
+    err(name .. " is not found in dictionary", item)
   elseif word.immediate then
-    error("' cannot be used on a macro: " .. name)
+    err("' cannot be used on a macro: " .. name, item)
   end
   return ast.push(ast.identifier(word.lua_name))
 end
@@ -261,7 +265,7 @@ local function valid_tbl_assignment(compiler, name)
   return false
 end
 
-function macros.assignment(compiler)
+function macros.assignment(compiler, item)
   local name = compiler:word()
   if name == "var" then
     -- declare and assign of a new var
@@ -275,7 +279,7 @@ function macros.assignment(compiler)
     then
       return ast.assignment(name, ast.pop())
     else
-      error("Undeclared variable: " .. name)
+      err("Undeclared variable: " .. name, item)
     end
   end
 end
@@ -397,11 +401,11 @@ function macros._end(compiler)
   return ast.keyword("end")
 end
 
-function macros.end_word(compiler)
+function macros.end_word(compiler, item)
   if stack:depth() == 0 or
      stack:tos().name ~= "func_header"
   then
-    error("Unexpected semicolon") -- TODO line num
+    err("Unexpected semicolon", item)
   end
   stack:pop()
   return macros._end(compiler)
@@ -415,11 +419,11 @@ function macros.keyval(compiler)
   }
 end
 
-function macros.formal_params(compiler)
+function macros.formal_params(compiler, item)
   if stack:depth() == 0 or
      stack:tos().name ~= "func_header"
   then
-    error("Unexpected (:") -- TODO line num
+    err("Unexpected (:", item)
   end
   local func_header = stack:tos()
   local param_name = compiler:word()

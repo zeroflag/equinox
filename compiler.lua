@@ -2,6 +2,7 @@
 -- tab auto complete repl (linenoise/readline)
 -- basic syntax check
 -- debuginfo level (assert)
+-- var names with -
 -- inline
 
 local stack = require("stack")
@@ -122,12 +123,12 @@ function Compiler:def_word(alias, name, immediate)
   self.dict:def_word(alias, name, immediate)
 end
 
-function Compiler:exec_macro(word)
-  local mod, fun = self.dict:find(word).lua_name:match("^(.-)%.(.+)$")
+function Compiler:exec_macro(item)
+  local mod, fun = self.dict:find(item.token).lua_name:match("^(.-)%.(.+)$")
   if mod == "macros" and type(macros[fun]) == "function" then
-    return macros[fun](self)
+    return macros[fun](self, item)
   else
-    error("Unknown macro " .. word)
+    error("Unknown macro: " .. item.token .. " at line: " .. item.line_number)
   end
 end
 
@@ -156,7 +157,7 @@ function Compiler:compile_token(item)
   if item.kind == "word" then
     local word = self.dict:find(item.token)
     if word and word.immediate then
-      return self:exec_macro(item.token)
+      return self:exec_macro(item)
     end
     if word and word.is_lua_alias then
       local res = interop.parse_signature(word.lua_name)
