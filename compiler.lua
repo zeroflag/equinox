@@ -1,6 +1,5 @@
 -- TODO
 -- tab auto complete repl (linenoise/readline)
--- tbl lookup check var name (t.x)
 -- basic syntax check
 -- debuginfo level (assert)
 -- inline

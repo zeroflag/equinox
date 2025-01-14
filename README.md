@@ -1,7 +1,7 @@
 # Equinox
 Forth Programming Language, hosted by Lua. 
 
-Work in progress.
+## Work in progress.
 
 ### Design goals
 
@@ -9,8 +9,8 @@ Work in progress.
 * Modeless with no interpretation mode
 * Uses Lua call semantics, no return stack
 * Lua table and array support 
-* Fix Lua's accidental global problem
-* Seamless Love2D integration
+* Fixes Lua's accidental global problem
+* Seamless Love2D and TIC-80 integration
 * Self-hosted compiler (eventually)
 
 <img src="logo/logo.png" alt="logo" width="300"/>
@@ -30,13 +30,13 @@ Work in progress.
 
 #### Lua interop
 
-| Operation                                 | Syntax                |
-|-------------------------------------------|-----------------------|
-| Call Lua function (2 parameters)          | 2 8 math.pow/2        |
-| Call nullary Lua function (no parameters) | os.time/0 or os.time/ |
-| Call Lua function and ignore return value | tbl 2 table.remove~2  |
-| Call Lua object method                    | 2 astr:sub/1          |
-| Property lookup                           | math.pi               |
-|                                           |                       |
+| Operation                                          | Syntax                |
+|----------------------------------------------------|-----------------------|
+| Call Lua function (2 parameters)                   | 2 8 math.pow/2        |
+| Call nullary Lua function (no parameters)          | os.time/0 or os.time/ |
+| Call Lua (binary) function and ignore return value | tbl 2 table.remove~2  |
+| Call Lua (unary) method                            | 2 astr:sub/1          |
+| Property lookup                                    | math.pi               |
+|                                                    |                       |
 
 ![{master}](https://github.com/zeroflag/equinox/actions/workflows/makefile.yml/badge.svg) 
