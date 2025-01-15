@@ -4,7 +4,6 @@ local interop = require("interop")
 local ast = require("ast")
 
 local macros = {}
-local sequence = 1
 
 local function sanitize(str)
   str = str:gsub("-", "_mi_")
@@ -199,10 +198,13 @@ local function def_word(compiler, is_global)
   local forth_name = compiler:word()
   local lua_name = sanitize(forth_name)
   if compiler:find(forth_name) then
-    lua_name = lua_name .. "__s" .. sequence
+    if not compiler.state.sequence then
+      compiler.state.sequence = 1
+    end
+    lua_name = lua_name .. "__s" .. compiler.state.sequence
+    compiler.state.sequence = compiler.state.sequence + 1
   end
   compiler:new_env("colon_" .. lua_name)
-  sequence = sequence + 1
   compiler:def_word(forth_name, lua_name, false)
   local header = ast.func_header(lua_name, is_global)
   stack:push(header)

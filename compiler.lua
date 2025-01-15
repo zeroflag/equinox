@@ -3,6 +3,7 @@
 -- basic syntax check
 -- debuginfo level (assert)
 -- var names with -
+-- reveal word only after ;
 
 local stack = require("stack")
 local macros = require("macros")
