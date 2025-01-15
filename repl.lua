@@ -5,12 +5,33 @@ local MULTI_LINE = 2
 
 local Repl = {}
 
+local function join(dir, child)
+  if not dir or "" == dir then return child end
+  local sep = ""
+  if dir:sub(-1) ~= "/" and dir:sub(-1) ~= "\\" then
+    sep = package.config:sub(1, 1)
+  end
+  return dir .. sep .. child
+end
+
 local repl_ext = "repl_ext.eqx"
+local home = os.getenv("HOME") or os.getenv("USERPROFILE")
+local search_paths = { join(home, ".equinox"), "" }
 
 local function file_exists(filename)
   local file = io.open(filename, "r")
   if file then file:close() return true
   else return false end
+end
+
+local function file_exists_in_any_of(filename, dirs)
+  for i, dir in ipairs(dirs) do
+    local path = join(dir, filename)
+    if file_exists(path) then
+      return path
+    end
+  end
+  return nil
 end
 
 local function extension(filename)
@@ -194,8 +215,9 @@ function Repl:safe_call(func)
 end
 
 function Repl:start()
-  if file_exists(repl_ext) then
-    self.compiler:eval_file(repl_ext)
+  local ext = file_exists_in_any_of(repl_ext, search_paths)
+  if ext then
+    self.compiler:eval_file(ext)
     self.repl_ext_loaded = true
   end
   local prompt = "#"
