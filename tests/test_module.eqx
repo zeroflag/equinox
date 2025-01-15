@@ -7,7 +7,9 @@ mymodule.word1/ 42 =assert
 mymodule:word2/ 1337 =assert
 
 mymodule.const1 1337 =assert
-mymodule.const2 1991  =assert
+mymodule.const2 1991 =assert
+
+mymodule:method/ 1991 =assert
 
 depth 0 =assert
 adepth 0 =assert

@@ -2,8 +2,9 @@
 -- tab auto complete repl (linenoise/readline)
 -- basic syntax check
 -- debuginfo level (assert)
--- var names with -
+-- var names with dash
 -- reveal word only after ;
+-- : mod.my-method error while : my-word works
 
 local stack = require("stack")
 local macros = require("macros")
@@ -236,7 +237,7 @@ function Compiler:error_handler(err)
   if info and info.source ~= self.chunk_name then
     info = debug.getinfo(4, "lS") -- if it was error/1
   end
-  if info then
+  if info and info.currentline > 0 then
     local src_line_num =
       self.line_mapping:resolve_target(info.currentline)
     if src_line_num then
@@ -253,18 +254,21 @@ function Compiler:error_handler(err)
       print()
     end
     print(string.format("Original Error: %d", info.currentline))
-    print(debug.traceback())
   end
   return err
 end
 
 function Compiler:eval(text, log_result)
-  local code = self:compile_and_load(text, log_result)
-  local success, result = xpcall(code, function() self:error_handler() end)
+  local code, err = self:compile_and_load(text, log_result)
+  if err then
+    self:error_handler(err) -- error during load
+    return error(err)
+  end
+  local success, result = xpcall(code, function(e) self:error_handler(e) end)
   if success then
     return result
   else
-    error(err)
+    error(result) -- error during execute
   end
 end
 

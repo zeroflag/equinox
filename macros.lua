@@ -24,7 +24,7 @@ local function sanitize(str)
     :gsub("?", "_qe_")
     :gsub("!", "_ex_")
     :gsub(",", "_ca_")
-    :gsub(":", "_cm_")
+    --:gsub(":", "_cm_") TODO allow method definitions?
     :gsub("%{", "_c1_")
     :gsub("%}", "_c2_")
     :gsub("%[", "_b1_")
@@ -196,12 +196,16 @@ end
 local function def_word(compiler, is_global, item)
   local forth_name = compiler:word()
   local lua_name = sanitize(forth_name)
-  if compiler:find(forth_name) then
+  if not forth_name:find("[.:]") and compiler:find(forth_name) then
+    -- emulate hyper static glob env for funcs but not for methods
     lua_name = lua_name .. "__s" .. compiler.state.sequence
     compiler.state.sequence = compiler.state.sequence + 1
   end
   compiler:new_env("colon_" .. lua_name)
   compiler:def_word(forth_name, lua_name, false)
+  if forth_name:find(":") then -- TODO check if lhs is defined
+    compiler:def_var("self")
+  end
   local header = ast.func_header(lua_name, is_global)
   if compiler.state.last_word then
     err("Word definitions cannot be nested", item)

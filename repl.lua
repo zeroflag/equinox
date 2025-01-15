@@ -191,7 +191,7 @@ function Repl:process_commands()
 end
 
 function Repl:print_err(result)
-  print("\27[91m" .. "Red Alert: " .. "\27[0m" .. result)
+  print("\27[91m" .. "Red Alert: " .. "\27[0m" .. tostring(result))
 end
 
 function Repl:print_ok()

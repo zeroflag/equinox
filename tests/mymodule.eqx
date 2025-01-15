@@ -4,4 +4,6 @@
 : my.word1 42 ;
 : my.word2 (: self :) self.const1 ;
 
+: my:method self.const2 ;
+
 my return
