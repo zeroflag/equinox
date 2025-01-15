@@ -4,7 +4,6 @@
 -- debuginfo level (assert)
 -- var names with -
 -- single line comment breaks repl
--- var x \n : tst .. breaks repl
 -- reveal word only after ;
 
 local stack = require("stack")
@@ -28,6 +27,7 @@ function Compiler.new(codegen, optimizer)
     code_start = 1,
     line_mapping = nil,
     env = nil,
+    root_env = Env.new(nil, "root"),
     state = {},
     optimizer = codegen,
     codegen = optimizer,
@@ -35,15 +35,15 @@ function Compiler.new(codegen, optimizer)
     dict = Dict.new()
   }
   setmetatable(obj, {__index = Compiler})
+  obj.root_env:def_var_unsafe("true", "true")
+  obj.root_env:def_var_unsafe("false", "false")
+  obj.root_env:def_var_unsafe("nil", "NIL")
   obj:reset_state()
   return obj
 end
 
 function Compiler:reset_state()
-  self.env = Env.new(nil, "root")
-  self.env:def_var_unsafe("true", "true")
-  self.env:def_var_unsafe("false", "false")
-  self.env:def_var_unsafe("nil", "NIL")
+  self.env = self.root_env
   self.state = {sequence = 1, do_loop_nesting = 1, last_word = nil}
 end
 
