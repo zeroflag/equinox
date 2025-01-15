@@ -1,4 +1,3 @@
-local stack = require("stack")
 local aux = require("aux")
 local interop = require("interop")
 local ast = require("ast")
@@ -194,7 +193,7 @@ function macros.def_alias(compiler)
   compiler:alias(lua_name, forth_alias)
 end
 
-local function def_word(compiler, is_global)
+local function def_word(compiler, is_global, item)
   local forth_name = compiler:word()
   local lua_name = sanitize(forth_name)
   if compiler:find(forth_name) then
@@ -204,16 +203,20 @@ local function def_word(compiler, is_global)
   compiler:new_env("colon_" .. lua_name)
   compiler:def_word(forth_name, lua_name, false)
   local header = ast.func_header(lua_name, is_global)
-  stack:push(header)
+  if compiler.state.last_word then
+    err("Word definitions cannot be nested", item)
+  else
+    compiler.state.last_word = header
+  end
   return header
 end
 
-function macros.colon(compiler)
-  return def_word(compiler, true)
+function macros.colon(compiler, item)
+  return def_word(compiler, true, item)
 end
 
-function macros.local_colon(compiler)
-  return def_word(compiler, false)
+function macros.local_colon(compiler, item)
+  return def_word(compiler, false, item)
 end
 
 function macros.tick(compiler, item)
@@ -402,12 +405,10 @@ function macros._end(compiler)
 end
 
 function macros.end_word(compiler, item)
-  if stack:depth() == 0 or
-     stack:tos().name ~= "func_header"
-  then
+  if not compiler.state.last_word then
     err("Unexpected semicolon", item)
   end
-  stack:pop()
+  compiler.state.last_word = nil
   return macros._end(compiler)
 end
 
@@ -420,12 +421,10 @@ function macros.keyval(compiler)
 end
 
 function macros.formal_params(compiler, item)
-  if stack:depth() == 0 or
-     stack:tos().name ~= "func_header"
-  then
+  if not compiler.state.last_word then
     err("Unexpected (:", item)
   end
-  local func_header = stack:tos()
+  local func_header = compiler.state.last_word
   local param_name = compiler:word()
   while param_name ~= ":)" do
     compiler:def_var(param_name)

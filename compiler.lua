@@ -4,9 +4,6 @@
 -- debuginfo level (assert)
 -- var names with -
 -- reveal word only after ;
--- REPL multiline bug / env, nested envs + macro push
--- 1.  macro push leaves trash behind in case of error
---     def word, end word, formal params
 
 local stack = require("stack")
 local macros = require("macros")
@@ -45,7 +42,7 @@ end
 
 function Compiler:reset_state()
   self.env = Env.new(nil, "root")
-  self.state = {sequence = 1, do_loop_nesting = 1}
+  self.state = {sequence = 1, do_loop_nesting = 1, last_word = nil}
 end
 
 function Compiler:init(text)
