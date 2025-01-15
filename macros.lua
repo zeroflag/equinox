@@ -239,14 +239,15 @@ function macros.ret(compiler)
 end
 
 function macros.comment(compiler)
-  repeat until ")" == compiler:next_chr()
+  repeat
+    local ch = compiler:next_chr()
+  until ")" == ch or "" == ch
 end
 
 function macros.single_line_comment(compiler)
-  local ch
   repeat
-    ch = compiler:next_chr()
-  until "\n" == ch or "\r" == ch
+    local ch = compiler:next_chr()
+  until "\n" == ch or "\r" == ch or "" == ch
   if ch == "\r" and compiler:peek_chr() == "\n" then
     compiler:next_chr()
   end

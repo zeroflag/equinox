@@ -3,7 +3,6 @@
 -- basic syntax check
 -- debuginfo level (assert)
 -- var names with -
--- single line comment breaks repl
 -- reveal word only after ;
 
 local stack = require("stack")
