@@ -42,7 +42,7 @@ local function sanitize(str)
   return str
 end
 
-local function err(message, item)
+local function err(message, item) -- TODO move to comp
   error(message .. " at line: " .. item.line_number)
 end
 
@@ -196,12 +196,12 @@ function macros.def_alias(compiler)
 end
 
 local function def_word(compiler, is_global)
-  compiler:new_env()
   local forth_name = compiler:word()
   local lua_name = sanitize(forth_name)
   if compiler:find(forth_name) then
     lua_name = lua_name .. "__s" .. sequence
   end
+  compiler:new_env("colon_" .. lua_name)
   sequence = sequence + 1
   compiler:def_word(forth_name, lua_name, false)
   local header = ast.func_header(lua_name, is_global)
@@ -339,12 +339,16 @@ function macros._exit()
   return ast._return(nil) -- exit from Forth word
 end
 
-local do_loop_nesting = 0
-local do_loop_vars = {"i", "j", "k"}
-
 function macros._do(compiler)
-  do_loop_nesting = do_loop_nesting + 1
-  local loop_var = do_loop_vars[((do_loop_nesting -1) % #do_loop_vars) +1]
+  local do_loop_vars = {"i", "j", "k"}
+  local state = compiler.state
+  if state.do_loop_nesting then
+    state.do_loop_nesting = state.do_loop_nesting + 1
+  else
+    state.do_loop_nesting = 1
+  end
+  local loop_var =
+    do_loop_vars[((state.do_loop_nesting -1) % #do_loop_vars) +1]
   compiler:new_env('DO_LOOP')
   compiler:def_var(loop_var)
   return ast._for(
@@ -356,7 +360,8 @@ end
 
 function macros._loop(compiler)
   compiler:remove_env('DO_LOOP')
-  do_loop_nesting = do_loop_nesting - 1
+  compiler.state.do_loop_nesting =
+    compiler.state.do_loop_nesting - 1
   return ast.keyword("end")
 end
 

@@ -232,6 +232,7 @@ function Repl:start()
         self:print_err(result)
       elseif not result then
         self.mode = MULTI_LINE
+        self.compiler:reset_state()
       else
         self.mode = SINGLE_LINE
         self:safe_call(function() result() end)

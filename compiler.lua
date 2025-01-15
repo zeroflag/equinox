@@ -3,7 +3,6 @@
 -- basic syntax check
 -- debuginfo level (assert)
 -- var names with -
--- inline
 
 local stack = require("stack")
 local macros = require("macros")
@@ -26,6 +25,7 @@ function Compiler.new(codegen, optimizer)
     code_start = 1,
     line_mapping = nil,
     env = Env.new(nil, "root"),
+    state = {},
     optimizer = codegen,
     codegen = optimizer,
     chunk_name = "<<compiled eqx code>>",
@@ -36,6 +36,11 @@ function Compiler.new(codegen, optimizer)
   obj.env:def_var_unsafe("nil", "NIL")
   setmetatable(obj, {__index = Compiler})
   return obj
+end
+
+function Compiler:reset_state()
+  self.env = Env.new(nil, "root")
+  self.state = {}
 end
 
 function Compiler:init(text)
