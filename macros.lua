@@ -198,9 +198,6 @@ local function def_word(compiler, is_global)
   local forth_name = compiler:word()
   local lua_name = sanitize(forth_name)
   if compiler:find(forth_name) then
-    if not compiler.state.sequence then
-      compiler.state.sequence = 1
-    end
     lua_name = lua_name .. "__s" .. compiler.state.sequence
     compiler.state.sequence = compiler.state.sequence + 1
   end
@@ -344,13 +341,9 @@ end
 function macros._do(compiler)
   local do_loop_vars = {"i", "j", "k"}
   local state = compiler.state
-  if state.do_loop_nesting then
-    state.do_loop_nesting = state.do_loop_nesting + 1
-  else
-    state.do_loop_nesting = 1
-  end
   local loop_var =
     do_loop_vars[((state.do_loop_nesting -1) % #do_loop_vars) +1]
+  state.do_loop_nesting = state.do_loop_nesting + 1
   compiler:new_env('DO_LOOP')
   compiler:def_var(loop_var)
   return ast._for(

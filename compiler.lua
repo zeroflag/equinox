@@ -4,6 +4,9 @@
 -- debuginfo level (assert)
 -- var names with -
 -- reveal word only after ;
+-- REPL multiline bug / env, nested envs + macro push
+-- 1.  macro push leaves trash behind in case of error
+--     def word, end word, formal params
 
 local stack = require("stack")
 local macros = require("macros")
@@ -25,23 +28,24 @@ function Compiler.new(codegen, optimizer)
     output = nil,
     code_start = 1,
     line_mapping = nil,
-    env = Env.new(nil, "root"),
+    env = nil,
     state = {},
     optimizer = codegen,
     codegen = optimizer,
     chunk_name = "<<compiled eqx code>>",
     dict = Dict.new()
   }
+  setmetatable(obj, {__index = Compiler})
+  obj:reset_state()
   obj.env:def_var_unsafe("true", "true")
   obj.env:def_var_unsafe("false", "false")
   obj.env:def_var_unsafe("nil", "NIL")
-  setmetatable(obj, {__index = Compiler})
   return obj
 end
 
 function Compiler:reset_state()
   self.env = Env.new(nil, "root")
-  self.state = {}
+  self.state = {sequence = 1, do_loop_nesting = 1}
 end
 
 function Compiler:init(text)
