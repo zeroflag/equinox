@@ -1,0 +1,21 @@
+depth 0 =assert
+adepth 0 =assert
+
+block
+  global g
+  10 -> g
+  10 g =assert
+  block
+    11 -> g
+    41 -> global g2
+  end
+  11 g =assert
+  50 -> var g2 \ shadow g2
+  50 g2 =assert
+end
+
+11 g =assert
+41 g2 =assert
+
+depth 0 =assert
+adepth 0 =assert
