@@ -107,12 +107,20 @@ function ast.init_local(var, exp)
   return {name = "init_local", var = var, exp = exp}
 end
 
+function ast.init_global(var, exp)
+  return {name = "init_global", var = var, exp = exp}
+end
+
 function ast._if(cond, body)
   return {name = "if", exp = cond, body = body}
 end
 
 function ast.def_local(var)
   return {name = "local", var = var}
+end
+
+function ast.def_global(var)
+  return {name = "global", var = var}
 end
 
 function ast.new_table()

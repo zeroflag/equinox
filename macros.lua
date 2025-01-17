@@ -24,7 +24,6 @@ local function sanitize(str)
     :gsub("?", "_qe_")
     :gsub("!", "_ex_")
     :gsub(",", "_ca_")
-    --:gsub(":", "_cm_") TODO allow method definitions?
     :gsub("%{", "_c1_")
     :gsub("%}", "_c2_")
     :gsub("%[", "_b1_")
@@ -36,6 +35,9 @@ local function sanitize(str)
   end
   if str:match("^%.") then
     str = "dot_" .. str:sub(2)
+  end
+  if str:match("^%:") then
+    str = "col_" .. str:sub(2) -- TODO check
   end
   return str
 end
@@ -203,8 +205,14 @@ local function def_word(compiler, is_global, item)
   end
   compiler:new_env("colon_" .. lua_name)
   compiler:def_word(forth_name, lua_name, false)
-  if forth_name:find(":") then -- TODO check if lhs is defined
-    compiler:def_var("self")
+  if forth_name:find(":") then
+    local obj = forth_name:match("([^:]+)")
+    if obj and compiler:has_var(obj) then
+      compiler:def_var("self")
+    else
+      err("Undefined object: " .. tostring(obj) ..
+          " in method definition: " .. forth_name, item)
+    end
   end
   local header = ast.func_header(lua_name, is_global)
   if compiler.state.last_word then
@@ -263,6 +271,12 @@ function macros.var(compiler)
   return ast.def_local(name)
 end
 
+function macros.var_global(compiler)
+  local name = compiler:word()
+  compiler:def_global(name)
+  return ast.def_global(name)
+end
+
 local function valid_tbl_assignment(compiler, name)
   if interop.is_lua_prop_lookup(name) then
     local tbl = interop.table_name(name)
@@ -279,6 +293,11 @@ function macros.assignment(compiler, item)
     name = compiler:word()
     compiler:def_var(name)
     return ast.init_local(name, ast.pop())
+  elseif name == "global" then
+    -- declare and assign of a new global
+    name = compiler:word()
+    compiler:def_global(name)
+    return ast.init_global(name, ast.pop())
   else
     -- assignment of existing var
     if compiler:has_var(name) or

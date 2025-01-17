@@ -34,8 +34,14 @@ function CodeGen:gen(ast)
   if "local" == ast.name then
     return "local " .. ast.var
   end
+  if "global" == ast.name then
+    return ast.var .. "=nil"
+  end
   if "init_local" == ast.name then
     return "local " .. ast.var .. "=" .. self:gen(ast.exp)
+  end
+  if "init_global" == ast.name then
+    return ast.var .. "=" .. self:gen(ast.exp)
   end
   if "assignment" == ast.name then
     return ast.var .. " = " .. self:gen(ast.exp)

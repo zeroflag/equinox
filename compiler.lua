@@ -4,6 +4,9 @@
 -- debuginfo level (assert)
 -- var names with dash
 -- reveal word only after ;
+-- remove mandatory / from obj:method calls
+-- don't sanitize methods
+-- globals
 -- : mod.my-method error while : my-word works
 
 local stack = require("stack")
@@ -76,6 +79,10 @@ end
 
 function Compiler:def_var(name)
   self.env:def_var(name)
+end
+
+function Compiler:def_global(name)
+  self.root_env:def_var(name)
 end
 
 function Compiler:has_var(name)
