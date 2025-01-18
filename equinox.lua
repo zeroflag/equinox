@@ -21,18 +21,19 @@ function require(module_name)
 end
 
 local lib = [[
-alias: append >p table.insert 2
-alias: insert >p table.insert 3
-alias: remove >p table.remove 2
-alias: >str >f tostring 1
-alias: need >f require 1
-alias: max  >f math.max 2
-alias: min  >f math.min 2
+alias: append #( table.insert 2 0 )
+alias: insert #( table.insert 3 0 )
+alias: remove #( table.remove 2 0 )
+alias: >str #( tostring 1 )
+alias: need #( require 1 )
+alias: type #( type 1 )
+alias: max  #( math.max 2 )
+alias: min  #( math.min 2 )
 
 \ TODO
 \ alias: assert-true >p assert 1
 
-: assert-true >p assert 1 ;
+: assert-true #( assert 1 0 ) ;
 : assert-false not assert-true ;
 : =assert = assert-true ;
 
@@ -51,7 +52,7 @@ alias: min  >f math.min 2
     {}
     depth a> - 1 -
     dup 2 % 0 != if
-      "Table needs even number of items" >f error 1
+      "Table needs even number of items" #( error 1 )
     then
     2 / 0 do
       dup >a -rot put a>

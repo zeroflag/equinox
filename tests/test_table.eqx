@@ -36,7 +36,7 @@ tbl 1 at "b" =assert
 tbl 2 at "c" =assert
 tbl 3 at "a" =assert
 
-tbl 2 >f table.remove 2 "c" =assert ( returns the removed item )
+tbl 2 #( table.remove 2 ) "c" =assert ( returns the removed item )
 
 tbl 1 at "b" =assert
 tbl 2 at "a" =assert

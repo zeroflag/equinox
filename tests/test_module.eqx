@@ -3,7 +3,7 @@ adepth 0 =assert
 
 "tests/mymodule.eqx" need -> var mymodule
 
->f mymodule.word1 0 42 =assert
+#( mymodule.word1 0 ) 42 =assert
 mymodule:word2 1337 =assert
 
 mymodule.const1 1337 =assert

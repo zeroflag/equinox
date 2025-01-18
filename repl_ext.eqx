@@ -1,7 +1,6 @@
-alias: rep  >f string.rep 2
-alias: sub  >f string.sub 3
-alias: gsub >f string.gsub 3
-alias: type >f type 1
+alias: rep  #( string.rep 2 )
+alias: sub  #( string.sub 3 )
+alias: gsub #( string.gsub 3 )
 
 12 -> var width
 
@@ -19,7 +18,7 @@ alias: type >f type 1
 :: padlen ( s -- n ) size width swap - ;
 :: padding ( s -- s ) padlen " " swap rep ;
 :: pad ( s -- s ) dup padding swap .. ;
-:: .str "\"%s\"" swap >f string.format 2 . ;
+:: .str "\"%s\"" swap #( string.format 2 ) . ;
 :: sanitize (  s -- s )
    "\n" "\\n" gsub drop ( count ) ;
 

@@ -15,4 +15,4 @@ function assert_tos(result, code)
   stack:pop()
 end
 
-assert_tos(2, "1 2 >f math.max 2")
+assert_tos(2, "1 2 #( math.max 2 )")
