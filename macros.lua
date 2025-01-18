@@ -269,22 +269,25 @@ function macros.single_line_comment(compiler)
 end
 
 function macros.arity_call_lua(compiler, item)
-  local func = compiler:word()
+  local func  = compiler:word() -- TODO resolve func name
   local numret = 1
+  local arity = 0
   local token = compiler:word()
-  local arity = tonumber(token)
-  if not arity or arity < 0 then
-    err("expected arity number, got " .. token, item)
-  end
-  token = compiler:word()
   if token ~= ")" then
-    numret = tonumber(token)
-    if not numret or numret < 0 then
-      err("expected number of return values, got " .. token, item)
+    arity = tonumber(token)
+    if not arity or arity < 0 then
+      err("expected arity number, got " .. token, item)
     end
     token = compiler:word()
     if token ~= ")" then
-      err("expected closing ), got " .. token, item)
+      numret = tonumber(token)
+      if not numret or numret < 0 then
+        err("expected number of return values, got " .. token, item)
+      end
+      token = compiler:word()
+      if token ~= ")" then
+        err("expected closing ), got " .. token, item)
+      end
     end
   end
   local params = {}
@@ -299,7 +302,7 @@ function macros.arity_call_lua(compiler, item)
         ast.init_local(params[i].id, ast.pop()))
     end
   end
-  if numret == 0 then
+  if numret == 0 then -- TODO support > 1
     table.insert(stmts, ast.func_call(func, unpack(params)))
   else
     table.insert(stmts, ast.push_many(

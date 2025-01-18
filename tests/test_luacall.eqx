@@ -16,6 +16,8 @@ math.pi #( math.cos 1 ) -1 =assert
 "abc" -> var s
 s:upper "ABC" =assert
 
+#( os.time ) type "number" =assert
+
 { $K { $K2 "test string" } } -> var t
 
 t.K.K2:upper "TEST STRING" =assert
