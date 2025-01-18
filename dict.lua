@@ -57,8 +57,9 @@ function Dict:word_list()
   local result, seen = {}, {}
   for i, each in ipairs(self.words) do
     if not seen[each.forth_name] then
-      if interop.resolve_lua_func(each.lua_name) or
-         each.immediate
+      if each.is_lua_alias or
+         each.immediate or
+         interop.resolve_lua_func(each.lua_name)
       then
         table.insert(result, each.forth_name)
       end
@@ -128,6 +129,8 @@ function Dict:init()
   self:def_macro("pairs:", "macros.for_pairs")
   self:def_macro("to:", "macros._to")
   self:def_macro("step:", "macros._step")
+  self:def_macro(">>", "macros.arity_call_func")
+  self:def_macro("~>>", "macros.arity_call_void")
   self:def_macro("->", "macros.assignment")
   self:def_macro("var", "macros.var")
   self:def_macro("global", "macros.var_global")

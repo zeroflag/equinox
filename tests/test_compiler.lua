@@ -15,12 +15,4 @@ function assert_tos(result, code)
   stack:pop()
 end
 
-assert_tos(2, "1 2 math.max/2")
-
---[[
-local status, result = pcall(
-  function()
-    return compiler:eval("1 2 math.min")
-  end)
-assert(not status)
-]]--
+assert_tos(2, "1 2 >> math.max 2")

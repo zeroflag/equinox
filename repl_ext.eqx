@@ -1,27 +1,31 @@
-12 -> var width
+alias: rep  >> string.rep 2
+alias: sub  >> string.sub 3
+alias: gsub >> string.gsub 3
+alias: type >> type 1
 
+12 -> var width
 
 :: line ( --  )
   " +"
-  "-" width 2 + string.rep/2
+  "-" width 2 + rep
   .. "+"
   .. . cr ;
 
 :: trunc ( s -- s )
   dup size width > if
-    1 width 2 - string.sub/3 ".." ..
+    1 width 2 - sub ".." ..
   then ;
 
 :: padlen ( s -- n ) size width swap - ;
-:: padding ( s -- s ) padlen " " swap string.rep/2 ;
+:: padding ( s -- s ) padlen " " swap rep ;
 :: pad ( s -- s ) dup padding swap .. ;
-:: .str "\"%s\"" swap string.format/2 . ;
+:: .str "\"%s\"" swap >> string.format 2 . ;
 :: sanitize (  s -- s )
-   "\n" "\\n" string.gsub/3 drop ( count ) ;
+   "\n" "\\n" gsub drop ( count ) ;
 
 : clear depth 0 do drop loop ;
-: table? type/1 "table" = ;
-: number? type/1 "number" = ;
+: table? type "table" = ;
+: number? type "number" = ;
 
 : seq? ( tbl -- bool )
   dup table? not if
@@ -39,7 +43,7 @@
   swap ( tbl ) size = ;
 
 : inspect ( obj -- )
-  dup type/1
+  dup type
   case
     "string" of .str endof
     "number" of .    endof

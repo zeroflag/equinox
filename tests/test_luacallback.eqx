@@ -7,9 +7,9 @@ adepth 0 =assert
 : callback3 (: a b c :) a b + c * ;
 
 3     callback0   9   =assert
-42    callback1/1 -42 =assert
-20 13 callback2/2 7   =assert
-2 3 4 callback3/3 20  =assert
+42    >> callback1 1 -42 =assert
+20 13 >> callback2 2 7   =assert
+2 3 4 >> callback3 3 20  =assert
 
 depth 0 =assert
 adepth 0 =assert

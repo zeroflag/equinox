@@ -1,6 +1,8 @@
 var counter 0 -> counter
 var steps
 
+\ TOOD update interop lessons
+
 [
   [
     "Welcome to the Equinox Forth programming language tutorial."
@@ -219,7 +221,7 @@ var steps
 : len ( -- ) steps size ;
 
 : show-progress ( -- )
-  "Lesson \(%d/%d\):" counter len string.format/3 . cr
+  "Lesson \(%d/%d\):" counter len >> string.format 3 . cr
   "================" . cr ;
 
 : finished? counter len >= ;
@@ -236,8 +238,8 @@ var steps
   finished? not if show-instructions cr then ;
 
 : clamp ( -- )
-  counter 1 math.max/2 -> counter
-  counter len math.min/2 -> counter ;
+  counter 1 max -> counter
+  counter len min -> counter ;
 
 : step-by ( n -- )
   counter swap + -> counter

@@ -1,0 +1,37 @@
+depth 0 =assert
+adepth 0 =assert
+
+alias: this dup
+alias: that over
+
+3 this * 9 =assert
+
+4 5 that 4 =assert
++ 9 =assert
+
+alias: ADD +
+alias: MUL *
+
+2 3 ADD 4 MUL 20 =assert
+
+alias: type >> type 1
+
+"str" type "string" =assert
+
+alias: sub1 >> string.sub 2
+alias: sub2 >> string.sub 3
+
+"Hello, Lua" -> var s
+
+s 1 5 sub2 "Hello" =assert
+s 8 sub1 "Lua" =assert
+
+alias: ADD2 ADD
+
+4 5 ADD2 9 =assert
+
+-1 -9 max -1 =assert
+-1 -9 min -9 =assert
+
+depth 0 =assert
+adepth 0 =assert

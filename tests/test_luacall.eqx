@@ -1,17 +1,30 @@
 depth 0 =assert
 adepth 0 =assert
 
-2 8 math.pow/2 256 =assert
-2 10 math.pow/2 1024 =assert
+2 8 >> math.pow 2 256 =assert
+2 10 >> math.pow 2 1024 =assert
 
-502 1002 math.min/2 502 =assert
-502 1002 math.max/2 1002 =assert
-502 1002 math.min/2 502 =assert
+502 1002 >> math.min 2 502 =assert
+502 1002 >> math.max 2 1002 =assert
+502 1002 >> math.min 2 502 =assert
 
-math.pi math.cos/1 -1 =assert
+math.pi >> math.cos 1 -1 =assert
 
-"55" tonumber/1 55 =assert
-16 math.sqrt/1 4 =assert
+"55" >> tonumber 1 55 =assert
+16 >> math.sqrt 1 4 =assert
+
+"abc" -> var s
+s:upper "ABC" =assert
+
+{ $K { $K2 "test string" } } -> var t
+
+t.K.K2:upper "TEST STRING" =assert
+t.K.K2:upper:lower "test string" =assert
+
+1 3 >> t.K.K2:sub 2 "tes" =assert
+
+\ TODO signature
+\ 1 3 t.K.K2:upper:sub/2 "TES" =assert
 
 depth 0 =assert
 adepth 0 =assert

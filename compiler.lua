@@ -4,14 +4,10 @@
 -- debuginfo level (assert)
 -- var names with dash
 -- reveal word only after ;
--- remove mandatory / from obj:method calls
 -- don't sanitize methods
--- globals
 -- : mod.my-method error while : my-word works
 
-local stack = require("stack")
 local macros = require("macros")
-local Stack = require("stack_def")
 local Dict = require("dict")
 local Parser = require("parser")
 local LineMapping = require("line_mapping")
@@ -19,7 +15,7 @@ local Output = require("output")
 local Env = require("env")
 local interop = require("interop")
 local ast = require("ast")
-local unpack = table.unpack or unpack
+local utils = require("utils")
 
 local Compiler = {}
 
@@ -90,7 +86,11 @@ function Compiler:has_var(name)
 end
 
 function Compiler:word()
-  return self.parser:next_item().token
+  return self:next_item().token
+end
+
+function Compiler:next_item()
+  return self.parser:next_item()
 end
 
 function Compiler:find(forth_name)
@@ -111,28 +111,6 @@ end
 
 function Compiler:alias(lua_name, forth_alias)
   return self.dict:def_lua_alias(lua_name, forth_alias)
-end
-
-function Compiler:lua_call(name, arity, void)
-  local params = {}
-  local stmts = {}
-  if arity > 0 then
-    for i = 1, arity do
-      table.insert(params,
-        ast.identifier(ast.gen_id("__p")))
-    end
-    for i = arity, 1, -1 do -- reverse parameter order
-      table.insert(stmts,
-        ast.init_local(params[i].id, ast.pop()))
-    end
-  end
-  if void then
-    table.insert(stmts, ast.func_call(name, unpack(params)))
-  else
-    table.insert(stmts, ast.push_many(
-                   ast.func_call(name, unpack(params))))
-  end
-  return stmts
 end
 
 function Compiler:def_word(alias, name, immediate)
@@ -176,12 +154,8 @@ function Compiler:compile_token(item)
       return self:exec_macro(item)
     end
     if word and word.is_lua_alias then
-      local res = interop.parse_signature(word.lua_name)
-      if res then -- lua alias
-        return self:lua_call(res.name, res.arity, res.void)
-      else        -- normal alias
-        return ast.func_call(word.lua_name)
-      end
+      -- Prevent optimizer to overwrite original definition
+      return utils.deepcopy(word.lua_name)
     end
     if self.env:has_var(item.token) then -- Forth variable
       return ast.push(ast.identifier(item.token))
@@ -189,21 +163,20 @@ function Compiler:compile_token(item)
     if word then -- Regular Forth word
       return ast.func_call(word.lua_name)
     end
-    if interop.is_lua_prop_lookup(item.token) then
-      -- Lua/Forth table lookup like: math.pi or tbl.key
-      local tbl = interop.table_name(item.token)
-      if self.env:has_var(tbl) or
-         interop.resolve_lua_obj(item.token)
+    if interop.is_mixed_lua_expression(item.token) then
+      -- Table lookup: math.pi or tbl.key or method call a:b a:b.c
+      local parts = interop.explode(item.token)
+      local name = parts[1]
+      if self.env:has_var(name) or
+              interop.resolve_lua_obj(name)
       then
-        return ast.push(ast.identifier(item.token))
+        -- This can result multiple values, like img:getDimensions,
+        -- a single value like tbl.key or str:upper, or nothing like img:draw
+        -- TODO if only tbl, than use push instead of push many as it must be faster
+        return ast.push_many(ast.identifier(interop.join(parts)))
       else
-        error("Unkown variable: " .. tbl .. " at: " .. item.token)
+        error("Unkown variable: " .. name .. " at: " .. item.token)
       end
-    end
-    local res = interop.parse_signature(item.token)
-    if res then
-      -- Lua call with spec. signature such as math.pow/2 or io.write~
-      return self:lua_call(res.name, res.arity, res.void)
     end
     if interop.resolve_lua_obj(item.token) then
       -- Lua globals from _G, such as math, table, io

@@ -1,7 +1,7 @@
 "testing error/1" .
 
 : my-abort ( -- )
-  "test" error/1 ;
+  "test" ~>> error 1 ;
 
 2 3 + dup * . cr
 

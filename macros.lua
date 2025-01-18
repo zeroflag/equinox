@@ -1,6 +1,7 @@
 local aux = require("aux")
 local interop = require("interop")
 local ast = require("ast")
+local unpack = table.unpack or unpack
 
 local macros = {}
 
@@ -190,9 +191,9 @@ function macros.cr()
 end
 
 function macros.def_alias(compiler)
-  local lua_name = compiler:word()
-  forth_alias = compiler:word()
-  compiler:alias(lua_name, forth_alias)
+  local forth_name = compiler:word()
+  local exp = compiler:next_item()
+  compiler:alias(compiler:compile_token(exp), forth_name)
 end
 
 local function def_word(compiler, is_global, item)
@@ -238,6 +239,8 @@ function macros.tick(compiler, item)
     err(name .. " is not found in dictionary", item)
   elseif word.immediate then
     err("' cannot be used on a macro: " .. name, item)
+  elseif word.is_lua_alias then
+    err("' cannot be used on an alias: " .. name, item)
   end
   return ast.push(ast.identifier(word.lua_name))
 end
@@ -263,6 +266,42 @@ function macros.single_line_comment(compiler)
   if ch == "\r" and compiler:peek_chr() == "\n" then
     compiler:next_chr()
   end
+end
+
+function macros.arity_call_func(compiler, item)
+  return macros.arity_call(compiler, item, false)
+end
+
+function macros.arity_call_void(compiler, item)
+  return macros.arity_call(compiler, item, true)
+end
+
+function macros.arity_call(compiler, item, void)
+  local func = compiler:word()
+  local param = compiler:word()
+  local arity = tonumber(param)
+  if not arity then
+    err("expected arity number, got " .. param, item)
+  end
+  local params = {}
+  local stmts = {}
+  if arity > 0 then
+    for i = 1, arity do
+      table.insert(params,
+        ast.identifier(ast.gen_id("__p")))
+    end
+    for i = arity, 1, -1 do -- reverse parameter order
+      table.insert(stmts,
+        ast.init_local(params[i].id, ast.pop()))
+    end
+  end
+  if void then
+    table.insert(stmts, ast.func_call(func, unpack(params)))
+  else
+    table.insert(stmts, ast.push_many(
+                   ast.func_call(func, unpack(params))))
+  end
+  return stmts
 end
 
 function macros.var(compiler)

@@ -18,28 +18,38 @@ function interop.resolve_lua_func(name)
   end
 end
 
-local function parse_arity(arity)
-  if arity and #arity > 0 then
-    return tonumber(arity)
-  else
-    return 0
-  end
-end
-
 function interop.table_name(token)
   return string.match(token, "^[^.]+")
 end
 
-function interop.parse_signature(signature)
-  local name, arity = string.match(signature, "([^%/]+)%/(%d*)")
-  if name then
-    return {name=name, arity=parse_arity(arity), void=false}
+function interop.explode(token)
+  local result = {}
+  for part, sep in token:gmatch("([^:%.]+)([:%.]?)") do
+    table.insert(result, part)
+    if sep ~= "" then
+      table.insert(result, sep)
+    end
   end
-  local name, arity = string.match(signature, "([^%/]+)%~(%d*)")
-  if name then
-    return {name=name, arity=parse_arity(arity), void=true}
+  return result
+end
+
+function interop.join(parts)
+  local exp = ""
+  for i, each in ipairs(parts) do
+    exp = exp .. each
+    if each ~= ":" and
+        each ~= "." and
+        parts[i-1] == ":"
+    then
+      exp = exp .. "()"
+    end
   end
-  return nil
+  return exp
+end
+
+function interop.is_mixed_lua_expression(token)
+  return string.match(token, ".+[.:].+") and
+    not string.match(token, "([/~]%d*)$")
 end
 
 function interop.is_lua_prop_lookup(token)

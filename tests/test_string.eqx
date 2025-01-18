@@ -1,43 +1,45 @@
 adepth 0 =assert
 depth 0 =assert
 
-$xyz string.len/1 3 =assert
+alias: slen >> string.len 1
 
-"asdf" string.len/1 4 =assert
-"asdf jkle" string.len/1 9 =assert
-"asdf jkle " string.len/1 10 =assert
-" asdf jkle" string.len/1 10 =assert
-" asdf jkle " string.len/1 11 =assert
-"" string.len/1 0 =assert
-" " string.len/1 1 =assert
-"  " string.len/1 2 =assert
-"  asdf  jkle  " string.len/1 14 =assert
+$xyz slen 3 =assert
+
+"asdf" slen 4 =assert
+"asdf jkle" slen 9 =assert
+"asdf jkle " slen 10 =assert
+" asdf jkle" slen 10 =assert
+" asdf jkle " slen 11 =assert
+"" slen 0 =assert
+" " slen 1 =assert
+"  " slen 2 =assert
+"  asdf  jkle  " slen 14 =assert
 
 " abc " " xyz " .. " abc  xyz " =assert
 
 var str
 "abc" -> str
-str:upper/0 "ABC" =assert
-str:len/0 3 =assert
-str:reverse/0 "cba" =assert
+str:upper "ABC" =assert
+str:len 3 =assert
+str:reverse "cba" =assert
 
 "2@4" -> str
-"(%d)@%d" str:match/1
+"(%d)@%d" >> str:match 1
 "2" =assert
 
 "2@4@8" -> str
-"(%d)@(%d)@(%d)" str:match/1
+"(%d)@(%d)@(%d)" >> str:match 1
 
 "8" =assert
 "4" =assert
 "2" =assert
 
-str:len/ 5 =assert
+str:len 5 =assert
 
-"string\twith \n escaped characters" string.len/1 32 =assert
-"str with \"quotes\"" string.len/1 17 =assert
-"\"" string.len/1 1 =assert
-"\"\"" string.len/1 2 =assert
+"string\twith \n escaped characters" slen 32 =assert
+"str with \"quotes\"" slen 17 =assert
+"\"" slen 1 =assert
+"\"\"" slen 2 =assert
 
 adepth 0 =assert
 depth 0 =assert
