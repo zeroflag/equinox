@@ -221,7 +221,7 @@ var steps
 : len ( -- ) steps size ;
 
 : show-progress ( -- )
-  "Lesson \(%d/%d\):" counter len >> string.format 3 . cr
+  "Lesson \(%d/%d\):" counter len >f string.format 3 . cr
   "================" . cr ;
 
 : finished? counter len >= ;

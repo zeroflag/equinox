@@ -14,12 +14,12 @@ alias: MUL *
 
 2 3 ADD 4 MUL 20 =assert
 
-alias: type >> type 1
+alias: type >f type 1
 
 "str" type "string" =assert
 
-alias: sub1 >> string.sub 2
-alias: sub2 >> string.sub 3
+alias: sub1 >f string.sub 2
+alias: sub2 >f string.sub 3
 
 "Hello, Lua" -> var s
 

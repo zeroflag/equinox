@@ -1,7 +1,7 @@
 adepth 0 =assert
 depth 0 =assert
 
-alias: slen >> string.len 1
+alias: slen >f string.len 1
 
 $xyz slen 3 =assert
 
@@ -24,11 +24,11 @@ str:len 3 =assert
 str:reverse "cba" =assert
 
 "2@4" -> str
-"(%d)@%d" >> str:match 1
+"(%d)@%d" >f str:match 1
 "2" =assert
 
 "2@4@8" -> str
-"(%d)@(%d)@(%d)" >> str:match 1
+"(%d)@(%d)@(%d)" >f str:match 1
 
 "8" =assert
 "4" =assert
