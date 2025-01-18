@@ -67,7 +67,7 @@ version:
 bundle:
 	@version=$$(cat "version/version.txt") ; \
 	echo "Creating $(BUNDLE) v$$version" ; \
-	$(AMALG) -s $(EQUINOX) compiler env codegen ast_optimizer ast_matchers aux dict ast line_mapping interop parser macros output stack_def repl stack -o $(BUNDLE); \
+	$(AMALG) -s $(EQUINOX) compiler utils env codegen ast_optimizer ast_matchers aux dict ast line_mapping interop parser macros output stack_def repl stack -o $(BUNDLE); \
 	sed -i "s/^__VERSION__=.*$$/__VERSION__=\"$$version\"/" $(BUNDLE); \
 
 repl:
