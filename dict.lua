@@ -2,9 +2,9 @@ local interop = require("interop")
 
 local Dict = {}
 
-function Dict.new()
+function Dict:new()
   local obj = {words = {}}
-  setmetatable(obj, {__index = Dict})
+  setmetatable(obj, {__index = self})
   obj:init()
   return obj
 end
