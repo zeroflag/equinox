@@ -1,8 +1,8 @@
 local CodeGen = {}
 
-function CodeGen.new()
+function CodeGen:new()
   local obj = {}
-  setmetatable(obj, {__index = CodeGen})
+  setmetatable(obj, {__index = self})
   return obj
 end
 

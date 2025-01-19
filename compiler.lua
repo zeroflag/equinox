@@ -20,7 +20,7 @@ local utils = require("utils")
 
 local Compiler = {}
 
-function Compiler.new(codegen, optimizer)
+function Compiler:new(codegen, optimizer)
   local obj = {
     parser = nil,
     output = nil,
@@ -34,7 +34,7 @@ function Compiler.new(codegen, optimizer)
     chunk_name = "<<compiled eqx code>>",
     dict = Dict.new()
   }
-  setmetatable(obj, {__index = Compiler})
+  setmetatable(obj, {__index = self})
   obj.root_env:def_var_unsafe("true", "true")
   obj.root_env:def_var_unsafe("false", "false")
   obj.root_env:def_var_unsafe("nil", "NIL")

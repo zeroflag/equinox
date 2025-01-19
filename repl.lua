@@ -38,7 +38,7 @@ local function extension(filename)
   return filename:match("^.+(%.[^%.]+)$")
 end
 
-function Repl.new(compiler, optimizer)
+function Repl:new(compiler, optimizer)
   local obj = {compiler = compiler,
                optimizer = optimizer,
                mode = SINGLE_LINE,
@@ -46,7 +46,7 @@ function Repl.new(compiler, optimizer)
                repl_ext_loaded = false,
                input = "",
                log_result = false }
-  setmetatable(obj, {__index = Repl})
+  setmetatable(obj, {__index = self})
   return obj
 end
 

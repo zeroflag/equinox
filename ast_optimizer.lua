@@ -1,9 +1,9 @@
 local Optimizer = {}
 local matchers = require("ast_matchers")
 
-function Optimizer.new()
+function Optimizer:new()
   local obj = {logging = false, enabled = true}
-  setmetatable(obj, {__index = Optimizer})
+  setmetatable(obj, {__index = self})
   return obj
 end
 

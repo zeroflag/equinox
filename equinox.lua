@@ -6,9 +6,9 @@ local CodeGen = require("codegen")
 local Repl = require("repl")
 
 local equinox = {}
-local optimizer = Optimizer.new()
-local compiler = Compiler.new(optimizer, CodeGen.new())
-local repl = Repl.new(compiler, optimizer)
+local optimizer = Optimizer:new()
+local compiler = Compiler:new(optimizer, CodeGen:new())
+local repl = Repl:new(compiler, optimizer)
 
 local lua_require = require
 
