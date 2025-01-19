@@ -281,7 +281,7 @@ function macros.arity_call_lua(compiler, item)
     token = compiler:word()
     if token ~= ")" then
       numret = tonumber(token)
-      if not numret or numret < 0 then
+      if not numret then
         err("expected number of return values, got " .. token, item)
       end
       token = compiler:word()
@@ -481,8 +481,23 @@ function macros.end_word(compiler, item)
   if not compiler.state.last_word then
     err("Unexpected semicolon", item)
   end
+  local name = compiler.state.last_word.func_name
   compiler.state.last_word = nil
-  return macros._end(compiler)
+  compiler:remove_env()
+  return ast.end_func(name)
+end
+
+function macros.see(compiler, item)
+  local name = compiler:word()
+  local word = compiler:find(name)
+  if not word then
+    err(name .. " is not found in dictionary", item)
+  elseif word.immediate then
+    err("see cannot be used on a macro: " .. name, item)
+  elseif word.is_lua_alias then
+    err("see cannot be used on an alias: " .. name, item)
+  end
+  print(word.code)
 end
 
 function macros.keyval(compiler)

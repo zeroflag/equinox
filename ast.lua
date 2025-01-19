@@ -16,6 +16,10 @@ function ast.func_header(func_name, global)
   }
 end
 
+function ast.end_func(func_name)
+  return {name = "end_func", func_name = func_name}
+end
+
 function ast.func_call(func_name, ...)
   return {
     name = "func_call",

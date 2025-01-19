@@ -14,7 +14,8 @@ local function entry(forth_name, lua_name, immediate, is_lua_alias)
     forth_name = forth_name,
     lua_name = lua_name,
     immediate = immediate,
-    is_lua_alias = is_lua_alias
+    is_lua_alias = is_lua_alias,
+    line_number = nil
   }
 end
 
@@ -43,10 +44,24 @@ function Dict:def_lua_alias(lua_name, forth_name)
   table.insert(self.words, entry(forth_name, lua_name, immediate, true))
 end
 
-function Dict:find(forth_name)
+function Dict:find(name)
+  return self:find_by(
+    function (item)
+      return item.forth_name == name
+    end)
+end
+
+function Dict:find_by_lua_name(name)
+  return self:find_by(
+    function (item)
+      return item.lua_name == name
+    end)
+end
+
+function Dict:find_by(pred)
   for i = #self.words, 1, -1 do
     local each = self.words[i]
-    if each.forth_name == forth_name then
+    if pred(each) then
       return each
     end
   end
@@ -145,6 +160,7 @@ function Dict:init()
   self:def_macro("(:", "macros.formal_params")
   self:def_macro("block", "macros.block")
   self:def_macro("end", "macros._end")
+  self:def_macro("see", "macros.see")
 end
 
 return Dict

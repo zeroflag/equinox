@@ -139,7 +139,10 @@ function CodeGen:gen(ast)
       result = result .. p
       if i < #ast.params then result = result .. "," end
     end
-    return result .. ")\n"
+    return result .. ")"
+  end
+  if "end_func" == ast.name then
+    return "end"
   end
   error("Unknown AST: " .. tostring(ast) ..
         " with name: " .. tostring(ast.name))

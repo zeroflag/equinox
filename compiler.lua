@@ -5,7 +5,6 @@
 -- var names with dash
 -- reveal word only after ;
 -- don't sanitize methods
--- benchmark slowdown
 -- : mod.my-method error while : my-word works
 
 local macros = require("macros")
@@ -206,6 +205,13 @@ function Compiler:generate_code()
       self.line_mapping:set_target_source(
         ast.forth_line_number,
         self.output.line_number)
+    end
+    if ast.name == "func_header" then
+      local word = self.dict:find_by_lua_name(ast.func_name)
+      word.line_number = self.output.line_number
+    elseif ast.name == "end_func" then
+      local word = self.dict:find_by_lua_name(ast.func_name)
+      word.code = self.output:text(word.line_number)
     end
     self.output:append(code)
     self.output:new_line()
