@@ -268,13 +268,18 @@ function macros.single_line_comment(compiler)
   end
 end
 
+local function is_valid_exp(exp, compiler)
+  local name = exp
+  if interop.is_mixed_lua_expression(exp) then
+    name = interop.explode(exp)[1]
+  end
+  return compiler:valid_ref(name) or compiler:find(name)
+end
+
 function macros.arity_call_lua(compiler, item)
   local func  = compiler:word()
-  if not compiler:valid_var(func) and
-     not compiler:find(func)
-  then
-    -- TODO
-    --err("Unkown function or word: " .. func, item)
+  if not is_valid_exp(func, compiler) then
+    err("Unkown function or word: " .. func, item)
   end
   local numret = -1
   local arity = 0

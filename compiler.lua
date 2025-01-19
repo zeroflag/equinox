@@ -138,7 +138,7 @@ function Compiler:add_ast_nodes(nodes, item)
   end
 end
 
-function Compiler:valid_var(name)
+function Compiler:valid_ref(name)
   return self.env:has_var(name)
     or interop.resolve_lua_obj(name)
 end
@@ -162,18 +162,18 @@ function Compiler:compile_token(item)
       -- Prevent optimizer to overwrite original definition
       return utils.deepcopy(word.lua_name)
     end
-    if self:valid_var(item.token) then
-      -- Forth variable or Lua globals from _G
-      return ast.push(ast.identifier(item.token))
-    end
     if word then -- Regular Forth word
       return ast.func_call(word.lua_name)
+    end
+    if self:valid_ref(item.token) then
+      -- Forth variable or Lua globals from _G
+      return ast.push(ast.identifier(item.token))
     end
     if interop.is_mixed_lua_expression(item.token) then
       -- Table lookup: math.pi or tbl.key or method call a:b a:b.c
       local parts = interop.explode(item.token)
       local name = parts[1]
-      if self:valid_var(name) then
+      if self:valid_ref(name) then
         -- This can result multiple values, like img:getDimensions,
         -- a single value like tbl.key or str:upper, or nothing like img:draw
         -- TODO if only tbl, than use push instead of push many as it must be faster
