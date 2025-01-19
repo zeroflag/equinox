@@ -1,5 +1,5 @@
 local Stack = require("stack_def")
-local stack = Stack.new("test")
+local stack = Stack:new("test")
 
 assert(stack:depth() == 0)
 

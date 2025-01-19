@@ -1,10 +1,10 @@
 local Stack = {}
 local NIL = {} -- nil cannot be stored in table, use this placeholder
 
-function Stack.new(name)
+function Stack:new(name)
   local obj = {stack = {nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil},
                name = name}
-  setmetatable(obj, {__index = Stack})
+  setmetatable(obj, {__index = self})
   return obj
 end
 
