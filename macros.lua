@@ -292,8 +292,8 @@ function macros.arity_call_lua(compiler, item)
     token = compiler:word()
     if token ~= ")" then
       numret = tonumber(token)
-      if not numret then
-        err("expected number of return values, got " .. token, item)
+      if not numret or numret < -1 or numret > 1 then
+        err("expected number of return values (0/1/-1), got " .. token, item)
       end
       token = compiler:word()
       if token ~= ")" then
@@ -313,14 +313,16 @@ function macros.arity_call_lua(compiler, item)
         ast.init_local(params[i].id, ast.pop()))
     end
   end
-  if numret == 0 then -- TODO support > 1
+  if numret == 0 then
     table.insert(stmts, ast.func_call(func, unpack(params)))
   elseif numret == 1 then
     table.insert(stmts, ast.push(
                    ast.func_call(func, unpack(params))))
-  else
+  elseif numret == -1 then
     table.insert(stmts, ast.push_many(
                    ast.func_call(func, unpack(params))))
+  else
+    err("Invalid numret:" .. tostring(numret), item)
   end
   return stmts
 end
