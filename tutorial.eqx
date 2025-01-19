@@ -1,8 +1,6 @@
 var counter 0 -> counter
 var steps
 
-\ TOOD update interop lessons
-
 [
   [
     "Welcome to the Equinox Forth programming language tutorial."
@@ -194,54 +192,58 @@ var steps
     "When calling a Lua function, you need to indicate its arity (number of parameters)."
     ""
     "Type:"
-    "  2 8 math.pow/2 ."
+    "  2 8 #( math.pow 2 ) ."
     ""
     "This will print out 256."
-    "The /2 instructs Equinox to compile code that consumes two parameters from the stack when calling the Lua function."
+    "The number 2 at the end instructs Equinox to compile code that consumes two parameters from the stack when calling the Lua function."
     "You can omit the final part when calling a function with no parameters."
     ""
     "Type:"
-    "  os.time ."
+    "  #( os.time ) ."
   ]
   [
     "Some Lua functions don't return anything, or you deliberately want to ignore the return value."
-    "In such cases, you can use the same synax, but instead of '/' you need to use '!' character."
+    "In such cases, you can use the same synax with an additional parameter indicating the number of return values."
     ""
     "Type:"
-    "  123 io.write!1"
+    "  \"Hello\" #( io.write 1 0 )"
     ""
-    "io.write/1 leaves a boolean value on the stack, while io.write!1 doesn't."
+    "You can define an alias to reduce verbosity using the following syntax:"
+    ""
+    "Type:"
+    "  alias: pow #( math.pow 2 )"
+    "  2 10 pow ."
   ]
   [ "Congratulations, you finished the basic Equinox Forth tutorial." ]
 ] -> steps
 
-: show-instructions ( -- )
+:: show-instructions ( -- )
   "After you finished, type 'go' to go to the next tutorial step or 'back' to go back." . ;
 
-: len ( -- ) steps size ;
+:: len ( -- ) steps size ;
 
-: show-progress ( -- )
-  "Lesson \(%d/%d\):" counter len >f string.format 3 . cr
+:: show-progress ( -- )
+  "Lesson \(%d/%d\):" counter len #( string.format 3 ) . cr
   "================" . cr ;
 
-: finished? counter len >= ;
-: current ( -- [] ) steps counter at ;
+:: finished? counter len >= ;
+:: current ( -- [] ) steps counter at ;
 
-: show-lesson ( -- )
+:: show-lesson ( -- )
   current ipairs: i line
     line . cr
   end ;
 
-: show ( -- )
+:: show ( -- )
   show-progress
   show-lesson cr
   finished? not if show-instructions cr then ;
 
-: clamp ( -- )
+:: clamp ( -- )
   counter 1 max -> counter
   counter len min -> counter ;
 
-: step-by ( n -- )
+:: step-by ( n -- )
   counter swap + -> counter
   clamp ;
 
