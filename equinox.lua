@@ -29,6 +29,7 @@ alias: need #( require 1 )
 alias: type #( type 1 )
 alias: max  #( math.max 2 )
 alias: min  #( math.min 2 )
+alias: # size
 
 \ TODO
 \ alias: assert-true >p assert 1

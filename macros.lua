@@ -493,11 +493,12 @@ function macros.see(compiler, item)
   if not word then
     err(name .. " is not found in dictionary", item)
   elseif word.immediate then
-    err("see cannot be used on a macro: " .. name, item)
+    print("N/A. Macro (immediate word)")
   elseif word.is_lua_alias then
-    err("see cannot be used on an alias: " .. name, item)
+    print("N/A. Alias")
+  else
+    print(word.code)
   end
-  print(word.code)
 end
 
 function macros.keyval(compiler)
