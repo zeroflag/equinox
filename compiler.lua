@@ -209,12 +209,14 @@ function Compiler:generate_code()
     if ast.name == "func_header" then
       local word = self.dict:find_by_lua_name(ast.func_name)
       word.line_number = self.output.line_number
-    elseif ast.name == "end_func" then
-      local word = self.dict:find_by_lua_name(ast.func_name)
-      word.code = self.output:text(word.line_number)
     end
     self.output:append(code)
     self.output:new_line()
+    if ast.name == "end_func" then
+      local word = self.dict:find_by_lua_name(ast.func_name)
+      word.code = string.gsub(
+        self.output:text(word.line_number), "[\n\r]+$", "")
+    end
   end
   return self.output
 end
