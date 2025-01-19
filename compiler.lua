@@ -144,8 +144,7 @@ function Compiler:add_ast_nodes(nodes, item)
 end
 
 function Compiler:valid_ref(name)
-  return self.env:has_var(name)
-    or interop.resolve_lua_obj(name)
+  return self.env:has_var(name) or interop.resolve_lua_obj(name)
 end
 
 function Compiler:compile_token(item)
@@ -167,12 +166,11 @@ function Compiler:compile_token(item)
       -- Prevent optimizer to overwrite original definition
       return utils.deepcopy(word.lua_name)
     end
+    if self.env:has_var(item.token) then -- Forth variable
+      return ast.push(ast.identifier(item.token))
+    end
     if word then -- Regular Forth word
       return ast.func_call(word.lua_name)
-    end
-    if self:valid_ref(item.token) then
-      -- Forth variable or Lua globals from _G
-      return ast.push(ast.identifier(item.token))
     end
     if interop.is_mixed_lua_expression(item.token) then
       -- Table lookup: math.pi or tbl.key or method call a:b a:b.c
@@ -186,6 +184,10 @@ function Compiler:compile_token(item)
       else
         self:err("Unkown variable: " .. name .. " in expression: " .. item.token, item)
       end
+    end
+    if interop.resolve_lua_obj(item.token) then
+      -- Lua globals from _G, such as math, table, io
+      return ast.push(ast.identifier(item.token))
     end
   end
   self:err("Unknown token: " .. item.token .. " kind: " .. item.kind, item)
