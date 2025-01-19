@@ -117,7 +117,8 @@ function Compiler:def_word(alias, name, immediate)
   self.dict:def_word(alias, name, immediate)
 end
 
-local function err(message, item) -- TODO show lines
+function Compiler:err(message, item)
+  self:show_lines(item.line_number)
   error(message .. " at line: " .. item.line_number)
 end
 
@@ -126,7 +127,7 @@ function Compiler:exec_macro(item)
   if mod == "macros" and type(macros[fun]) == "function" then
     return macros[fun](self, item)
   else
-    error("Unknown macro: " .. item.token .. " at line: " .. item.line_number)
+    self:err("Unknown macro: " .. item.token, item)
   end
 end
 
@@ -183,11 +184,11 @@ function Compiler:compile_token(item)
         -- TODO if only tbl, than use push instead of push many as it must be faster
         return ast.push_many(ast.identifier(interop.join(parts)))
       else
-        error("Unkown variable: " .. name .. " at: " .. item.token)
+        self:err("Unkown variable: " .. name .. " in expression: " .. item.token, item)
       end
     end
   end
-  error("Unknown token: " .. item.token .. " kind: " .. item.kind)
+  self:err("Unknown token: " .. item.token .. " kind: " .. item.kind, item)
 end
 
 function Compiler:compile(text)
@@ -225,6 +226,17 @@ function Compiler:generate_code()
   return self.output
 end
 
+function Compiler:show_lines(src_line_num)
+  for i = src_line_num -2, src_line_num +2 do
+    local line = self.parser.lines[i]
+    if line then
+      local mark = "  "
+      if i == src_line_num then mark = "=>" end
+      print(string.format("%s%03d.  %s", mark, i , line))
+    end
+  end
+end
+
 function Compiler:error_handler(err)
   local info = debug.getinfo(3, "lS")
   if info and info.source ~= self.chunk_name then
@@ -236,14 +248,7 @@ function Compiler:error_handler(err)
     if src_line_num then
       print(string.format(
               "Error occurred at line: %d", src_line_num))
-      for i = src_line_num -2, src_line_num +2 do
-        local line = self.parser.lines[i]
-        if line then
-          local mark = "  "
-          if i == src_line_num then mark = "=>" end
-          print(string.format("%s%03d.  %s", mark, i , line))
-        end
-      end
+      self:show_lines(src_line_num)
       print()
     end
     print(string.format("Original Error: %d", info.currentline))
