@@ -1,10 +1,13 @@
+alias: sqrt #( math.sqrt 1 1 )
+alias: clock #( os.clock )
+
 : sieve_of_eratosthenes ( limit -- tbl )
   var primes
   { } -> primes
   2 over ( limit ) to: i
     primes i i !
   end
-  2 over ( limit ) math.sqrt/1 to: i
+  2 over ( limit ) sqrt to: i
     primes i @ if
       i i * over ( limit ) i step: j
         primes j false !
@@ -18,9 +21,9 @@
     then
   end ;
 
-os.clock/0
+clock
 1000000 sieve_of_eratosthenes
-os.clock/0 rot ( started ) - . cr
+clock rot ( started ) - . cr
 
 pairs: k v
   k . v . cr

@@ -270,7 +270,7 @@ end
 
 function macros.arity_call_lua(compiler, item)
   local func  = compiler:word() -- TODO resolve func name
-  local numret = 1
+  local numret = -1
   local arity = 0
   local token = compiler:word()
   if token ~= ")" then
@@ -304,6 +304,9 @@ function macros.arity_call_lua(compiler, item)
   end
   if numret == 0 then -- TODO support > 1
     table.insert(stmts, ast.func_call(func, unpack(params)))
+  elseif numret == 1 then
+    table.insert(stmts, ast.push(
+                   ast.func_call(func, unpack(params))))
   else
     table.insert(stmts, ast.push_many(
                    ast.func_call(func, unpack(params))))

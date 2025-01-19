@@ -5,6 +5,7 @@
 -- var names with dash
 -- reveal word only after ;
 -- don't sanitize methods
+-- benchmark slowdown
 -- : mod.my-method error while : my-word works
 
 local macros = require("macros")

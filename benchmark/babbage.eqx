@@ -1,3 +1,5 @@
+alias: clock #( os.clock )
+
 : babbage
   1
   begin
@@ -7,10 +9,10 @@
     269696 =
   until ;
 
-os.clock/0
+clock
 1 500 to: i
   babbage drop
 end
-os.clock/0 swap ( started ) - . cr
+clock swap ( started ) - . cr
 
 babbage . cr
