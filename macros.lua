@@ -43,10 +43,6 @@ local function sanitize(str)
   return str
 end
 
-local function err(message, item) -- TODO move to comp
-  error(message .. " at line: " .. item.line_number)
-end
-
 function macros.add()
   return ast.push(ast.bin_op("+", ast.pop(), ast.pop()))
 end
@@ -211,13 +207,13 @@ local function def_word(compiler, is_global, item)
     if obj and compiler:has_var(obj) then
       compiler:def_var("self")
     else
-      err("Undefined object: " .. tostring(obj) ..
+      compiler:err("Undefined object: " .. tostring(obj) ..
           " in method definition: " .. forth_name, item)
     end
   end
   local header = ast.func_header(lua_name, is_global)
   if compiler.state.last_word then
-    err("Word definitions cannot be nested", item)
+    compiler:err("Word definitions cannot be nested", item)
   else
     compiler.state.last_word = header
   end
@@ -236,11 +232,11 @@ function macros.tick(compiler, item)
   local name = compiler:word()
   local word = compiler:find(name)
   if not word then
-    err(name .. " is not found in dictionary", item)
+    compiler:err(name .. " is not found in dictionary", item)
   elseif word.immediate then
-    err("' cannot be used on a macro: " .. name, item)
+    compiler:err("' cannot be used on a macro: " .. name, item)
   elseif word.is_lua_alias then
-    err("' cannot be used on an alias: " .. name, item)
+    compiler:err("' cannot be used on an alias: " .. name, item)
   end
   return ast.push(ast.identifier(word.lua_name))
 end
@@ -279,7 +275,7 @@ end
 function macros.arity_call_lua(compiler, item)
   local func  = compiler:word()
   if not is_valid_exp(func, compiler) then
-    err("Unkown function or word: " .. func, item)
+    compiler:err("Unkown function or word: " .. func, item)
   end
   local numret = -1
   local arity = 0
@@ -287,17 +283,17 @@ function macros.arity_call_lua(compiler, item)
   if token ~= ")" then
     arity = tonumber(token)
     if not arity or arity < 0 then
-      err("expected arity number, got " .. token, item)
+      compiler:err("expected arity number, got " .. token, item)
     end
     token = compiler:word()
     if token ~= ")" then
       numret = tonumber(token)
       if not numret or numret < -1 or numret > 1 then
-        err("expected number of return values (0/1/-1), got " .. token, item)
+        compiler:err("expected number of return values (0/1/-1), got " .. token, item)
       end
       token = compiler:word()
       if token ~= ")" then
-        err("expected closing ), got " .. token, item)
+        compiler:err("expected closing ), got " .. token, item)
       end
     end
   end
@@ -322,7 +318,7 @@ function macros.arity_call_lua(compiler, item)
     table.insert(stmts, ast.push_many(
                    ast.func_call(func, unpack(params))))
   else
-    err("Invalid numret:" .. tostring(numret), item)
+    compiler:err("Invalid numret:" .. tostring(numret), item)
   end
   return stmts
 end
@@ -367,7 +363,7 @@ function macros.assignment(compiler, item)
     then
       return ast.assignment(name, ast.pop())
     else
-      err("Undeclared variable: " .. name, item)
+      compiler:err("Undeclared variable: " .. name, item)
     end
   end
 end
@@ -492,7 +488,7 @@ end
 
 function macros.end_word(compiler, item)
   if not compiler.state.last_word then
-    err("Unexpected semicolon", item)
+    compiler:err("Unexpected semicolon", item)
   end
   local name = compiler.state.last_word.func_name
   compiler.state.last_word = nil
@@ -504,7 +500,7 @@ function macros.see(compiler, item)
   local name = compiler:word()
   local word = compiler:find(name)
   if not word then
-    err(name .. " is not found in dictionary", item)
+    compiler:err(name .. " is not found in dictionary", item)
   elseif word.immediate then
     print("N/A. Macro (immediate word)")
   elseif word.is_lua_alias then
@@ -524,7 +520,7 @@ end
 
 function macros.formal_params(compiler, item)
   if not compiler.state.last_word then
-    err("Unexpected (:", item)
+    compiler:err("Unexpected (:", item)
   end
   local func_header = compiler.state.last_word
   local param_name = compiler:word()

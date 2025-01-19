@@ -117,6 +117,10 @@ function Compiler:def_word(alias, name, immediate)
   self.dict:def_word(alias, name, immediate)
 end
 
+local function err(message, item) -- TODO show lines
+  error(message .. " at line: " .. item.line_number)
+end
+
 function Compiler:exec_macro(item)
   local mod, fun = self.dict:find(item.token).lua_name:match("^(.-)%.(.+)$")
   if mod == "macros" and type(macros[fun]) == "function" then
