@@ -1,13 +1,8 @@
 depth 0 =assert
 adepth 0 =assert
 
-\ TODO
-
-var sum1
-var sum2
-
-0 -> sum1
-0 -> sum2
+0 -> var sum1
+0 -> var sum2
 
 [ 4 2 3 ] ipairs: index item
   sum1 item + -> sum1
