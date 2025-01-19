@@ -138,6 +138,11 @@ function Compiler:add_ast_nodes(nodes, item)
   end
 end
 
+function Compiler:valid_var(name)
+  return self.env:has_var(name)
+    or interop.resolve_lua_obj(name)
+end
+
 function Compiler:compile_token(item)
   if item.kind == "symbol" then
     return ast.push(ast.literal("string", item.token:sub(2)))
@@ -157,7 +162,8 @@ function Compiler:compile_token(item)
       -- Prevent optimizer to overwrite original definition
       return utils.deepcopy(word.lua_name)
     end
-    if self.env:has_var(item.token) then -- Forth variable
+    if self:valid_var(item.token) then
+      -- Forth variable or Lua globals from _G
       return ast.push(ast.identifier(item.token))
     end
     if word then -- Regular Forth word
@@ -167,9 +173,7 @@ function Compiler:compile_token(item)
       -- Table lookup: math.pi or tbl.key or method call a:b a:b.c
       local parts = interop.explode(item.token)
       local name = parts[1]
-      if self.env:has_var(name) or
-              interop.resolve_lua_obj(name)
-      then
+      if self:valid_var(name) then
         -- This can result multiple values, like img:getDimensions,
         -- a single value like tbl.key or str:upper, or nothing like img:draw
         -- TODO if only tbl, than use push instead of push many as it must be faster
@@ -177,10 +181,6 @@ function Compiler:compile_token(item)
       else
         error("Unkown variable: " .. name .. " at: " .. item.token)
       end
-    end
-    if interop.resolve_lua_obj(item.token) then
-      -- Lua globals from _G, such as math, table, io
-      return ast.push(ast.identifier(item.token))
     end
   end
   error("Unknown token: " .. item.token .. " kind: " .. item.kind)
