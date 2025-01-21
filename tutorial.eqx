@@ -61,10 +61,10 @@ var steps
     "'dup' is another stack manipulation word that makes a copy of the top of the stack."
     ""
     "Type:"
-    "3"
-    "dup"
-    "*"
-    "."
+    "  3"
+    "  dup"
+    "  *"
+    "  ."
     "You should see 9 as the result."
   ]
   [

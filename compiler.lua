@@ -240,9 +240,13 @@ function Compiler:show_lines(src_line_num)
 end
 
 function Compiler:error_handler(err)
-  local info = debug.getinfo(3, "lS")
-  if info and info.source ~= self.chunk_name then
-    info = debug.getinfo(4, "lS") -- if it was error/1
+  local info
+  for level = 1, math.huge do
+    info = debug.getinfo(level, "Sl")
+    if not info then break end
+    if info.source == self.chunk_name then
+      break
+    end
   end
   if info and info.currentline > 0 then
     local src_line_num =
@@ -262,9 +266,9 @@ function Compiler:eval(text, log_result)
   local code, err = self:compile_and_load(text, log_result)
   if err then
     self:error_handler(err) -- error during load
-    return error(err)
+    error(err)
   end
-  local success, result = xpcall(code, function(e) self:error_handler(e) end)
+  local success, result = xpcall(code, function(e) return self:error_handler(e) end)
   if success then
     return result
   else

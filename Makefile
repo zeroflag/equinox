@@ -35,7 +35,7 @@ out_tests:
 	@echo "Running OUT tests ($(luaver)) ($(opt))"; \
 	for file in $(TEST_SOUT_FILES); do \
 		echo " - $$file..."; \
-		$$luaver $(EQUINOX) $(opt) $$file 2>&1 | sed '/Original Error:/Q' > "$$file.out" || exit 1; \
+		$$luaver $(EQUINOX) $(opt) $$file 2>/dev/null | sed '/Original Error:/Q' > "$$file.out" || exit 1; \
 		diff "$$file.out" "$$file.expected" || exit 1; \
 	done
 
