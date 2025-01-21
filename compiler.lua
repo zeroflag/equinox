@@ -5,6 +5,7 @@
 -- var names with dash
 -- reveal word only after ;
 -- don't sanitize methods
+-- line numbers are broken when using require
 -- : mod.my-method error while : my-word works
 
 local macros = require("macros")
@@ -243,8 +244,7 @@ function Compiler:error_handler(err)
   local info
   for level = 1, math.huge do
     info = debug.getinfo(level, "Sl")
-    if not info then break end
-    if info.source == self.chunk_name then
+    if not info or info.source == self.chunk_name then
       break
     end
   end
