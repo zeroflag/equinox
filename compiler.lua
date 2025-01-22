@@ -121,7 +121,7 @@ function Compiler:def_word(alias, name, immediate)
 end
 
 function Compiler:err(message, item)
-  self.source:show_lines(src_line_num)
+  self.source:show_lines(item.line_number)
   error(message .. " at line: " .. item.line_number)
 end
 
