@@ -1,4 +1,5 @@
 local stack = require("stack")
+local Source = require("source")
 
 local SINGLE_LINE = 1
 local MULTI_LINE = 2
@@ -226,7 +227,8 @@ function Repl:start()
     self:read()
     if not self:process_commands() then
       local success, result = pcall(function ()
-          return self.compiler:compile_and_load(self.input, self.log_result)
+          return self.compiler:compile_and_load(
+            Source:from_text(self.input), self.log_result)
       end)
       if not success then
         self:print_err(result)

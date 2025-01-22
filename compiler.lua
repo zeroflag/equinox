@@ -49,8 +49,9 @@ function Compiler:reset_state()
   self.state = {sequence = 1, do_loop_nesting = 1, last_word = nil}
 end
 
-function Compiler:init(text)
-  self.parser = Parser:new(text)
+function Compiler:init(source)
+  self.source = source
+  self.parser = Parser:new(source.text)
   self.output = Output:new(marker .. self.source.name .. ">>")
   self.output:append("local stack = require(\"stack\")")
   self.output:new_line()
@@ -195,8 +196,8 @@ function Compiler:compile_token(item)
   self:err("Unknown token: " .. item.token .. " kind: " .. item.kind, item)
 end
 
-function Compiler:compile(text)
-  self:init(text)
+function Compiler:compile(source)
+  self:init(source)
   local item = self.parser:next_item()
   while item do
     local node = self:compile_token(item)
@@ -266,8 +267,8 @@ function Compiler:eval_text(text, log_result)
   return self:_eval(Source:from_text(text), log_result)
 end
 
-function Compiler:compile_and_load(text, log_result) -- used by REPL for multiline
-  local out = self:compile(text)
+function Compiler:compile_and_load(source, log_result) -- used by REPL for multiline
+  local out = self:compile(source)
   if log_result then
     io.write(self.output:text(self.code_start))
   end
@@ -275,9 +276,7 @@ function Compiler:compile_and_load(text, log_result) -- used by REPL for multili
 end
 
 function Compiler:_eval(source, log_result)
-  self.source = source
-  local code, err = self:compile_and_load(
-    source.text, log_result, path)
+  local code, err = self:compile_and_load(source, log_result, path)
   if err then
     self:error_handler(err) -- error during load
     error(err)
