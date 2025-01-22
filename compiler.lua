@@ -251,7 +251,9 @@ function Compiler:error_handler(err)
     if src_line_num then
       print(string.format(
               "Error occurred at line: %d (%s)", src_line_num, file))
-      Source:from_file(file):show_lines(src_line_num)
+      if utils.exists(file) then
+        Source:from_file(file):show_lines(src_line_num)
+      end
       print()
     end
     print(string.format("Original Error: %d", info.currentline))
