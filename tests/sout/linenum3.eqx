@@ -1,0 +1,8 @@
+"tests/mymod.eqx" need -> var mymod
+
+mymod:w1 mymod:w2 + 3 =assert
+
+: myword
+  mymod:w1 mymod:w3 * ;
+
+myword

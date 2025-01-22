@@ -1,0 +1,8 @@
+{} -> var mod
+
+: mod.w1 1 ;
+: mod.w2 2 ;
+: mod.w3 nil ;
+
+
+mod return
