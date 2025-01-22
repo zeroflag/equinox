@@ -1,11 +1,11 @@
 local Env = require("env")
 
-local root = Env.new(nil, "root")
+local root = Env:new(nil, "root")
 
-local child1 = Env.new(root, "child1")
-local child2 = Env.new(root, "child2")
+local child1 = Env:new(root, "child1")
+local child2 = Env:new(root, "child2")
 
-local child2_child = Env.new(child2, "child2_child")
+local child2_child = Env:new(child2, "child2_child")
 
 --[[
   root

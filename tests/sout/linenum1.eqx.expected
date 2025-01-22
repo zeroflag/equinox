@@ -1,4 +1,4 @@
-Error occurred at line: 4
+Error occurred at line: 4 (tests/sout/linenum1.eqx)
   002.  : nested3
   003.    ( errror comes here)
 =>004.    nil "invalid concat" .. ;

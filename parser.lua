@@ -2,20 +2,11 @@ local interop = require("interop")
 
 local Parser = {}
 
-local function lines_of(input)
-  local lines = {}
-  for line in input:gmatch("([^\r\n]*)\r?\n?") do
-    table.insert(lines, line)
-  end
-  return lines
-end
-
-function Parser.new(source)
+function Parser:new(source)
   local obj = {index = 1,
                line_number = 1,
-               source = source,
-               lines = lines_of(source)}
-  setmetatable(obj, {__index = Parser})
+               source = source}
+  setmetatable(obj, {__index = self})
   return obj
 end
 

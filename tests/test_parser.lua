@@ -2,7 +2,7 @@ local json = require("tests/json")
 local Parser = require("parser")
 
 function parse(text)
-  local parser = Parser.new(text)
+  local parser = Parser:new(text)
   return parser:parse_all()
 end
 

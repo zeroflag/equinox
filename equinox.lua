@@ -85,7 +85,7 @@ function equinox.eval_files(files, log_result)
 end
 
 function equinox.init()
-  compiler:eval(lib)
+  compiler:eval_text(lib)
 end
 
 function equinox.main()
@@ -116,8 +116,8 @@ function equinox.main()
   end
 end
 
-function equinox.eval(str, log_result)
-  return compiler:eval(str, log_result)
+function equinox.eval_text(str, log_result)
+  return compiler:eval_text(str, log_result)
 end
 
 function equinox.eval_file(str, log_result)

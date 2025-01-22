@@ -1,8 +1,8 @@
 local Output = {}
 
-function Output.new(name)
+function Output:new(name)
   local obj = {lines = {""}, line_number = 1, name = name}
-  setmetatable(obj, {__index = Output})
+  setmetatable(obj, {__index = self})
   return obj
 end
 

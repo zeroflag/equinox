@@ -6,7 +6,7 @@ local stack = require("stack")
 local compiler = Compiler:new(Optimizer:new(), CodeGen:new())
 
 function assert_tos(result, code)
-  compiler:eval(code)
+  compiler:eval_text(code)
   assert(stack:depth() == 1,
          "'" .. code .. "' depth: " .. stack:depth())
   assert(stack:tos() == result,

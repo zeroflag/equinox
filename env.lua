@@ -1,10 +1,10 @@
 local Env = {}
 
-function Env.new(parent, name)
+function Env:new(parent, name)
   local obj = {parent = parent,
                name = name,
                vars = {}}
-  setmetatable(obj, {__index = Env})
+  setmetatable(obj, {__index = self})
   return obj
 end
 

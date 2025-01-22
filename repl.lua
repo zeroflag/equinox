@@ -198,7 +198,7 @@ function Repl:print_ok()
   if stack:depth() > 0 then
     print("\27[92m" .. "OK(".. stack:depth()  .. ")" .. "\27[0m")
     if self.always_show_stack and self.repl_ext_loaded then
-      self.compiler:eval(".s")
+      self.compiler:eval_text(".s")
     end
   else
     print("\27[92mOK\27[0m")

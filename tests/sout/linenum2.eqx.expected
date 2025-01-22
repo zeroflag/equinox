@@ -1,5 +1,5 @@
 testing error/1 25 
-Error occurred at line: 4
+Error occurred at line: 4 (tests/sout/linenum2.eqx)
   002.  
   003.  : my-abort ( -- )
 =>004.    "test" #( error 1 0 ) ;

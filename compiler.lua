@@ -13,25 +13,27 @@ local Dict = require("dict")
 local Parser = require("parser")
 local LineMapping = require("line_mapping")
 local Output = require("output")
+local Source = require("source")
 local Env = require("env")
 local interop = require("interop")
 local ast = require("ast")
 local utils = require("utils")
 
 local Compiler = {}
+local marker = "<<equinox:"
 
 function Compiler:new(codegen, optimizer)
   local obj = {
     parser = nil,
+    source = Source:empty(),
     output = nil,
     code_start = 1,
-    line_mapping = nil,
+    line_mapping = LineMapping:new(),
     env = nil,
-    root_env = Env.new(nil, "root"),
+    root_env = Env:new(nil, "root"),
     state = {},
     optimizer = codegen,
     codegen = optimizer,
-    chunk_name = "<<compiled eqx code>>",
     dict = Dict:new()
   }
   setmetatable(obj, {__index = self})
@@ -48,9 +50,8 @@ function Compiler:reset_state()
 end
 
 function Compiler:init(text)
-  self.parser = Parser.new(text)
-  self.output = Output.new(self.chunk_name)
-  self.line_mapping = LineMapping.new()
+  self.parser = Parser:new(text)
+  self.output = Output:new(marker .. self.source.name .. ">>")
   self.output:append("local stack = require(\"stack\")")
   self.output:new_line()
   self.output:append("local aux = require(\"aux\")")
@@ -60,7 +61,7 @@ function Compiler:init(text)
 end
 
 function Compiler:new_env(name)
-  self.env = Env.new(self.env, name)
+  self.env = Env:new(self.env, name)
 end
 
 function Compiler:remove_env(name)
@@ -119,7 +120,7 @@ function Compiler:def_word(alias, name, immediate)
 end
 
 function Compiler:err(message, item)
-  self:show_lines(item.line_number)
+  self.source:show_lines(src_line_num)
   error(message .. " at line: " .. item.line_number)
 end
 
@@ -210,7 +211,8 @@ function Compiler:generate_code()
   for i, ast in ipairs(self.ast) do
     local code = self.codegen:gen(ast)
     if ast.forth_line_number then
-      self.line_mapping:set_target_source(
+      self.line_mapping:map_target_to_source(
+        self.source.name,
         ast.forth_line_number,
         self.output.line_number)
     end
@@ -229,32 +231,26 @@ function Compiler:generate_code()
   return self.output
 end
 
-function Compiler:show_lines(src_line_num)
-  for i = src_line_num -2, src_line_num +2 do
-    local line = self.parser.lines[i]
-    if line then
-      local mark = "  "
-      if i == src_line_num then mark = "=>" end
-      print(string.format("%s%03d.  %s", mark, i , line))
-    end
-  end
-end
-
 function Compiler:error_handler(err)
   local info
+  local file = "N/A"
   for level = 1, math.huge do
     info = debug.getinfo(level, "Sl")
-    if not info or info.source == self.chunk_name then
+    if not info then
+      break
+    end
+    if info.source and info.source:sub(1, #marker) == marker then
+      file = info.source:match(marker .. "(.-)>>")
       break
     end
   end
   if info and info.currentline > 0 then
     local src_line_num =
-      self.line_mapping:resolve_target(info.currentline)
+      self.line_mapping:resolve_target(file, info.currentline)
     if src_line_num then
       print(string.format(
-              "Error occurred at line: %d", src_line_num))
-      self:show_lines(src_line_num)
+              "Error occurred at line: %d (%s)", src_line_num, file))
+      Source:from_file(file):show_lines(src_line_num)
       print()
     end
     print(string.format("Original Error: %d", info.currentline))
@@ -262,8 +258,26 @@ function Compiler:error_handler(err)
   return err
 end
 
-function Compiler:eval(text, log_result)
-  local code, err = self:compile_and_load(text, log_result)
+function Compiler:eval_file(path, log_result)
+  return self:_eval(Source:from_file(path), log_result)
+end
+
+function Compiler:eval_text(text, log_result)
+  return self:_eval(Source:from_text(text), log_result)
+end
+
+function Compiler:compile_and_load(text, log_result) -- used by REPL for multiline
+  local out = self:compile(text)
+  if log_result then
+    io.write(self.output:text(self.code_start))
+  end
+  return out:load()
+end
+
+function Compiler:_eval(source, log_result)
+  self.source = source
+  local code, err = self:compile_and_load(
+    source.text, log_result, path)
   if err then
     self:error_handler(err) -- error during load
     error(err)
@@ -274,24 +288,6 @@ function Compiler:eval(text, log_result)
   else
     error(result) -- error during execute
   end
-end
-
-function Compiler:compile_and_load(text, log_result)
-  local out = self:compile(text)
-  if log_result then
-    io.write(self.output:text(self.code_start))
-  end
-  return out:load()
-end
-
-function Compiler:eval_file(path, log_result)
-  local file = io.open(path, "r")
-  if not file then
-    error("Could not open file: " .. path)
-  end
-  local content = file:read("*a")
-  file:close()
-  return self:eval(content, log_result)
 end
 
 return Compiler
