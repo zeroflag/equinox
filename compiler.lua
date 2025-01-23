@@ -1,11 +1,7 @@
 -- TODO
--- tab auto complete repl (linenoise/readline)
 -- basic syntax check
--- debuginfo level (assert)
 -- var names with dash
--- reveal word only after ;
 -- don't sanitize methods
--- line numbers are broken when using require
 -- : mod.my-method error while : my-word works
 
 local macros = require("macros")
@@ -104,6 +100,10 @@ function Compiler:find(forth_name)
   return self.dict:find(forth_name)
 end
 
+function Compiler:reveal(lua_name)
+  self.dict:reveal(lua_name)
+end
+
 function Compiler:next_chr()
   return self.parser:next_chr()
 end
@@ -120,12 +120,12 @@ function Compiler:alias(lua_name, forth_alias)
   return self.dict:def_lua_alias(lua_name, forth_alias)
 end
 
-function Compiler:def_word(alias, name, immediate)
-  self.dict:def_word(alias, name, immediate)
+function Compiler:def_word(alias, name, immediate, hidden)
+  self.dict:def_word(alias, name, immediate, hidden)
 end
 
 function Compiler:err(message, item)
-  self.source:show_lines(item.line_number)
+  self.source:show_lines(item.line_number, 1)
   error(message .. " at line: " .. item.line_number)
 end
 

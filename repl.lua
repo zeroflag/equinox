@@ -80,16 +80,15 @@ math.randomseed(os.time())
 function Repl:welcome(version)
   print("Equinox Forth Console (" .. _VERSION .. ") @ Delta Quadrant.")
   print(messages[math.random(1, #messages)])
-  print("\27[1;96m")
+  io.write("\27[1;96m")
   print(string.format([[
- ___________________          _-_
- \__(==========/_=_/ ____.---'---`---.____
-             \_ \    \----._________.----/
-               \ \   /  /    `-_-'
-          ___,--`.`-'..'-_
-         /____          (|
-               `--.____,-'   v%s
-]], version))
+ __________________          _-_
+ \__(=========/_=_/ ____.---'---`---.___
+            \_ \    \----._________.---/
+              \ \   /  /    `-_-'
+         ___,--`.`-'..'-_
+        /____          (|
+              `--.____,-'   v%s]], version))
   print("\27[0m")
   print("Type 'words' for wordlist, 'bye' to exit or 'help'.")
   print("First time Forth user? Type: load-file tutorial")

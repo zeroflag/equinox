@@ -201,7 +201,7 @@ local function def_word(compiler, is_global, item)
     compiler.state.sequence = compiler.state.sequence + 1
   end
   compiler:new_env("colon_" .. lua_name)
-  compiler:def_word(forth_name, lua_name, false)
+  compiler:def_word(forth_name, lua_name, false, true)
   if forth_name:find(":") then
     local obj = forth_name:match("([^:]+)")
     if obj and compiler:has_var(obj) then
@@ -491,6 +491,7 @@ function macros.end_word(compiler, item)
     compiler:err("Unexpected semicolon", item)
   end
   local name = compiler.state.last_word.func_name
+  macros.reveal(compiler, item)
   compiler.state.last_word = nil
   compiler:remove_env()
   return ast.end_func(name)
@@ -530,6 +531,13 @@ function macros.formal_params(compiler, item)
     param_name = compiler:word()
   end
   return result
+end
+
+function macros.reveal(compiler, item)
+  if not compiler.state.last_word then
+    compiler:err("Reveal must be used within a word definition.", item)
+  end
+  compiler:reveal(compiler.state.last_word.func_name)
 end
 
 function macros.words(compiler)

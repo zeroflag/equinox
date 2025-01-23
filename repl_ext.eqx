@@ -41,7 +41,7 @@ alias: gsub #( string.gsub 3 )
   end
   swap ( tbl ) size = ;
 
-: inspect ( obj -- )
+: inspect ( obj -- ) reveal
   dup type
   case
     "string" of .str endof

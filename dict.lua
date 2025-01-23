@@ -9,12 +9,13 @@ function Dict:new()
   return obj
 end
 
-local function entry(forth_name, lua_name, immediate, is_lua_alias)
+local function entry(forth_name, lua_name, immediate, is_lua_alias, hidden)
   return {
     forth_name = forth_name,
     lua_name = lua_name,
     immediate = immediate,
     is_lua_alias = is_lua_alias,
+    hidden = hidden,
     line_number = nil
   }
 end
@@ -32,16 +33,18 @@ local function is_valid_lua_identifier(name)
   return name:match("^[a-zA-Z_][a-zA-Z0-9_]*$") ~= nil
 end
 
-function Dict:def_word(forth_name, lua_name, immediate)
-  table.insert(self.words, entry(forth_name, lua_name, immediate, false))
+function Dict:def_word(forth_name, lua_name, immediate, hidden)
+  table.insert(self.words,
+               entry(forth_name, lua_name, immediate, false, hidden))
 end
 
 function Dict:def_macro(forth_name, lua_name)
-  self:def_word(forth_name, lua_name, true)
+  self:def_word(forth_name, lua_name, true, false)
 end
 
 function Dict:def_lua_alias(lua_name, forth_name)
-  table.insert(self.words, entry(forth_name, lua_name, immediate, true))
+  table.insert(self.words,
+               entry(forth_name, lua_name, immediate, true, false))
 end
 
 function Dict:find(name)
@@ -61,17 +64,29 @@ end
 function Dict:find_by(pred)
   for i = #self.words, 1, -1 do
     local each = self.words[i]
-    if pred(each) then
+    if not each.hidden and pred(each) then
       return each
     end
   end
   return nil
 end
 
+function Dict:reveal(name)
+  for i = #self.words, 1, -1 do
+    local each = self.words[i]
+    if each.lua_name == name then
+      each.hidden = false
+      return
+    end
+  end
+end
+
 function Dict:word_list()
   local result, seen = {}, {}
   for i, each in ipairs(self.words) do
-    if not seen[each.forth_name] then
+    if not seen[each.forth_name] and
+       not each.hidden
+    then
       if each.is_lua_alias or
          each.immediate or
          interop.resolve_lua_func(each.lua_name)
@@ -154,6 +169,7 @@ function Dict:init()
   self:def_macro(":", "macros.colon")
   self:def_macro("::", "macros.local_colon")
   self:def_macro(";", "macros.end_word")
+  self:def_macro("reveal", "macros.reveal")
   self:def_macro("exec", "macros.exec")
   self:def_macro("'", "macros.tick")
   self:def_macro("$", "macros.keyval")
