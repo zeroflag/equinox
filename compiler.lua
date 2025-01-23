@@ -244,25 +244,23 @@ function Compiler:error_handler(err)
     if not info then
       break
     end
-    if info.source and info.source:sub(1, #marker) == marker then
+    if info.source and
+       info.currentline > 0 and
+       info.source:sub(1, #marker) == marker
+    then
       file = info.source:match(marker .. "(.-)>>")
-      break
-    end
-  end
-  if info and info.currentline > 0 then
-    local src_line_num =
-      self.line_mapping:resolve_target(file, info.currentline)
-    if src_line_num then
-      print(string.format(
-              "Error occurred at line: %d (%s)", src_line_num, file))
-      if utils.exists(file) then
-        Source:from_file(file):show_lines(src_line_num)
-      elseif self.chunks[file] then
-        self.chunks[file]:show_lines(src_line_num)
+      local src_line_num =
+        self.line_mapping:resolve_target(file, info.currentline)
+      if src_line_num then
+        io.stderr:write(string.format(
+                "  File \"%s\", line %d (%d)\n", file, src_line_num, info.currentline))
+        if utils.exists(file) then
+          Source:from_file(file):show_lines(src_line_num, 1)
+        elseif self.chunks[file] then
+          self.chunks[file]:show_lines(src_line_num, 1)
+        end
       end
-      print()
     end
-    print(string.format("Original Error: %d", info.currentline))
   end
   return err
 end

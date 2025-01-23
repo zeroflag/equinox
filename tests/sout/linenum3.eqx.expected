@@ -1,7 +1,6 @@
-Error occurred at line: 6 (tests/sout/linenum3.eqx)
-  004.  
-  005.  : myword
-=>006.    mymod:w1 mymod:w3 * ;
-  007.  
-  008.  myword
-
+  File "tests/sout/linenum3.eqx", line 6 
+      005.  : myword
+    =>006.    mymod:w1 mymod:w3 * ;
+      007.  
+  File "tests/sout/linenum3.eqx", line 8 
+      007.  

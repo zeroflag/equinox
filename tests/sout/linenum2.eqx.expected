@@ -1,8 +1,6 @@
-testing error/1 25 
-Error occurred at line: 4 (tests/sout/linenum2.eqx)
-  002.  
-  003.  : my-abort ( -- )
-=>004.    "test" #( error 1 0 ) ;
-  005.  
-  006.  2 3 + dup * . cr
-
+  File "tests/sout/linenum2.eqx", line 2 
+      001.  : my-abort ( -- )
+    =>002.    "test" #( error 1 0 ) ;
+      003.  
+  File "tests/sout/linenum2.eqx", line 6 
+      005.  

@@ -46,13 +46,13 @@ function Source:from_file(path)
   return src
 end
 
-function Source:show_lines(src_line_num)
-  for i = src_line_num -2, src_line_num +2 do
+function Source:show_lines(src_line_num, n)
+  for i = src_line_num - n, src_line_num + n do
     local line = self.lines[i]
     if line then
       local mark = "  "
       if i == src_line_num then mark = "=>" end
-      print(string.format("%s%03d.  %s", mark, i , line))
+      io.stderr:write(string.format("    %s%03d.  %s\n", mark, i , line))
     end
   end
 end

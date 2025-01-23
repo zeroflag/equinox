@@ -1,7 +1,6 @@
-Error occurred at line: 4 (tests/sout/linenum1.eqx)
-  002.  : nested3
-  003.    ( errror comes here)
-=>004.    nil "invalid concat" .. ;
-  005.  
-  006.  : nested2 nested3 ;
-
+  File "tests/sout/linenum1.eqx", line 4 
+      003.    ( errror comes here)
+    =>004.    nil "invalid concat" .. ;
+      005.  
+  File "tests/sout/linenum1.eqx", line 6 
+      005.  
