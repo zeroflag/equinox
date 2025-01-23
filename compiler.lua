@@ -27,6 +27,7 @@ function Compiler:new(codegen, optimizer)
     parser = nil,
     source = Source:empty(),
     output = nil,
+    chunks = {},
     code_start = 1,
     line_mapping = LineMapping:new(),
     env = nil,
@@ -59,6 +60,9 @@ function Compiler:init(source)
   self.output:new_line()
   self.ast = {}
   self.code_start = self.output:size()
+  if self.source.type == "chunk" then
+    self.chunks[self.source.name] = self.source
+  end
 end
 
 function Compiler:new_env(name)
@@ -253,6 +257,8 @@ function Compiler:error_handler(err)
               "Error occurred at line: %d (%s)", src_line_num, file))
       if utils.exists(file) then
         Source:from_file(file):show_lines(src_line_num)
+      elseif self.chunks[file] then
+        self.chunks[file]:show_lines(src_line_num)
       end
       print()
     end

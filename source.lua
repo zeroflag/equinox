@@ -14,13 +14,16 @@ function Source:new(text, path)
   local obj = {text = text,
                path = path,
                name = nil,
+               type = nil,
                lines = lines_of(text)}
   setmetatable(obj, {__index = self})
   if path then
     obj.name = path
+    obj.type = "file"
   else
     obj.name = "chunk" .. seq
     seq = seq + 1
+    obj.type = "chunk"
   end
   return obj
 end
