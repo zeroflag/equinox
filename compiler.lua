@@ -1,8 +1,7 @@
 -- TODO
 -- basic syntax check
 -- var names with dash
--- don't sanitize methods
--- nesting, repl restart
+-- don't sanitize methods (.:)
 -- : mod.my-method error while : my-word works
 
 local macros = require("macros")
@@ -127,7 +126,12 @@ end
 
 function Compiler:err(message, item)
   self.source:show_lines(item.line_number, 1)
+  self:reset_state()
   error(message .. " at line: " .. item.line_number)
+end
+
+function Compiler:warn(message, item)
+  print("[WARN] " .. message .. " at line: " .. item.line_number)
 end
 
 function Compiler:exec_macro(item)

@@ -34,12 +34,11 @@ local function sanitize(str)
   if str:match("^%d+") then
     str = "_" .. str
   end
-  if str:match("^%.") then
-    str = "dot_" .. str:sub(2)
-  end
-  if str:match("^%:") then
-    str = "col_" .. str:sub(2) -- TODO check
-  end
+  -- . and : are only allowed at the beginning or end
+  if str:match("^%.") then str = "dot_" .. str:sub(2) end
+  if str:match("^%:") then str = "col_" .. str:sub(2) end
+  if str:match("%.$") then str = str:sub(1, #str -1) .. "_dot" end
+  if str:match("%:$") then str = str:sub(1, #str -1) .. "_col" end
   return str
 end
 
@@ -192,25 +191,37 @@ function macros.def_alias(compiler)
   compiler:alias(compiler:compile_token(exp), forth_name)
 end
 
+local function dot_or_colon_notation(str)
+  return str:sub(2, #str -1):find("[.:]")
+end
+
 local function def_word(compiler, is_global, item)
   local forth_name = compiler:word()
   local lua_name = sanitize(forth_name)
-  if not forth_name:find("[.:]") and compiler:find(forth_name) then
+  if select(2, forth_name:gsub("%:", "")) > 1 or
+     select(2, forth_name:gsub("%.", "")) > 1
+  then
+    compiler:err("Name " .. forth_name ..
+                 " can't contain multiple . or : characters.", item)
+  end
+  if dot_or_colon_notation(forth_name) then -- method syntax
+    local obj = forth_name:match("([^.:]+)")
+    if not compiler:has_var(obj) then
+      compiler:warn("Unknown object: " .. tostring(obj) ..
+          " in method definition: " .. forth_name, item)
+    end
+    if forth_name:find(":") then
+      compiler:def_var("self")
+    end
+  elseif compiler:find(forth_name) then -- Regular Forth word
     -- emulate hyper static glob env for funcs but not for methods
     lua_name = lua_name .. "__s" .. compiler.state.sequence
     compiler.state.sequence = compiler.state.sequence + 1
   end
   compiler:new_env("colon_" .. lua_name)
+  -- TODO don't add to the dict if it's a method
   compiler:def_word(forth_name, lua_name, false, true)
-  if forth_name:find(":") then
-    local obj = forth_name:match("([^:]+)")
-    if obj and compiler:has_var(obj) then
-      compiler:def_var("self")
-    else
-      compiler:err("Undefined object: " .. tostring(obj) ..
-          " in method definition: " .. forth_name, item)
-    end
-  end
+
   local header = ast.func_header(lua_name, is_global)
   if compiler.state.last_word then
     compiler:err("Word definitions cannot be nested", item)
