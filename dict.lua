@@ -20,19 +20,6 @@ local function entry(forth_name, lua_name, immediate, is_lua_alias, hidden)
   }
 end
 
-local function is_valid_lua_identifier(name)
-  local keywords = {
-      ["and"] = true, ["break"] = true, ["do"] = true, ["else"] = true, ["elseif"] = true,
-      ["end"] = true, ["false"] = true, ["for"] = true, ["function"] = true, ["goto"] = true,
-      ["if"] = true, ["in"] = true, ["local"] = true, ["nil"] = true, ["not"] = true,
-      ["or"] = true, ["repeat"] = true, ["return"] = true, ["then"] = true, ["true"] = true,
-      ["until"] = true, ["while"] = true }
-  if keywords[name] then
-      return false
-  end
-  return name:match("^[a-zA-Z_][a-zA-Z0-9_]*$") ~= nil
-end
-
 function Dict:def_word(forth_name, lua_name, immediate, hidden)
   table.insert(self.words,
                entry(forth_name, lua_name, immediate, false, hidden))

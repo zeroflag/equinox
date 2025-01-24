@@ -191,10 +191,6 @@ function macros.def_alias(compiler)
   compiler:alias(compiler:compile_token(exp), forth_name)
 end
 
-local function dot_or_colon_notation(str)
-  return str:sub(2, #str -1):find("[.:]")
-end
-
 local function def_word(compiler, is_global, item)
   local forth_name = compiler:word()
   local lua_name = sanitize(forth_name)
@@ -204,8 +200,13 @@ local function def_word(compiler, is_global, item)
     compiler:err("Name " .. forth_name ..
                  " can't contain multiple . or : characters.", item)
   end
-  if dot_or_colon_notation(forth_name) then -- method syntax
-    local obj = forth_name:match("([^.:]+)")
+  if interop.dot_or_colon_notation(forth_name) then -- method syntax
+    local parts = interop.explode(forth_name)
+    local obj = parts[1]
+    local method = parts[3] -- parts[2] is expected to be . or :
+    if not interop.is_valid_lua_identifier(method) then
+      compiler:err("Name " .. method .. " is not a valid name for dot or colon notation.", item)
+    end
     if not compiler:has_var(obj) then
       compiler:warn("Unknown object: " .. tostring(obj) ..
           " in method definition: " .. forth_name, item)
@@ -218,10 +219,10 @@ local function def_word(compiler, is_global, item)
     lua_name = lua_name .. "__s" .. compiler.state.sequence
     compiler.state.sequence = compiler.state.sequence + 1
   end
+  if not interop.dot_or_colon_notation(forth_name) then
+    compiler:def_word(forth_name, lua_name, false, true)
+  end
   compiler:new_env("colon_" .. lua_name)
-  -- TODO don't add to the dict if it's a method
-  compiler:def_word(forth_name, lua_name, false, true)
-
   local header = ast.func_header(lua_name, is_global)
   if compiler.state.last_word then
     compiler:err("Word definitions cannot be nested", item)
@@ -277,7 +278,7 @@ end
 
 local function is_valid_exp(exp, compiler)
   local name = exp
-  if interop.is_mixed_lua_expression(exp) then
+  if interop.dot_or_colon_notation(exp) then
     name = interop.explode(exp)[1]
   end
   return compiler:valid_ref(name) or compiler:find(name)
@@ -294,17 +295,17 @@ function macros.arity_call_lua(compiler, item)
   if token ~= ")" then
     arity = tonumber(token)
     if not arity or arity < 0 then
-      compiler:err("expected arity number, got " .. token, item)
+      compiler:err("expected arity number, got " .. tostring(token), item)
     end
     token = compiler:word()
     if token ~= ")" then
       numret = tonumber(token)
       if not numret or numret < -1 or numret > 1 then
-        compiler:err("expected number of return values (0/1/-1), got " .. token, item)
+        compiler:err("expected number of return values (0/1/-1), got " .. tostring(token), item)
       end
       token = compiler:word()
       if token ~= ")" then
-        compiler:err("expected closing ), got " .. token, item)
+        compiler:err("expected closing ), got " .. tostring(token), item)
       end
     end
   end
@@ -510,6 +511,7 @@ end
 
 function macros.see(compiler, item)
   local name = compiler:word()
+  if not name then return end
   local word = compiler:find(name)
   if not word then
     compiler:err(name .. " is not found in dictionary", item)

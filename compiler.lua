@@ -89,7 +89,12 @@ function Compiler:has_var(name)
 end
 
 function Compiler:word()
-  return self:next_item().token
+  local item = self:next_item()
+  if item then
+    return item.token
+  else
+    return nil
+  end
 end
 
 function Compiler:next_item()
@@ -184,7 +189,7 @@ function Compiler:compile_token(item)
     if word then -- Regular Forth word
       return ast.func_call(word.lua_name)
     end
-    if interop.is_mixed_lua_expression(item.token) then
+    if interop.dot_or_colon_notation(item.token) then
       -- Table lookup: math.pi or tbl.key or method call a:b a:b.c
       local parts = interop.explode(item.token)
       local name = parts[1]
@@ -228,14 +233,17 @@ function Compiler:generate_code()
     end
     if ast.name == "func_header" then
       local word = self.dict:find_by_lua_name(ast.func_name)
-      word.line_number = self.output.line_number
+      -- methods are not stored in dict
+      if word then word.line_number = self.output.line_number end
     end
     self.output:append(code)
     self.output:new_line()
     if ast.name == "end_func" then
       local word = self.dict:find_by_lua_name(ast.func_name)
-      word.code = string.gsub(
-        self.output:text(word.line_number), "[\n\r]+$", "")
+      if word then -- methods are not stored in dict
+        word.code = string.gsub(
+          self.output:text(word.line_number), "[\n\r]+$", "")
+      end
     end
   end
   return self.output

@@ -47,14 +47,25 @@ function interop.join(parts)
   return exp
 end
 
-function interop.is_mixed_lua_expression(token)
-  return string.match(token, ".+[.:].+") and
-    not string.match(token, "([/~]%d*)$")
+function interop.is_lua_prop_lookup(token)
+  return token:sub(2, #token -1):find("[.]")
 end
 
-function interop.is_lua_prop_lookup(token)
-  return string.match(token, ".+%..+") and
-    not string.match(token, "([/~]%d*)$")
+function interop.dot_or_colon_notation(token)
+  return token:sub(2, #token -1):find("[.:]")
+end
+
+function interop.is_valid_lua_identifier(name)
+  local keywords = {
+      ["and"] = true, ["break"] = true, ["do"] = true, ["else"] = true, ["elseif"] = true,
+      ["end"] = true, ["false"] = true, ["for"] = true, ["function"] = true, ["goto"] = true,
+      ["if"] = true, ["in"] = true, ["local"] = true, ["nil"] = true, ["not"] = true,
+      ["or"] = true, ["repeat"] = true, ["return"] = true, ["then"] = true, ["true"] = true,
+      ["until"] = true, ["while"] = true }
+  if keywords[name] then
+      return false
+  end
+  return name:match("^[a-zA-Z_][a-zA-Z0-9_]*$") ~= nil
 end
 
 return interop
