@@ -2,6 +2,7 @@
 -- basic syntax check
 -- var names with dash
 -- don't sanitize methods
+-- nesting, repl restart
 -- : mod.my-method error while : my-word works
 
 local macros = require("macros")
