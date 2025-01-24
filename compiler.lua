@@ -1,7 +1,6 @@
 -- TODO
 -- basic syntax check
 -- var names with dash
--- don't sanitize methods (.:)
 -- : mod.my-method error while : my-word works
 
 local macros = require("macros")
@@ -195,9 +194,12 @@ function Compiler:compile_token(item)
       local name = parts[1]
       if self:valid_ref(name) then
         -- This can result multiple values, like img:getDimensions,
-        -- a single value like tbl.key or str:upper, or nothing like img:draw
-        -- TODO if only tbl, than use push instead of push many as it must be faster
-        return ast.push_many(ast.identifier(interop.join(parts)))
+        -- a single value like tbl.key or str:upper, or void like img:draw
+        if interop.is_lua_prop_lookup(item.token) then
+          return ast.push(ast.identifier(interop.join(parts)))
+        else
+          return ast.push_many(ast.identifier(interop.join(parts)))
+        end
       else
         self:err("Unkown variable: " .. name .. " in expression: " .. item.token, item)
       end
