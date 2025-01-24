@@ -193,6 +193,9 @@ end
 
 local function def_word(compiler, is_global, item)
   local forth_name = compiler:word()
+  if not forth_name then
+    compiler:err("Missing name for colon definition.", item)
+  end
   local lua_name = sanitize(forth_name)
   if select(2, forth_name:gsub("%:", "")) > 1 or
      select(2, forth_name:gsub("%.", "")) > 1
