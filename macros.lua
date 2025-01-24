@@ -200,19 +200,20 @@ local function def_word(compiler, is_global, item)
   if select(2, forth_name:gsub("%:", "")) > 1 or
      select(2, forth_name:gsub("%.", "")) > 1
   then
-    compiler:err("Name " .. forth_name ..
-                 " can't contain multiple . or : characters.", item)
+    compiler:err("Name '" .. forth_name .. "' " ..
+                 "can't contain multiple . or : characters.", item)
   end
   if interop.dot_or_colon_notation(forth_name) then -- method syntax
     local parts = interop.explode(forth_name)
     local obj = parts[1]
     local method = parts[3] -- parts[2] is expected to be . or :
     if not interop.is_valid_lua_identifier(method) then
-      compiler:err("Name " .. method .. " is not a valid name for dot or colon notation.", item)
+      compiler:err("Name '" .. method .. "' " ..
+                   "is not a valid name for dot or colon notation.", item)
     end
     if not compiler:has_var(obj) then
-      compiler:warn("Unknown object: " .. tostring(obj) ..
-          " in method definition: " .. forth_name, item)
+      compiler:warn("Unknown object: '" .. tostring(obj) .. "'" ..
+          "in method definition: " .. forth_name, item)
     end
     if forth_name:find(":") then
       compiler:def_var("self")

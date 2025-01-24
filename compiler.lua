@@ -1,7 +1,6 @@
 -- TODO
 -- basic syntax check
 -- var names with dash
--- : mod.my-method error while : my-word works
 
 local macros = require("macros")
 local Dict = require("dict")
