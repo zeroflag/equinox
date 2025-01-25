@@ -1,7 +1,7 @@
 depth 0 =assert
 adepth 0 =assert
 
-: factorial ( n -- n! ) reveal
+: factorial ( n -- n! ) recursive
   dup 2 > if dup 1 - factorial * then ;
 
 5  factorial 120           =assert
@@ -11,7 +11,8 @@ adepth 0 =assert
 
 depth 0 =assert
 adepth 0 =assert
-15 factorial 1307674368000 =assert
+
+15 factorial  1307674368000 =assert
 
 depth 0 =assert
 adepth 0 =assert

@@ -1,6 +1,7 @@
 -- TODO
 -- basic syntax check
 -- var names with dash
+-- love2d traceback
 
 local macros = require("macros")
 local Dict = require("dict")
