@@ -1,0 +1,9 @@
+depth 0 =assert
+adepth 0 =assert
+
+: >! 3 / ;
+
+9 >! 3 =assert
+
+depth 0 =assert
+adepth 0 =assert
