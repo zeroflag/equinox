@@ -16,20 +16,22 @@ function Env:def_var_unsafe(forth_name, lua_name)
 end
 
 function Env:def_var(name)
-  if interop.is_valid_lua_identifier(name) then
-    self:def_var_unsafe(name, name)
-  else
-    error(name .. " is not a valid variable name. Avoid reserved keywords and special characters.")
-  end
+  local lua_name = interop.sanitize(name)
+  self:def_var_unsafe(name, lua_name)
+  return lua_name
 end
 
 function Env:has_var(forth_name)
+  return self:find_var(forth_name) ~= nil
+end
+
+function Env:find_var(forth_name)
   for i, each in ipairs(self.vars) do
     if each.forth_name == forth_name then
-      return true
+      return each
     end
   end
-  return self.parent and self.parent:has_var(forth_name)
+  return self.parent and self.parent:find_var(forth_name)
 end
 
 return Env

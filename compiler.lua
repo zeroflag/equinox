@@ -76,15 +76,19 @@ function Compiler:remove_env(name)
 end
 
 function Compiler:def_var(name)
-  self.env:def_var(name)
+  return self.env:def_var(name)
 end
 
 function Compiler:def_global(name)
-  self.root_env:def_var(name)
+  return self.root_env:def_var(name)
 end
 
 function Compiler:has_var(name)
   return self.env:has_var(name)
+end
+
+function Compiler:find_var(name)
+  return self.env:find_var(name)
 end
 
 function Compiler:word()
@@ -183,7 +187,8 @@ function Compiler:compile_token(item)
       return utils.deepcopy(word.lua_name)
     end
     if self.env:has_var(item.token) then -- Forth variable
-      return ast.push(ast.identifier(item.token))
+      return ast.push(
+        ast.identifier(self.env:find_var(item.token).lua_name))
     end
     if word then -- Regular Forth word
       return ast.func_call(word.lua_name)

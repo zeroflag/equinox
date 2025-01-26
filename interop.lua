@@ -68,4 +68,41 @@ function interop.is_valid_lua_identifier(name)
   return name:match("^[a-zA-Z_][a-zA-Z0-9_]*$") ~= nil
 end
 
+function interop.sanitize(str)
+  str = str:gsub("-", "_mi_")
+    :gsub("%+", "_pu_")
+    :gsub("%%", "_pe_")
+    :gsub("/", "_fs_")
+    :gsub("\\", "_bs_")
+    :gsub("~", "_ti_")
+    :gsub("#", "_hs_")
+    :gsub("%*", "_sr_")
+    :gsub(";", "_sc_")
+    :gsub("&", "_an_")
+    :gsub("|", "_or_")
+    :gsub("@", "_at_")
+    :gsub("`", "_bt_")
+    :gsub("=", "_eq_")
+    :gsub("'", "_sq_")
+    :gsub('"', "_dq_")
+    :gsub("?", "_qe_")
+    :gsub("!", "_ex_")
+    :gsub(",", "_ca_")
+    :gsub("%{", "_c1_")
+    :gsub("%}", "_c2_")
+    :gsub("%[", "_b1_")
+    :gsub("%]", "_b2_")
+    :gsub("%(", "_p1_")
+    :gsub("%(", "_p2_")
+  if str:match("^%d+") then
+    str = "_" .. str
+  end
+  -- . and : are only allowed at the beginning or end
+  if str:match("^%.") then str = "dot_" .. str:sub(2) end
+  if str:match("^%:") then str = "col_" .. str:sub(2) end
+  if str:match("%.$") then str = str:sub(1, #str -1) .. "_dot" end
+  if str:match("%:$") then str = str:sub(1, #str -1) .. "_col" end
+  return str
+end
+
 return interop

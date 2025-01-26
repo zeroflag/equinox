@@ -5,43 +5,6 @@ local unpack = table.unpack or unpack
 
 local macros = {}
 
-local function sanitize(str)
-  str = str:gsub("-", "_mi_")
-    :gsub("%+", "_pu_")
-    :gsub("%%", "_pe_")
-    :gsub("/", "_fs_")
-    :gsub("\\", "_bs_")
-    :gsub("~", "_ti_")
-    :gsub("#", "_hs_")
-    :gsub("%*", "_sr_")
-    :gsub(";", "_sc_")
-    :gsub("&", "_an_")
-    :gsub("|", "_or_")
-    :gsub("@", "_at_")
-    :gsub("`", "_bt_")
-    :gsub("=", "_eq_")
-    :gsub("'", "_sq_")
-    :gsub('"', "_dq_")
-    :gsub("?", "_qe_")
-    :gsub("!", "_ex_")
-    :gsub(",", "_ca_")
-    :gsub("%{", "_c1_")
-    :gsub("%}", "_c2_")
-    :gsub("%[", "_b1_")
-    :gsub("%]", "_b2_")
-    :gsub("%(", "_p1_")
-    :gsub("%(", "_p2_")
-  if str:match("^%d+") then
-    str = "_" .. str
-  end
-  -- . and : are only allowed at the beginning or end
-  if str:match("^%.") then str = "dot_" .. str:sub(2) end
-  if str:match("^%:") then str = "col_" .. str:sub(2) end
-  if str:match("%.$") then str = str:sub(1, #str -1) .. "_dot" end
-  if str:match("%:$") then str = str:sub(1, #str -1) .. "_col" end
-  return str
-end
-
 function macros.add()
   return ast.push(ast.bin_op("+", ast.pop(), ast.pop()))
 end
@@ -196,7 +159,7 @@ local function def_word(compiler, is_global, item)
   if not forth_name then
     compiler:err("Missing name for colon definition.", item)
   end
-  local lua_name = sanitize(forth_name)
+  local lua_name = interop.sanitize(forth_name)
   if select(2, forth_name:gsub("%:", "")) > 1 or
      select(2, forth_name:gsub("%.", "")) > 1
   then
@@ -339,16 +302,22 @@ function macros.arity_call_lua(compiler, item)
   return stmts
 end
 
-function macros.var(compiler)
+function macros.var(compiler, item)
   local name = compiler:word()
-  compiler:def_var(name)
-  return ast.def_local(name)
+  if name then
+    return ast.def_local(compiler:def_var(name))
+  else
+    compiler:err("Missing variable name.", item)
+  end
 end
 
-function macros.var_global(compiler)
+function macros.var_global(compiler, item)
   local name = compiler:word()
-  compiler:def_global(name)
-  return ast.def_global(name)
+  if name then
+    return ast.def_global(compiler:def_global(name))
+  else
+    compiler:err("Missing variable name.", item)
+  end
 end
 
 local function valid_tbl_assignment(compiler, name)
@@ -365,18 +334,17 @@ function macros.assignment(compiler, item)
   if name == "var" then
     -- declare and assign of a new var
     name = compiler:word()
-    compiler:def_var(name)
-    return ast.init_local(name, ast.pop())
+    return ast.init_local(compiler:def_var(name), ast.pop())
   elseif name == "global" then
     -- declare and assign of a new global
     name = compiler:word()
-    compiler:def_global(name)
-    return ast.init_global(name, ast.pop())
+    return ast.init_global(compiler:def_global(name), ast.pop())
   else
     -- assignment of existing var
-    if compiler:has_var(name) or
-       valid_tbl_assignment(compiler, name) -- 123 -> tbl.x
-    then
+    if compiler:has_var(name) then
+      return ast.assignment(
+        compiler:find_var(name).lua_name, ast.pop())
+    elseif valid_tbl_assignment(compiler, name) then -- 123 -> tbl.x
       return ast.assignment(name, ast.pop())
     else
       compiler:err("Undeclared variable: " .. name, item)

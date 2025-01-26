@@ -26,5 +26,13 @@ var x
 44 -> var n
 n 44 =assert
 
+12 -> var var-with-hyphen
+var-with-hyphen 12 =assert
+
+var 1spec-var+_*%#@!
+3 -> 1spec-var+_*%#@!
+1spec-var+_*%#@! 3 =assert
+
+
 depth 0 =assert
 adepth 0 =assert
