@@ -1,6 +1,5 @@
 -- TODO
 -- basic syntax check
--- var names with dash
 -- love2d traceback
 
 local macros = require("macros")
@@ -198,6 +197,9 @@ function Compiler:compile_token(item)
       local parts = interop.explode(item.token)
       local name = parts[1]
       if self:valid_ref(name) then
+        if self.env:has_var(name) then
+          parts[1] = self.env:find_var(name).lua_name
+        end
         -- This can result multiple values, like img:getDimensions,
         -- a single value like tbl.key or str:upper, or void like img:draw
         if interop.is_lua_prop_lookup(item.token) then

@@ -33,6 +33,22 @@ var 1spec-var+_*%#@!
 3 -> 1spec-var+_*%#@!
 1spec-var+_*%#@! 3 =assert
 
+var 5x!
+{ $x 555 } -> 5x!
+
+5x! $x @ 555 =assert
+5x!.x    555 =assert
+
+678 -> 5x!.y
+5x! $y @ 678 =assert
+5x!.y    678 =assert
+
+var t-1
+{ $a { $b 3 } } -> t-1
+t-1.a.b 3 =assert
+
+4 -> t-1.a.b
+t-1.a.b 4 =assert
 
 depth 0 =assert
 adepth 0 =assert

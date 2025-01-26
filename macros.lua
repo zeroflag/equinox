@@ -345,7 +345,13 @@ function macros.assignment(compiler, item)
       return ast.assignment(
         compiler:find_var(name).lua_name, ast.pop())
     elseif valid_tbl_assignment(compiler, name) then -- 123 -> tbl.x
-      return ast.assignment(name, ast.pop())
+      local parts = interop.explode(name)
+      if compiler:has_var(parts[1]) then
+        parts[1] = compiler:find_var(parts[1]).lua_name
+        return ast.assignment(interop.join(parts), ast.pop())
+      else
+        return ast.assignment(name, ast.pop())
+      end
     else
       compiler:err("Undeclared variable: " .. name, item)
     end
