@@ -22,13 +22,13 @@ var a
 
 ' odd [ 1 2 3 4 ] filter -> a
 a size 2 =assert
-a 1 at 1 =assert
-a 2 at 3 =assert
+a 1 @ 1 =assert
+a 2 @ 3 =assert
 
 ' even [ 1 2 3 4 ] filter -> a
 a size 2 =assert
-a 1 at 2 =assert
-a 2 at 4 =assert
+a 1 @ 2 =assert
+a 2 @ 4 =assert
 
 depth 0 =assert
 adepth 0 =assert

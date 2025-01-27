@@ -53,20 +53,20 @@ assert-false
 
 1 2 < if "yes" then "yes" =assert
 1 2 < dup if "yes" then "yes" =assert assert-true
-tbl 1 at if "yes" then "yes" =assert
+tbl 1 @ if "yes" then "yes" =assert
 
 verus not if "ok then" then
 
-\ inline tbl at param
-tbl 1 at "x" =assert
+\ inline tbl @ param
+tbl 1 @ "x" =assert
 
 \ inline tbl put params
-tbl 1 "y" put
-tbl 1 at "y" =assert
+tbl 1 "y" !
+tbl 1 @ "y" =assert
 
-\ inline table at param2
+\ inline table @ param2
 tbl
-dup 1 at "y" =assert
+dup 1 @ "y" =assert
 tbl =assert
 
 \ inline dup before unary

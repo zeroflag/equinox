@@ -54,7 +54,7 @@ alias: # size
       "Table needs even number of items" #( error 1 )
     then
     2 / 0 do
-      dup >a -rot put a>
+      dup >a -rot ! a>
     loop ;
 ]]
 
