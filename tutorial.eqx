@@ -227,7 +227,7 @@ var steps
   "================" . cr ;
 
 :: finished? counter len >= ;
-:: current ( -- [] ) steps counter at ;
+:: current ( -- [] ) steps counter @ ;
 
 :: show-lesson ( -- )
   current ipairs: i line
