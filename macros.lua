@@ -410,7 +410,8 @@ function macros._case(compiler) -- simulate goto with break, in pre lua5.2 since
   return ast.keyword("repeat")
 end
 
-function macros._of()
+function macros._of(compiler)
+  compiler:new_env('OF')
   return {
     ast.stack_op("over"),
     ast._if(ast.bin_op("==", ast.pop(), ast.pop())),
@@ -418,7 +419,8 @@ function macros._of()
   }
 end
 
-function macros._endof() -- GOTO endcase
+function macros._endof(compiler, item) -- GOTO endcase
+  compiler:remove_env('OF', item)
   return { ast.keyword("break"), ast.keyword("end") }
 end
 
