@@ -358,7 +358,8 @@ function macros.assignment(compiler, item)
   end
 end
 
-function macros._if()
+function macros._if(compiler)
+  compiler:new_env('IF')
   return ast._if(ast.pop())
 end
 
@@ -366,10 +367,25 @@ function macros._else()
   return ast.keyword("else")
 end
 
+function macros._then(compiler)
+  compiler:remove_env('IF')
+  return ast.keyword("end")
+end
+
 function macros._begin(compiler)
   -- begin..until / begin..again / begin..while..repeat
   compiler:new_env('BEGIN_LOOP')
   return ast._while(ast.literal("boolean", "true"))
+end
+
+function macros._again(compiler)
+  compiler:remove_env('BEGIN_LOOP')
+  return ast.keyword("end")
+end
+
+function macros._repeat(compiler)
+  compiler:remove_env('BEGIN_LOOP')
+  return ast.keyword("end")
 end
 
 function macros._until(compiler)
@@ -389,7 +405,8 @@ function macros._while()
   return ast._if(ast.unary_op("not", ast.pop()), ast.keyword("break"))
 end
 
-function macros._case() -- simulate goto with break, in pre lua5.2 since GOTO was not yet supported
+function macros._case(compiler) -- simulate goto with break, in pre lua5.2 since GOTO was not yet supported
+  compiler:new_env('CASE')
   return ast.keyword("repeat")
 end
 
@@ -405,7 +422,8 @@ function macros._endof() -- GOTO endcase
   return { ast.keyword("break"), ast.keyword("end") }
 end
 
-function macros._endcase()
+function macros._endcase(compiler)
+  compiler:remove_env('CASE')
   return ast._until(ast.literal("boolean", "true"))
 end
 
@@ -467,12 +485,8 @@ function macros._step(compiler)
   return ast._for(loop_var, ast.pop3rd(), ast.pop2nd(), ast.pop(), nil)
 end
 
-function macros._then(compiler)
-  return ast.keyword("end")
-end
-
 function macros._end(compiler)
-  compiler:remove_env()
+  compiler:remove_env() -- can belong to multiple
   return ast.keyword("end")
 end
 
