@@ -1,4 +1,4 @@
 #!/bin/bash
 
 dir=$(dirname "$(realpath "$0")")
-lua "$dir/equinox_bundle.lua" "$@"
+lua "$dir/src/equinox_bundle.lua" "$@"

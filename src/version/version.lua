@@ -1,6 +1,6 @@
 local version = {}
 
-local filename = "version/version.txt"
+local filename = "src/version/version.txt"
 
 function version.increment()
   local major, minor, patch = version.current:match("^(%d+)%.(%d+)%.(%d+)$")

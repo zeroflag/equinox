@@ -1,12 +1,13 @@
 LUA54 = lua5.4
 LUA51 = lua5.1
 LUA_VERSIONS := $(LUA54) $(LUA51) lua
+SRC_DIR = src
 TEST_DIR = tests
 TEST_LUA_FILES = $(wildcard $(TEST_DIR)/test_*.lua)
 TEST_EQX_FILES = $(wildcard $(TEST_DIR)/test_*.eqx)
 TEST_SOUT_FILES = $(wildcard $(TEST_DIR)/sout/*.eqx)
-EQUINOX = equinox.lua
-BUNDLE = equinox_bundle.lua
+EQUINOX = $(SRC_DIR)/equinox.lua
+BUNDLE = $(SRC_DIR)/equinox_bundle.lua
 AMALG = amalg.lua
 luaver ?= lua
 opt ?= o1
@@ -14,6 +15,8 @@ opt ?= o1
 GREEN := \033[0;32m
 RED := \033[0;31m
 NC := \033[0m
+
+export LUA_PATH=$(SRC_DIR)/?.lua;$(TEST_DIR)/?.lua;;
 
 all: clean test version bundle
 
@@ -62,10 +65,10 @@ test:
 
 version:
 	@echo "Increase patch version"
-	lua version/version.lua
+	lua $(SRC_DIR)/version/version.lua
 
 bundle:
-	@version=$$(cat "version/version.txt") ; \
+	@version=$$(cat "${SRC_DIR}/version/version.txt") ; \
 	echo "Creating $(BUNDLE) v$$version" ; \
 	$(AMALG) -s $(EQUINOX) compiler utils env codegen ast_optimizer ast_matchers aux dict ast line_mapping interop parser macros source output stack_def repl stack -o $(BUNDLE); \
 	sed -i "s/^__VERSION__=.*$$/__VERSION__=\"$$version\"/" $(BUNDLE); \
