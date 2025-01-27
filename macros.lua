@@ -367,8 +367,8 @@ function macros._else()
   return ast.keyword("else")
 end
 
-function macros._then(compiler)
-  compiler:remove_env('IF')
+function macros._then(compiler, item)
+  compiler:remove_env('IF', item)
   return ast.keyword("end")
 end
 
@@ -378,18 +378,18 @@ function macros._begin(compiler)
   return ast._while(ast.literal("boolean", "true"))
 end
 
-function macros._again(compiler)
-  compiler:remove_env('BEGIN_LOOP')
+function macros._again(compiler, item)
+  compiler:remove_env('BEGIN_LOOP', item)
   return ast.keyword("end")
 end
 
-function macros._repeat(compiler)
-  compiler:remove_env('BEGIN_LOOP')
+function macros._repeat(compiler, item)
+  compiler:remove_env('BEGIN_LOOP', item)
   return ast.keyword("end")
 end
 
-function macros._until(compiler)
-  compiler:remove_env('BEGIN_LOOP')
+function macros._until(compiler, item)
+  compiler:remove_env('BEGIN_LOOP', item)
   return {
     ast._if(ast.pop(), ast.keyword("break")),
     ast.keyword("end")
@@ -422,8 +422,8 @@ function macros._endof() -- GOTO endcase
   return { ast.keyword("break"), ast.keyword("end") }
 end
 
-function macros._endcase(compiler)
-  compiler:remove_env('CASE')
+function macros._endcase(compiler, item)
+  compiler:remove_env('CASE', item)
   return ast._until(ast.literal("boolean", "true"))
 end
 
@@ -446,8 +446,8 @@ function macros._do(compiler)
       nil)
 end
 
-function macros._loop(compiler)
-  compiler:remove_env('DO_LOOP')
+function macros._loop(compiler, item)
+  compiler:remove_env('DO_LOOP', item)
   compiler.state.do_loop_nesting =
     compiler.state.do_loop_nesting - 1
   return ast.keyword("end")

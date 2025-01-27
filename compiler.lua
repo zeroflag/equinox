@@ -63,9 +63,9 @@ function Compiler:new_env(name)
   self.env = Env:new(self.env, name)
 end
 
-function Compiler:remove_env(name)
+function Compiler:remove_env(name, item)
   if name and self.env.name ~= name then
-    error("Incorrect nesting: " .. name)
+    self:err("Incorrect nesting: " .. name, item)
   end
   if self.env.parent then
     self.env = self.env.parent
