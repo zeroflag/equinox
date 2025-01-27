@@ -1,7 +1,3 @@
--- TODO
--- basic syntax check
--- love2d traceback
-
 local macros = require("macros")
 local Dict = require("dict")
 local Parser = require("parser")
@@ -258,7 +254,7 @@ function Compiler:generate_code()
   return self.output
 end
 
-function Compiler:error_handler(err)
+function Compiler:traceback(err)
   local info
   local file = "N/A"
   for level = 1, math.huge do
@@ -306,10 +302,10 @@ end
 function Compiler:_eval(source, log_result)
   local code, err = self:compile_and_load(source, log_result, path)
   if err then
-    self:error_handler(err) -- error during load
+    self:traceback(err) -- error during load
     error(err)
   end
-  local success, result = xpcall(code, function(e) return self:error_handler(e) end)
+  local success, result = xpcall(code, function(e) return self:traceback(e) end)
   if success then
     return result
   else

@@ -124,6 +124,10 @@ function equinox.eval_file(str, log_result)
   return compiler:eval_file(str, log_result)
 end
 
+equinox.traceback = function(err)
+  return compiler:traceback(err)
+end
+
 if arg and arg[0] and
   (arg[0]:match("equinox.lua$") or
    arg[0]:match("equinox_bundle.lua$")) then
