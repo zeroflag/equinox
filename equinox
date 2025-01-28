@@ -1,4 +1,13 @@
-#!/bin/bash
+#!/usr/bin/env bash
+MODULE="equinox"
 
-dir=$(dirname "$(realpath "$0")")
-lua "$dir/src/equinox_bundle.lua" "$@"
+LUAROCKS_BIN=$(which lua)
+if [ -z "$LUAROCKS_BIN" ]; then
+  echo "Lua is not installed. Equinox requires Lua."
+  exit 1
+fi
+
+MODULE_PATH=$(luarocks show --porcelain "$MODULE" | grep "bundle" | awk -F' ' '{print $3}')
+
+$LUAROCKS_BIN "$MODULE_PATH" "$@"
+

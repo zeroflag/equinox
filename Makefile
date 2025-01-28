@@ -83,7 +83,12 @@ rockspec:
   specfile="equinox-$${version}.rockspec" ; \
 	echo "Creating rockspec: $${specfile} for v$${version}.." ; \
 	cp rockspec/equinox-template.rockspec $${specfile} ; \
-	sed -i "s/^version=.*$$/version=\"$$version\"/" $${specfile} ; \
+	sed -i "s/^version =.*$$/version = \"$$version\"/" $${specfile} ; \
+
+install:
+	@$(GET_VERSION) ; \
+  specfile="equinox-$${version}.rockspec" ; \
+	luarocks make $${specfile} ; \
 
 clean:
 	@echo "Cleaning up" ; \
@@ -91,4 +96,4 @@ clean:
 	rm -f $(BUNDLE) ; \
 
 # Add a phony directive to prevent file conflicts
-.PHONY: all test clean bundle rockspec repl version lua_tests eqx_tests opt_tests out_tests
+.PHONY: all test clean bundle rockspec repl version lua_tests eqx_tests opt_tests out_tests install
