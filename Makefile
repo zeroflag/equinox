@@ -66,7 +66,7 @@ test:
 	@echo "$(GREEN)All tests passed!$(NC)"
 
 version:
-	@echo "Increase patch version"
+	@echo "Increase patch version" ; \
 	lua $(SRC_DIR)/version/version.lua ; \
 
 bundle:
@@ -84,6 +84,7 @@ rockspec:
 	echo "Creating rockspec: $${specfile} for v$${version}.." ; \
 	cp rockspec/equinox-template.rockspec $${specfile} ; \
 	sed -i "s/^version =.*$$/version = \"$$version\"/" $${specfile} ; \
+	sed -i "s/\s*tag =.*$$/  tag = \"v$$version\"/" $${specfile} ; \
 
 install:
 	@$(GET_VERSION) ; \
