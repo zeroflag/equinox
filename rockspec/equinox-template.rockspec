@@ -22,15 +22,14 @@ dependencies = {
 build = {
   type = "builtin",
   modules = {
-    equinox_bundle = "src/equinox_bundle.lua",
+    ["equinox_bundle"] = "src/equinox_bundle.lua",
   },
   install = {
     bin = {
-        "equinox",
+      "equinox",
     },
-    lib = {
-      "repl_ext.eqx", -- TODO
-      "tutorial.eqx",
-    }
+  },
+  copy_directories = {
+    "ext"
   }
 }

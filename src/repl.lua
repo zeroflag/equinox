@@ -8,13 +8,12 @@ local MULTI_LINE = 2
 local Repl = {}
 
 local repl_ext = "repl_ext.eqx"
-local home = os.getenv("HOME") or os.getenv("USERPROFILE")
-local search_paths = { utils.join(home, ".equinox"), "" }
 
 function Repl:new(compiler, optimizer)
   local obj = {compiler = compiler,
                optimizer = optimizer,
                mode = SINGLE_LINE,
+               ext_dir = os.getenv("EQUINOX_EXT_DIR") or "./ext",
                always_show_stack = false,
                repl_ext_loaded = false,
                input = "",
@@ -152,6 +151,12 @@ function Repl:process_commands()
     if not utils.exists(path) and not utils.extension(path) then
       path = path .. ".eqx"
     end
+    if not utils.exists(path) and
+       not (string.find(path, "/") or
+            string.find(path, "\\"))
+    then
+      path = utils.join(self.ext_dir, path)
+    end
     if utils.exists(path) then
       self:safe_call(function() self.compiler:eval_file(path) end)
     else
@@ -187,7 +192,7 @@ function Repl:safe_call(func)
 end
 
 function Repl:start()
-  local ext = utils.file_exists_in_any_of(repl_ext, search_paths)
+  local ext = utils.file_exists_in_any_of(repl_ext, {self.ext_dir})
   if ext then
     self.compiler:eval_file(ext)
     self.repl_ext_loaded = true
