@@ -1,4 +1,4 @@
-local aux = require("aux")
+local aux = require("stack_aux")
 local interop = require("interop")
 local ast = require("ast")
 local unpack = table.unpack or unpack

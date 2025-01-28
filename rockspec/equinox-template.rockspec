@@ -3,7 +3,7 @@ version = "0.0-0"
 
 source = {
   url = "git+https://github.com/zeroflag/equinox",
-  tag = "v0.1"
+  tag = "v0.1-5"
 }
 
 description = {

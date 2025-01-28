@@ -610,16 +610,6 @@ end
 
 do
 local _ENV = _ENV
-package.preload[ "aux" ] = function( ... ) local arg = _G.arg;
-local Stack = require("stack_def")
-local aux = Stack:new("aux-stack")
-
-return aux
-end
-end
-
-do
-local _ENV = _ENV
 package.preload[ "codegen" ] = function( ... ) local arg = _G.arg;
 local CodeGen = {}
 
@@ -826,7 +816,7 @@ function Compiler:init(source)
   self.output = Output:new(marker .. self.source.name .. ">>")
   self.output:append("local stack = require(\"stack\")")
   self.output:new_line()
-  self.output:append("local aux = require(\"aux\")")
+  self.output:append("local aux = require(\"stack_aux\")")
   self.output:new_line()
   self.ast = {}
   self.code_start = self.output:size()
@@ -1464,7 +1454,7 @@ end
 do
 local _ENV = _ENV
 package.preload[ "macros" ] = function( ... ) local arg = _G.arg;
-local aux = require("aux")
+local aux = require("stack_aux")
 local interop = require("interop")
 local ast = require("ast")
 local unpack = table.unpack or unpack
@@ -2482,6 +2472,16 @@ end
 
 do
 local _ENV = _ENV
+package.preload[ "stack_aux" ] = function( ... ) local arg = _G.arg;
+local Stack = require("stack_def")
+local aux = Stack:new("aux-stack")
+
+return aux
+end
+end
+
+do
+local _ENV = _ENV
 package.preload[ "stack_def" ] = function( ... ) local arg = _G.arg;
 local Stack = {}
 local NIL = {} -- nil cannot be stored in table, use this placeholder
@@ -2725,7 +2725,7 @@ return utils
 end
 end
 
-__VERSION__="0.1-1"
+__VERSION__="0.1-5"
 
 local Compiler = require("compiler")
 local Optimizer = require("ast_optimizer")

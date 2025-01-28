@@ -46,7 +46,7 @@ function Compiler:init(source)
   self.output = Output:new(marker .. self.source.name .. ">>")
   self.output:append("local stack = require(\"stack\")")
   self.output:new_line()
-  self.output:append("local aux = require(\"aux\")")
+  self.output:append("local aux = require(\"stack_aux\")")
   self.output:new_line()
   self.ast = {}
   self.code_start = self.output:size()
