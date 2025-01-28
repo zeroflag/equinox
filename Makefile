@@ -16,9 +16,11 @@ GREEN := \033[0;32m
 RED := \033[0;31m
 NC := \033[0m
 
+GET_VERSION = version=$$(cat $(SRC_DIR)/version/version.txt)
+
 export LUA_PATH=$(SRC_DIR)/?.lua;$(TEST_DIR)/?.lua;;
 
-all: clean test version bundle
+all: clean test version bundle rockspec
 
 lua_tests:
 	@echo "Running Lua tests ($(luaver))"; \
@@ -65,20 +67,28 @@ test:
 
 version:
 	@echo "Increase patch version"
-	lua $(SRC_DIR)/version/version.lua
+	lua $(SRC_DIR)/version/version.lua ; \
 
 bundle:
-	@version=$$(cat "${SRC_DIR}/version/version.txt") ; \
-	echo "Creating $(BUNDLE) v$$version" ; \
+	@$(GET_VERSION) ; \
+	echo "Creating $(BUNDLE) v$${version}" ; \
 	$(AMALG) -s $(EQUINOX) compiler utils env codegen ast_optimizer ast_matchers aux dict ast line_mapping interop parser macros source output stack_def repl stack -o $(BUNDLE); \
-	sed -i "s/^__VERSION__=.*$$/__VERSION__=\"$$version\"/" $(BUNDLE); \
+	sed -i "s/^__VERSION__=.*$$/__VERSION__=\"$${version}\"/" $(BUNDLE); \
 
 repl:
 	@lua $(EQUINOX)
 
+rockspec:
+	@$(GET_VERSION) ; \
+  specfile="equinox-$${version}.rockspec" ; \
+	echo "Creating rockspec: $${specfile} for v$${version}.." ; \
+	cp rockspec/equinox-template.rockspec $${specfile} ; \
+	sed -i "s/^version=.*$$/version=\"$$version\"/" $${specfile} ; \
+
 clean:
-	@echo "Cleaning up"
-	rm -f $(BUNDLE)
+	@echo "Cleaning up" ; \
+  rm equinox-*.*-*.rockspec ; \
+	rm -f $(BUNDLE) ; \
 
 # Add a phony directive to prevent file conflicts
-.PHONY: all test clean bundle repl version lua_tests eqx_tests opt_tests out_tests
+.PHONY: all test clean bundle rockspec repl version lua_tests eqx_tests opt_tests out_tests

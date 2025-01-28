@@ -3,14 +3,14 @@ local version = {}
 local filename = "src/version/version.txt"
 
 function version.increment()
-  local major, minor, patch = version.current:match("^(%d+)%.(%d+)%.(%d+)$")
+  local major, minor, patch = version.current:match("^(%d+)%.(%d+)%-(%d+)$")
   if not major or not minor or not patch then
     error("Invalid version format. Expected format: major.minor.patch")
   end
   major = tonumber(major)
   minor = tonumber(minor)
   patch = tonumber(patch) + 1
-  version.current = string.format("%d.%d.%d", major, minor, patch)
+  version.current = string.format("%d.%d-%d", major, minor, patch)
 end
 
 function version.load()
