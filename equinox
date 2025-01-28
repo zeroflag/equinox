@@ -10,4 +10,8 @@ fi
 EXT_DIR="$(luarocks show --rock-dir $MODULE)/ext"
 MODULE_PATH=$(luarocks show --porcelain "$MODULE" | grep "bundle" | awk -F' ' '{print $3}')
 
+if [ -z "$MODULE_PATH" ]; then
+  MODULE_PATH=$(luarocks show "$MODULE" | grep "bundle" | sed -n 's/.*(\(.*\)).*/\1/p')
+fi
+
 EQUINOX_EXT_DIR="$EXT_DIR" $LUAROCKS_BIN "$MODULE_PATH" "$@"

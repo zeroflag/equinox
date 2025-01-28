@@ -1,5 +1,5 @@
 package = "equinox"
-version = "0.0-2086"
+version = "0.0-0"
 
 source = {
   url = "git+https://github.com/zeroflag/equinox",
@@ -7,9 +7,9 @@ source = {
 }
 
 description = {
-  summary = "Equinox Forth dialect",
+  summary = "Forth Dialect",
   detailed = [[
-Equinox is a Forth dialect implemented in Lua. It is designed for simplicity, flexibility, and to be easily embedded in Lua projects.
+Equinox is a Forth programming language that compiles to Lua.
   ]],
   homepage = "https://github.com/zeroflag/equinox",
   license = "MIT"
