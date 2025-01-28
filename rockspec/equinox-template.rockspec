@@ -29,7 +29,7 @@ build = {
         "equinox",
     },
     lib = {
-      "repl_ext.eqx",
+      "repl_ext.eqx", -- TODO
       "tutorial.eqx",
     }
   }

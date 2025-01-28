@@ -2180,6 +2180,7 @@ do
 local _ENV = _ENV
 package.preload[ "repl" ] = function( ... ) local arg = _G.arg;
 local stack = require("stack")
+local utils = require("utils")
 local Source = require("source")
 
 local SINGLE_LINE = 1
@@ -2187,38 +2188,9 @@ local MULTI_LINE = 2
 
 local Repl = {}
 
-local function join(dir, child)
-  if not dir or "" == dir then return child end
-  local sep = ""
-  if dir:sub(-1) ~= "/" and dir:sub(-1) ~= "\\" then
-    sep = package.config:sub(1, 1)
-  end
-  return dir .. sep .. child
-end
-
 local repl_ext = "repl_ext.eqx"
 local home = os.getenv("HOME") or os.getenv("USERPROFILE")
-local search_paths = { join(home, ".equinox"), "" }
-
-local function file_exists(filename)
-  local file = io.open(filename, "r")
-  if file then file:close() return true
-  else return false end
-end
-
-local function file_exists_in_any_of(filename, dirs)
-  for i, dir in ipairs(dirs) do
-    local path = join(dir, filename)
-    if file_exists(path) then
-      return path
-    end
-  end
-  return nil
-end
-
-local function extension(filename)
-  return filename:match("^.+(%.[^%.]+)$")
-end
+local search_paths = { utils.join(home, ".equinox"), "" }
 
 function Repl:new(compiler, optimizer)
   local obj = {compiler = compiler,
@@ -2358,10 +2330,10 @@ function Repl:process_commands()
   end
   local path = command:match("load%-file%s+(.+)")
   if path then
-    if not file_exists(path) and not extension(path) then
+    if not utils.exists(path) and not utils.extension(path) then
       path = path .. ".eqx"
     end
-    if file_exists(path) then
+    if utils.exists(path) then
       self:safe_call(function() self.compiler:eval_file(path) end)
     else
       print("File does not exist: " .. path)
@@ -2396,7 +2368,7 @@ function Repl:safe_call(func)
 end
 
 function Repl:start()
-  local ext = file_exists_in_any_of(repl_ext, search_paths)
+  local ext = utils.file_exists_in_any_of(repl_ext, search_paths)
   if ext then
     self.compiler:eval_file(ext)
     self.repl_ext_loaded = true
@@ -2710,6 +2682,20 @@ function utils.deepcopy(orig)
   return copy
 end
 
+function utils.extension(filename)
+  return filename:match("^.+(%.[^%.]+)$")
+end
+
+function utils.join(dir, child)
+  if not dir or "" == dir then return child end
+  local sep = ""
+  if dir:sub(-1) ~= "/" and dir:sub(-1) ~= "\\" then
+    sep = package.config:sub(1, 1)
+  end
+  return dir .. sep .. child
+end
+
+
 function utils.exists(filename)
   local file = io.open(filename, "r")
   if file then
@@ -2720,11 +2706,21 @@ function utils.exists(filename)
   end
 end
 
+function utils.file_exists_in_any_of(filename, dirs)
+  for i, dir in ipairs(dirs) do
+    local path = utils.join(dir, filename)
+    if utils.exists(path) then
+      return path
+    end
+  end
+  return nil
+end
+
 return utils
 end
 end
 
-__VERSION__="0.0-2127"
+__VERSION__="0.0-2129"
 
 local Compiler = require("compiler")
 local Optimizer = require("ast_optimizer")
