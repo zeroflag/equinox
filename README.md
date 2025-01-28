@@ -3,6 +3,12 @@ Forth Programming Language, hosted by Lua.
 
 ## Work in progress.
 
+## Install
+
+```bash
+$ luarocks install equinox
+```
+
 ### Design goals
 
 * Compiles directly to (optimized) Lua source code
