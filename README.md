@@ -1,4 +1,4 @@
-## Equinox - Forth Programming Language That Targtes Lua 
+## Equinox - Forth Programming Language That Targets Lua 
 
 ```
  _____            _                   _____          _   _     
