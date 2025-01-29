@@ -32,7 +32,7 @@ alias: magic-number 42
 magic-number . \ prints out 42
 ```
 
-Some of these aliases are already predefined, such as those for common table operations, as [shown here](doc/table.md).
+Some of these aliases are already predefined, such as those for common table operations, as [shown here](table.md).
 
 
 ## Return Value
