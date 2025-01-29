@@ -95,4 +95,6 @@ The USS Equinox, NCC-72381, was a small, Nova class Federation science vessel th
 
 RIP Captain Ransom and crew.
 
+(If you have good ASCII art or logo of a Nova-class starship, let me know, and I'll replace the Constitution one.)
+
 ![{master}](https://github.com/zeroflag/equinox/actions/workflows/makefile.yml/badge.svg) 
