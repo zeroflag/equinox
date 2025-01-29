@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 MODULE="equinox"
 
-LUAROCKS_BIN=$(which lua)
-if [ -z "$LUAROCKS_BIN" ]; then
+LUA=$(which lua)
+if [ -z "$LUA" ]; then
   echo "Lua is not installed. Equinox requires Lua."
   exit 1
 fi
@@ -14,4 +14,4 @@ if [ -z "$MODULE_PATH" ]; then
   MODULE_PATH=$(luarocks show "$MODULE" | grep "bundle" | sed -n 's/.*(\(.*\)).*/\1/p')
 fi
 
-EQUINOX_EXT_DIR="$EXT_DIR" $LUAROCKS_BIN "$MODULE_PATH" "$@"
+EQUINOX_EXT_DIR="$EXT_DIR" $LUA "$MODULE_PATH" "$@"

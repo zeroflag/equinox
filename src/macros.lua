@@ -192,7 +192,7 @@ local function def_word(compiler, is_global, item)
   compiler:new_env("colon_" .. lua_name)
   local header = ast.func_header(lua_name, is_global)
   if compiler.state.last_word then
-    compiler:err("Word definitions cannot be nested", item)
+    compiler:err("Word definitions cannot be nested.", item)
   else
     compiler.state.last_word = header
   end

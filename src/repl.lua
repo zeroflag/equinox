@@ -48,19 +48,42 @@ local messages = {
 
 math.randomseed(os.time())
 
+local is_windows = (os.getenv("OS") and string.find(os.getenv("OS"), "Windows"))
+  or package.config:sub(1,1) == '\\'
+
+local RED    = "\27[91m"
+local GREEN  = "\27[92m"
+local CYAN   = "\27[1;96m"
+local PURPLE = "\27[1;95m"
+local RESET  = "\27[0m"
+
+local function message(text, color, no_cr)
+  if no_cr then
+    new_line = ""
+  else
+    new_line = "\n"
+  end
+  if is_windows then
+    color = ""
+    reset = ""
+  else
+    reset = RESET
+  end
+  io.write(string.format("%s%s%s%s", color, text, reset, new_line))
+end
+
 function Repl:welcome(version)
   print("Equinox Forth Console (" .. _VERSION .. ") @ Delta Quadrant.")
   print(messages[math.random(1, #messages)])
-  io.write("\27[1;96m")
-  print(string.format([[
+  message(string.format([[
  __________________          _-_
  \__(=========/_=_/ ____.---'---`---.___
             \_ \    \----._________.---/
               \ \   /  /    `-_-'
          ___,--`.`-'..'-_
         /____          (|
-              `--.____,-'   v%s]], version))
-  print("\27[0m")
+              `--.____,-'   v%s
+]], version), CYAN)
   print("Type 'words' for wordlist, 'bye' to exit or 'help'.")
   print("First time Forth user? Type: load-file tutorial")
 end
@@ -88,7 +111,7 @@ function Repl:prompt()
 end
 
 function Repl:show_prompt()
-  io.write(string.format("\27[1;95m%s \27[0m", self:prompt()))
+  message(self:prompt() .. " ", PURPLE, true)
 end
 
 function Repl:read()
@@ -168,17 +191,18 @@ function Repl:process_commands()
 end
 
 function Repl:print_err(result)
-  print("\27[91m" .. "Red Alert: " .. "\27[0m" .. tostring(result))
+  message("Red Alert: ", RED, true)
+  print(tostring(result))
 end
 
 function Repl:print_ok()
   if stack:depth() > 0 then
-    print("\27[92m" .. "OK(".. stack:depth()  .. ")" .. "\27[0m")
+    message("OK(".. stack:depth()  .. ")", GREEN)
     if self.always_show_stack and self.repl_ext_loaded then
       self.compiler:eval_text(".s")
     end
   else
-    print("\27[92mOK\27[0m")
+    message("OK", GREEN)
   end
 end
 
