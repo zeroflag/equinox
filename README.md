@@ -64,6 +64,17 @@ Lua has some questionable semantics, like how a simple typo can accidentally cre
 
 Unlike Lua, Equinox syntactically distinguishes between sequential tables `[]` and hash maps `{}`. While the underlying data structure is the same, this differentiation helps make the code easier to read, in my opinion.
 
+### Why Not Equinox?
+
+Equinox is a Forth that uses postfix notation and a stack to manage the parameters of words. This is quite different from how mainstream programming languages work and look. Some people might find this style unusual or hard to read. While I believe Forth helps make people better programmers by teaching them to break down definitions into small, manageable pieces, I’m fully aware it’s not for everyone.
+
+Equinox is generally slower than Lua, mainly due to the stack operations. While the compiler uses various optimization techniques to minimize these operations, the end result is often slower compared to a pure Lua counterpart.
+
+..
+..
+..
+..
+
 #### Lua table operations
 
 | Operation       | Array                       | Table                               |
