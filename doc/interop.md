@@ -6,7 +6,7 @@ If you want to use something like `max`, you'll need to use the Lua function `ma
 However, Lua functions don't use Forth's data stack to pass parameters, and many Lua functions are variadic.
 Even when they aren't, there is no reliable way to check the arity of a Lua function.
 
-Therefore, you need to inform the compiler how many parameters a function expects.
+Therefore, you need to tell the compiler how many parameters a function expects.
 
 ```forth
 3 4 #( math.max 1 ) . \ this will print out 4
