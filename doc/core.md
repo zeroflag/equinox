@@ -41,7 +41,7 @@ If none of the conditions in the branches are met, the value is left on the stac
 
 ### Do Loop
 
-DO loops in Equinox look like those in traditional Forth dialects, but they are implemented differently.
+`Do` loops in Equinox look like those in traditional Forth dialects, but they are implemented differently.
 
 ```forth
 10 1 do i . loop \ prints out 1 2 3 4 5 6 7 8 9
