@@ -19,8 +19,6 @@
 $ luarocks install equinox
 ```
 
-### Run
-
 Start the REPL
 
 ```bash
