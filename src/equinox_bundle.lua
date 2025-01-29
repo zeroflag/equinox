@@ -1648,7 +1648,7 @@ local function def_word(compiler, is_global, item)
   compiler:new_env("colon_" .. lua_name)
   local header = ast.func_header(lua_name, is_global)
   if compiler.state.last_word then
-    compiler:err("Word definitions cannot be nested", item)
+    compiler:err("Word definitions cannot be nested.", item)
   else
     compiler.state.last_word = header
   end
@@ -2749,7 +2749,7 @@ return utils
 end
 end
 
-__VERSION__="0.1-16"
+__VERSION__="0.1-18"
 
 local Compiler = require("compiler")
 local Optimizer = require("ast_optimizer")
