@@ -45,7 +45,7 @@ If you're a first-time Forth user, I suggest you start with the built-in tutoria
 
 In the REPL, type:
 
-```bash
+```
 # load-file tutorial
 ```
 
