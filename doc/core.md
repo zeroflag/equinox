@@ -52,6 +52,7 @@ Unlike in a traditional Forth dialect, where the loop variable `i` is allocated 
 ```forth
 
 : tst 10 1 do i . loop ;
+
 see tst
 
 function tst()
