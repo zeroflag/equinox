@@ -95,9 +95,9 @@ However, this performance difference is expected to improve in the future.
  * In the current version user defined immediate words are not supported.
 
 ## Tutorial
- * [Lua Interop](doc/interop.md)
  * [Core](doc/core.md)
  * [Variables](doc/vars.md)
+ * [Lua Interop](doc/interop.md)
  * [Table Operations](doc/table.md)
  
 ## The Name
