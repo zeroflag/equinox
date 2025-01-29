@@ -96,6 +96,7 @@ However, this performance difference is expected to improve in the future.
 
 ## Tutorial
  * [Lua Interop](doc/interop.md)
+ * [Table Operations](doc/table.md)
  
 ## The Name
 
