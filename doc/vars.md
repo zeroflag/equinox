@@ -6,7 +6,7 @@ Local variables are restricted to the specific block in which they're declared, 
 
 ## Vars
 
-Below, the scope of variable x extends across the entire file, while the scope of variable y is limited to my-word.
+Below, the scope of variable `x` extends across the entire file, while the scope of variable `y` is limited to `my-word`.
 
 ```forth
 \ declared at top level
