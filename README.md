@@ -56,6 +56,8 @@ load-file tutorial
 $ equinox file.eqx
 ```
 
+For Love2D sample project see this repository: [VimSnake](https://github.com/zeroflag/vimsnake).
+
 ## Why Equinox?
 
 Popular retro gaming platforms like the TIC-80 tiny computer and 2D game engines like Love2D usually use Lua for scripting. 
