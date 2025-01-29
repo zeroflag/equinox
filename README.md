@@ -23,8 +23,6 @@
 * GameDev support via [Love2D](https://love2d.org/) and [TIC-80](https://tic80.com/) (later).
 * Self-hosted compiler (eventually).
 
-<img src="imgs/screenshot.png" alt="logo" width="800"/>
-
 # 🚀 Install
 
 ```bash
@@ -40,6 +38,9 @@ Equinox requires Lua 5.1 or later.
 ```bash
 $ equinox
 ```
+
+<img src="imgs/screenshot.png" alt="logo" width="800"/>
+
 
 If you're a first-time Forth user, I suggest you start with the built-in tutorial.
 
