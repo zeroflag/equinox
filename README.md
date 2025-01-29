@@ -74,7 +74,7 @@ Equinox is a Forth that uses postfix notation and a stack to manage the paramete
 
 While I believe Forth helps make people better programmers by teaching them to value simplicity and break down definitions into small, manageable pieces (which is more of a must than an option), I’m fully aware it’s not for everyone.
 
-Equinox is generally slower than Lua, mainly due to the stack operations. While the compiler uses various optimization techniques to minimize these operations, the end result is often slower compared to a pure Lua counterpart.
+Equinox is generally slower than Lua, mainly due to the stack operations. While the compiler uses various optimization techniques to minimize these operations, it's still in its early phase, so the end result is often slower compared to a pure Lua counterpart.
 
 However, this performance difference is expected to improve in the future.
 
