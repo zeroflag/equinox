@@ -1,11 +1,17 @@
 # Equinox
+ _____            _                   _____          _   _     
+| ____|__ _ _   _(_)_ __   _____  __ |  ___|__  _ __| |_| |__  
+|  _| / _` | | | | | '_ \ / _ \ \/ / | |_ / _ \| '__| __| '_ \ 
+| |__| (_| | |_| | | | | | (_) >  <  |  _| (_) | |  | |_| | | |
+|_____\__, |\__,_|_|_| |_|\___/_/\_\ |_|  \___/|_|   \__|_| |_|
+         |_| 
+
 Forth Programming Language, hosted by Lua. 
 
 ```forth
-: fibonacci 0 1 rot do 2dup + loop ;
+: fibonacci 0 1 rot 0 do 2dup + loop ;
 
-10 fibonacci
-.s
+10 fibonacci .s
 ```
 
 ## Install
