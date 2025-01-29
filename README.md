@@ -80,6 +80,8 @@ However, this performance difference is expected to improve in the future.
 
 The USS Equinox, NCC-72381, was a small, Nova class Federation science vessel that stuck in the Delta Quadrant and was (will?) destroyed in 2376.
 
+RIP Captain Ransom and the crew.
+
 ..
 ..
 ..
