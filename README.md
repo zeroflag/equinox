@@ -46,7 +46,7 @@ If you're a first-time Forth user, I suggest you start with the built-in tutoria
 In the REPL, type:
 
 ```
-# load-file tutorial
+load-file tutorial
 ```
 
 #### Compile and execute a file:
