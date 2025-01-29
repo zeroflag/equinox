@@ -22,7 +22,7 @@
 * Lua table and array support.
 * Fixes Lua's accidental global problem.
 * GameDev support via [Love2D](https://love2d.org/) and [TIC-80](https://tic80.com/) (later).
-* Self-hosted compiler (eventually).
+* Self-hosted compiler (later).
 
 ## 🚀 Install
 
