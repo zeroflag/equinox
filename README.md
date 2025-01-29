@@ -13,6 +13,16 @@
 10 fibonacci .s
 ```
 
+### Design goals
+
+* Compiles directly to (optimized) Lua source code
+* Modeless with no interpretation mode
+* Uses Lua call semantics, no return stack
+* Lua table and array support 
+* Fixes Lua's accidental global problem
+* Seamless [Love2D](https://love2d.org/) and [TIC-80](https://tic80.com/) integration
+* Self-hosted compiler (eventually)
+
 <img src="imgs/screenshot1.png" alt="logo" width="800"/>
 
 ### Install
@@ -32,18 +42,6 @@ Compile and execute a file:
 ```bash
 $ equinox file.eqx
 ```
-
-### Design goals
-
-* Compiles directly to (optimized) Lua source code
-* Modeless with no interpretation mode
-* Uses Lua call semantics, no return stack
-* Lua table and array support 
-* Fixes Lua's accidental global problem
-* Seamless [Love2D](https://love2d.org/) and [TIC-80](https://tic80.com/) integration
-* Self-hosted compiler (eventually)
-
-<img src="imgs/logo.png" alt="logo" width="300"/>
 
 #### Lua table operations
 
