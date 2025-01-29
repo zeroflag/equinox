@@ -127,7 +127,7 @@ again
 
 ```
 
-### New-Stle Loops
+### New-Style Loops
 
 Equinox is equipped with four new-style loops as well.
 
@@ -161,7 +161,7 @@ The `limit` is *inclusive*, so the loop will exit when idx is greater than 10.
 `step:` works similarly, but it also allows you to specify the increment.
 
 ```forth
-<start> <limit> to: <name>
+<start> <limit> <increment> step: <name>
   <body>
 end
 ```
