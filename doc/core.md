@@ -267,3 +267,5 @@ A reference like this can later be called with the `exec` word.
 exec . 
 \ prints out 2
 ```
+
+Note that tick works only with words, not with compile-time macros (immediate words).
