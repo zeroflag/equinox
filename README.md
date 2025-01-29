@@ -1,4 +1,5 @@
-# Equinox
+# Equinox - Forth Programming Language That Targtes Lua 
+
 ```
  _____            _                   _____          _   _     
 | ____|__ _ _   _(_)_ __   _____  __ |  ___|__  _ __| |_| |__  
@@ -8,7 +9,6 @@
          |_| 
 ```
 
-Forth Programming Language, hosted by Lua. 
 
 ```forth
 : fibonacci 0 1 rot 0 do 2dup + loop ;
