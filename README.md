@@ -76,6 +76,13 @@ Equinox is generally slower than Lua, mainly due to the stack operations. While 
 
 However, this performance difference is expected to improve in the future.
 
+## Differences from Other Forth Languages
+
+ * Equinox can leverage Lua's high-level data structure, the table, which can be used as an array or a dictionary.
+ * Equinox doesn't have a dedicated return stack (no `>r` `r>` words), but it has an auxiliary stack that can be used similarly (`a>` `>a`).
+ * `DO` loops use Lua local variables internally instead of the return stack, so no unloop is needed for an early exit.
+ * `DO` loops have safer semantics as they check the condition before entering the loop, so `1 1 do i . loop` won't enter the loop.
+
 ## The Name
 
 The USS Equinox, NCC-72381, was a small, Nova class Federation science vessel that stuck in the Delta Quadrant and was (will?) destroyed in 2376.
