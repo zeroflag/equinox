@@ -80,8 +80,11 @@ However, this performance difference is expected to improve in the future.
 
  * Equinox can leverage Lua's high-level data structure, the table, which can be used as an array or a dictionary.
  * Equinox doesn't have a dedicated return stack (no `>r` `r>` words), but it has an auxiliary stack that can be used similarly (`a>` `>a`).
- * `DO` loops use Lua local variables internally instead of the return stack, so no unloop is needed for an early exit.
+ * `DO` loops use Lua local variables internally instead of the return stack, so no `unloop` is needed for an early exit.
  * `DO` loops have safer semantics as they check the condition before entering the loop, so `1 1 do i . loop` won't enter the loop.
+ * Equinox doesn't have its own standard library besides the stack manipulation words and a few others for table construction, so you need to use Lua functions.
+ * The majority of the Equinox words are macros (immediate words), including the arithmetic operators and stack manipulation words.
+ * In the current version user defined immediate words are not supported.
 
 ## The Name
 
