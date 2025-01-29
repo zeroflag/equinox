@@ -1,12 +1,31 @@
 # Equinox
 Forth Programming Language, hosted by Lua. 
 
-## Work in progress.
+```forth
+: fibonacci 0 1 rot do 2dup + loop ;
+
+10 fibonacci
+.s
+```
 
 ## Install
 
 ```bash
 $ luarocks install equinox
+```
+
+## Run
+
+Start the REPL
+
+```bash
+$ equinox
+```
+
+Compile and execute a file:
+
+```bash
+$ equinox file.eqx
 ```
 
 ### Design goals
