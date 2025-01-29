@@ -31,13 +31,25 @@
 $ luarocks install equinox
 ```
 
-Start the REPL
+The easiest way to install Equinox is by using Lua's package manager, [Luarocks](https://luarocks.org/).
+
+Equinox requires Lua 5.1 or later.
+
+#### Start the REPL
 
 ```bash
 $ equinox
 ```
 
-Compile and execute a file:
+If you're a first-time Forth user, I suggest you start with the built-in tutorial.
+
+In the REPL, type:
+
+```bash
+# load-file tutorial
+```
+
+#### Compile and execute a file:
 
 ```bash
 $ equinox file.eqx
