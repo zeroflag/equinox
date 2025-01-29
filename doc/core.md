@@ -39,7 +39,7 @@ If none of the conditions in the branches are met, the value is left on the stac
 
 ## Loops
 
-### DO LOOP
+### Do Loop
 
 DO loops in Equinox look like those in traditional Forth dialects, but they are implemented differently.
 
@@ -83,7 +83,7 @@ You can nest up to three levels of `DO` loops, with the loop variables named `i`
 loop
 ```
 
-### BEGIN
+### Begin
 
 The `begin` word supports three different loop types: `begin` - `until`, `begin` - `again`, and `begin` - `while` - `repeat`.
 
@@ -130,7 +130,7 @@ again
 
 Equinox is equipped with four new-style loops as well.
 
-#### To loop
+#### To Loop
 
 `to:` and `step:` are more generalized for loops that allow you to name the loop variable.
 
@@ -155,7 +155,7 @@ Unlike with `DO` loops this type of loop expect the parameters in the opposite o
 
 The `limit` is *inclusive*, so the loop will exit when idx is greater than 10.
 
-#### Step loop
+#### Step Loop
 
 `step:` works similarly, but it also allows you to specify the increment.
 
@@ -174,7 +174,7 @@ end
 \ prints out 10 9 8 7 6 5 4 3 2 1
 ```
 
-#### ipairs
+#### Ipairs Loop
 
 The `ipairs:` loop allows you to iterate over a sequential table.
 
@@ -198,7 +198,7 @@ end
 \ 3 30
 ```
 
-#### pairs
+#### Pairs Loop
 
 The `pairs:` loop works similarly to `ipairs:` but it is for traversing a hash table (key value pairs).
 
