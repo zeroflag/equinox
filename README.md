@@ -1,4 +1,15 @@
-## Equinox - Forth Programming Language That Targets Lua 🖖
+# Equinox
+
+🌑 Get it through Luarocks:
+
+```bash
+$ luarocks install equinox
+
+$ equinox
+```
+
+## 🖖 Forth Programming Language That Targets Lua 
+
 
 ```forth
  _____            _                   _____          _   _     
@@ -13,7 +24,7 @@
 10 fibonacci .s
 ```
 
-### Design goals
+### 🌕 Design goals
 
 * Compiles directly to (optimized) Lua source code.
 * Modeless with no interpretation mode.
@@ -25,7 +36,7 @@
 
 <img src="imgs/screenshot.png" alt="logo" width="800"/>
 
-# Install
+# 🚀 Install
 
 ```bash
 $ luarocks install equinox
