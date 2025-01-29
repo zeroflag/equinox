@@ -1,5 +1,7 @@
 ## Equinox - Forth Programming Language That Targets Lua 🌑
 
+![{master}](https://github.com/zeroflag/equinox/actions/workflows/makefile.yml/badge.svg) 
+
 ```forth
  _____            _                   _____          _   _     
 | ____|__ _ _   _(_)_ __   _____  __ |  ___|__  _ __| |_| |__  
@@ -102,4 +104,4 @@ Source [Wikipedia](https://en.wikipedia.org/wiki/Equinox_(Star_Trek:_Voyager)).
 
 (If you have good ASCII art or logo of a Nova-class starship, let me know, and I'll replace the Constitution one.)
 
-![{master}](https://github.com/zeroflag/equinox/actions/workflows/makefile.yml/badge.svg) 
+
