@@ -8,7 +8,7 @@ $ luarocks install equinox
 $ equinox
 ```
 
-## 🖖 Forth Programming Language That Targets Lua 
+## Forth Programming Language That Targets Lua 
 
 
 ```forth
