@@ -16,8 +16,7 @@
 ## 🌕 Design goals
 
 * Compiles directly to (optimized) Lua source code.
-* Modeless with no interpretation mode.
-* Uses Lua call semantics, no return stack.
+* Modeless with no interpretation mode, no return stack.
 * Lua table and array support.
 * Fixes Lua's accidental global problem.
 * GameDev support via [Love2D](https://love2d.org/) and [TIC-80](https://tic80.com/) (later).
