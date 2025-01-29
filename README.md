@@ -8,7 +8,7 @@
 |_____\__, |\__,_|_|_| |_|\___/_/\_\ |_|  \___/|_|   \__|_| |_|
          |_|
 
-: fibonacci 0 1 rot 0 do 2dup + loop ;
+: fibonacci ( n -- .. ) 0 1 rot 0 do 2dup + loop ;
 
 10 fibonacci .s
 ```
