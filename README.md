@@ -1,4 +1,4 @@
-# Equinox - Forth Programming Language That Targtes Lua 
+## Equinox - Forth Programming Language That Targtes Lua 
 
 ```
  _____            _                   _____          _   _     
@@ -16,13 +16,13 @@
 10 fibonacci .s
 ```
 
-## Install
+### Install
 
 ```bash
 $ luarocks install equinox
 ```
 
-## Run
+### Run
 
 Start the REPL
 
