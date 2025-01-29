@@ -32,7 +32,7 @@ The easiest way to install Equinox is by using Lua's package manager, [Luarocks]
 
 Equinox requires Lua 5.1 or later.
 
-### Start the REPL
+### 💻 Start the REPL
 
 ```bash
 $ equinox
@@ -57,7 +57,7 @@ $ equinox file.eqx
 
 For Love2D sample project see this repository: [VimSnake](https://github.com/zeroflag/vimsnake).
 
-## Why Equinox?
+## 👍 Why Equinox?
 
 Popular retro gaming platforms like the TIC-80 tiny computer and 2D game engines like Love2D usually use Lua for scripting. 
 
@@ -67,7 +67,7 @@ Lua has some questionable semantics, like how a simple typo can accidentally cre
 
 Unlike Lua, Equinox syntactically distinguishes between sequential tables `[]` and hash maps `{}`. While the underlying data structure is the same, this differentiation helps make the code easier to read, in my opinion.
 
-## Why Not Equinox?
+## ⛔ Why Not Equinox?
 
 Equinox is a Forth that uses postfix notation and a stack to manage the parameters of words. This is quite different from how mainstream programming languages work and look. Some people might find this style unusual or hard to read. 
 
