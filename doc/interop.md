@@ -19,7 +19,7 @@ This will call `math.max` with 2 parameters (3 and 4).
 Typing this every time would be too verbose and error-prone, so you can define an alias for it.
 
 ```
-alias: max #( math.max 1 )
+alias: max #( math.max 2 )
 
 3 4 max . \ this will print out 4
 ```
