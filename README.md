@@ -94,11 +94,11 @@ However, this performance difference is expected to improve in the future.
 
 The USS Equinox, `NCC-72381`, was a small, Nova class Federation science vessel that stuck in the Delta Quadrant and was (will?) destroyed in 2376.
 
-<img src="imgs/Nova001.jpg" alt="starship" width="400"/>
+RIP Captain Ransom and crew.
+
+<img src="imgs/Nova001.jpg" alt="starship" width="300"/>
 
 Source [Wikipedia](https://en.wikipedia.org/wiki/Equinox_(Star_Trek:_Voyager)).
-
-RIP Captain Ransom and crew.
 
 (If you have good ASCII art or logo of a Nova-class starship, let me know, and I'll replace the Constitution one.)
 
