@@ -72,3 +72,5 @@ The above program is translated to the following Lua code:
 g1 = nil
 g1 = 12
 ```
+
+Try to avoid globals if possible.
