@@ -84,3 +84,22 @@ Where:
 | Property lookup                                    | math.pi                     |
 |                                                    |                             |
 
+## Lua Callbacks
+
+Sometimes, an Equinox word is expected to be called by Lua, like the following Love2D callback.
+
+Often, these callbacks take parameters, such as the key that has been pressed by the user.
+
+```forth
+: love.keypressed (: key :)
+  key case
+    $escape of quit endof
+    $space  of jump endof
+    drop ( key )
+  endcase ;
+```
+
+
+Equinox provides a way to declare Lua function parameters using the words `(:` and `:)`.
+
+Here, the Love2D framework calls our `love.keypressed` callback every time the user presses a key and passes the key's name as a parameter.

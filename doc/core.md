@@ -221,3 +221,31 @@ end
 \ k2 20
 \ k3 30
 ```
+
+## Word Definition
+
+The single colon (`:`) word is used to define words, while the double colon (`::`) is used for defining words local to the specific file.
+
+```forth
+: double ( n -- n ) dup + ;
+
+:: square ( n -- n ) dup * ; \ local word
+
+```
+
+Equinox maintains a hyper-static global environment (*yes, that's a real term, not a Star Trek reference*) that allows words to be redefined in terms of their older definitions.
+
+```forth
+: double ( n -- n ) 
+  "called double" .  \ log something out
+  double ; \ then call the original definition
+```
+
+So if you accidentally redefine a word, it will only affect its newer users.
+
+This also prevents recursion by default, but if you need recursion, you just need to mark the word as `recursive`.
+
+```forth
+: factorial ( n -- n! ) recursive
+  dup 2 > if dup 1 - factorial * then ;
+```
