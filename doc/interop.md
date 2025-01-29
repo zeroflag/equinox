@@ -79,11 +79,11 @@ The general form of this syntax is as follows:
 
 Where:
   * `arity` defines the number of input parameters (should be >= 0).
-    ** The default is 0.
+     - The default is 0.
   * `#return` defines the number of return values.
-    ** `-1` means any (default),
-    ** `0`  means none, and
-    ** `1`  means one.
+     - `-1` means any (default),
+     - `0`  means none, and
+     - `1`  means one.
 
 ## Examples
 
