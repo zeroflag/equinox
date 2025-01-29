@@ -9,8 +9,10 @@ Even when they aren't, there is no reliable way to check the arity of a Lua func
 Therefore, you need to tell the compiler how many parameters a function expects.
 
 ```forth
-3 4 #( math.max 1 ) . \ this will print out 4
+3 4 #( math.max 2 ) . \ this will print out 4
 ```
+
+This will call `math.max` with 2 parameters (3 and 4).
 
 ## Alias
 
