@@ -65,7 +65,7 @@ For Love2D sample project see this repository: [VimSnake](https://github.com/zer
 
 Popular retro gaming platforms like the [TIC-80](https://tic80.com/) tiny computer and 2D game engines like [Love2D](https://love2d.org/) usually use [Lua](https://www.lua.org/) for scripting. 
 
-While Lua's a cool, lightweight language, it doesn’t quite give you that old-school game dev vibe. Forth, on the other hand, really brings back the golden age of gaming with that nostalgic feel.
+While Lua's a cool, lightweight language, it doesn’t quite give you that old-school game dev vibe. Forth, on the other hand, really brings you back to the golden age of gaming with that nostalgic feel.
 
 Lua has some questionable semantics, like how a simple typo can accidentally create a global variable when you wanted to modify a local one. Equinox fixes this problem by preventing accidental creation of globals.
 
