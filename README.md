@@ -13,7 +13,7 @@
 10 fibonacci .s
 ```
 
-### 🌕 Design goals
+## 🌕 Design goals
 
 * Compiles directly to (optimized) Lua source code.
 * Modeless with no interpretation mode.
@@ -23,7 +23,7 @@
 * GameDev support via [Love2D](https://love2d.org/) and [TIC-80](https://tic80.com/) (later).
 * Self-hosted compiler (eventually).
 
-# 🚀 Install
+## 🚀 Install
 
 ```bash
 $ luarocks install equinox
@@ -33,7 +33,7 @@ The easiest way to install Equinox is by using Lua's package manager, [Luarocks]
 
 Equinox requires Lua 5.1 or later.
 
-#### Start the REPL
+### Start the REPL
 
 ```bash
 $ equinox
@@ -50,13 +50,13 @@ In the REPL, type:
 load-file tutorial
 ```
 
-#### Compile and execute a file:
+### Compile and execute a file:
 
 ```bash
 $ equinox file.eqx
 ```
 
-### Why Equinox?
+## Why Equinox?
 
 Popular retro gaming platforms like the TIC-80 tiny computer and 2D game engines like Love2D usually use Lua for scripting. 
 
@@ -66,7 +66,7 @@ Lua has some questionable semantics, like how a simple typo can accidentally cre
 
 Unlike Lua, Equinox syntactically distinguishes between sequential tables `[]` and hash maps `{}`. While the underlying data structure is the same, this differentiation helps make the code easier to read, in my opinion.
 
-### Why Not Equinox?
+## Why Not Equinox?
 
 Equinox is a Forth that uses postfix notation and a stack to manage the parameters of words. This is quite different from how mainstream programming languages work and look. Some people might find this style unusual or hard to read. 
 
@@ -74,7 +74,7 @@ While I believe Forth helps make people better programmers by teaching them to b
 
 Equinox is generally slower than Lua, mainly due to the stack operations. While the compiler uses various optimization techniques to minimize these operations, the end result is often slower compared to a pure Lua counterpart.
 
-### The Name
+## The Name
 
 The USS Equinox, NCC-72381, was a small, Nova class Federation science vessel that stuck in the Delta Quadrant and was (will?) destroyed in 2376.
 
