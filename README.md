@@ -94,6 +94,9 @@ However, this performance difference is expected to improve in the future.
  * The majority of the Equinox words are macros (immediate words), including the arithmetic operators and stack manipulation words.
  * In the current version user defined immediate words are not supported.
 
+## Tutorial
+ * [Lua Interop](doc/interop.md)
+ 
 ## The Name
 
 The USS Equinox, `NCC-72381`, was a small, Nova class Federation science vessel that stuck in the Delta Quadrant and was (will?) destroyed in 2376.
