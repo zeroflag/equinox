@@ -20,7 +20,7 @@
 * Uses Lua call semantics, no return stack.
 * Lua table and array support.
 * Fixes Lua's accidental global problem.
-* Gamedev support via [Love2D](https://love2d.org/) and [TIC-80](https://tic80.com/) (later).
+* GameDev support via [Love2D](https://love2d.org/) and [TIC-80](https://tic80.com/) (later).
 * Self-hosted compiler (eventually).
 
 <img src="imgs/screenshot.png" alt="logo" width="800"/>
