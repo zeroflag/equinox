@@ -57,6 +57,8 @@ load-file tutorial
 $ equinox file.eqx
 ```
 
+### Embed Into Lua Project
+
 For Love2D sample project see this repository: [VimSnake](https://github.com/zeroflag/vimsnake).
 
 ## 👍 Why Equinox?
