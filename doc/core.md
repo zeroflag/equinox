@@ -249,3 +249,21 @@ This also prevents recursion by default, but if you need recursion, you just nee
 : factorial ( n -- n! ) recursive
   dup 2 > if dup 1 - factorial * then ;
 ```
+
+## Tick
+
+The tick word (single quote `'`) is used to get a reference to a word.
+
+```forth
+' double .
+\ prints out something like function: 0x5578dfda96c0
+```
+
+A reference like this can later be called with the `exec` word.
+
+```forth
+1 
+' double 
+exec . 
+\ prints out 2
+```
