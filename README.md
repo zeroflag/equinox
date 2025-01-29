@@ -13,6 +13,8 @@
 10 fibonacci .s
 ```
 
+<img src="imgs/screenshot1.png" alt="logo" width="800"/>
+
 ### Install
 
 ```bash
@@ -41,7 +43,7 @@ $ equinox file.eqx
 * Seamless [Love2D](https://love2d.org/) and [TIC-80](https://tic80.com/) integration
 * Self-hosted compiler (eventually)
 
-<img src="logo/logo.png" alt="logo" width="300"/>
+<img src="imgs/logo.png" alt="logo" width="300"/>
 
 #### Lua table operations
 
