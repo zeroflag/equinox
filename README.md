@@ -62,6 +62,8 @@ Popular retro gaming platforms like the TIC-80 tiny computer and 2D game engines
 
 Lua has some questionable semantics, like how a simple typo can accidentally create a global variable when you wanted to modify a local one. Equinox fixes this problem by preventing accidental creation of globals.
 
+Unlike Lua, Equinox syntactically distinguishes between sequential tables `[]` and hash maps `{}`. While the underlying data structure is the same, this differentiation helps make the code easier to read, in my opinion.
+
 #### Lua table operations
 
 | Operation       | Array                       | Table                               |
