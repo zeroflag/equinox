@@ -12,7 +12,7 @@ local utils = require("utils")
 local Compiler = {}
 local marker = "<<equinox:"
 
-function Compiler:new(codegen, optimizer)
+function Compiler:new(optimizer, codegen)
   local obj = {
     parser = nil,
     source = Source:empty(),
@@ -23,8 +23,8 @@ function Compiler:new(codegen, optimizer)
     env = nil,
     root_env = Env:new(nil, "root"),
     state = {},
-    optimizer = codegen,
-    codegen = optimizer,
+    optimizer = optimizer,
+    codegen = codegen,
     dict = Dict:new()
   }
   setmetatable(obj, {__index = self})
