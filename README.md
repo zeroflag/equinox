@@ -74,6 +74,10 @@ While I believe Forth helps make people better programmers by teaching them to b
 
 Equinox is generally slower than Lua, mainly due to the stack operations. While the compiler uses various optimization techniques to minimize these operations, the end result is often slower compared to a pure Lua counterpart.
 
+### The Name
+
+The USS Equinox, NCC-72381, was a small, Nova class Federation science vessel that stuck in the Delta Quadrant and was (will?) destroyed in 2376.
+
 ..
 ..
 ..
