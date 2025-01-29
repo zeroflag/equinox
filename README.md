@@ -70,7 +70,7 @@ Unlike Lua, Equinox syntactically distinguishes between sequential tables `[]` a
 
 Equinox is a Forth that uses postfix notation and a stack to manage the parameters of words. This is quite different from how mainstream programming languages work and look. Some people might find this style unusual or hard to read. 
 
-While I believe Forth helps make people better programmers by teaching them to break down definitions into small, manageable pieces, I’m fully aware it’s not for everyone.
+While I believe Forth helps make people better programmers by teaching them to break down definitions into small, manageable pieces (which is more of a must than an option), I’m fully aware it’s not for everyone.
 
 Equinox is generally slower than Lua, mainly due to the stack operations. While the compiler uses various optimization techniques to minimize these operations, the end result is often slower compared to a pure Lua counterpart.
 
