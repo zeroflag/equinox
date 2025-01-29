@@ -1,15 +1,4 @@
-# Equinox
-
-🌑 Get it through Luarocks:
-
-```bash
-$ luarocks install equinox
-
-$ equinox
-```
-
-## Forth Programming Language That Targets Lua 
-
+## Equinox 🌑 Forth Programming Language That Targets Lua 
 
 ```forth
  _____            _                   _____          _   _     
