@@ -73,4 +73,4 @@ g1 = nil
 g1 = 12
 ```
 
-Try to avoid globals and use `var`s if possible.
+Try to avoid globals and use vars if possible.
