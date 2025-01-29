@@ -25,7 +25,7 @@
 
 <img src="imgs/screenshot.png" alt="logo" width="800"/>
 
-### Install
+# Install
 
 ```bash
 $ luarocks install equinox
