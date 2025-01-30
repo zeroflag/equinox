@@ -42,7 +42,7 @@ Contents of `player.eqx`:
 ```forth
 {} -> var Player
 
-: Player:new ( props -- )
+: Player:new ( props -- instance )
   dup { $__index self } #( setmetatable 2 0 ) ;
 
 : Player:update ( dt -- )
