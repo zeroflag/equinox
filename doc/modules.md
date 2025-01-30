@@ -1,6 +1,6 @@
 # Modules
 
-Just like in Lua, you can build modules using tables to store words and variables.Just like in Lua, you can build modules using tables to store words and variables.
+Just like in Lua, you can build modules using tables to store words and variables.
 
 Contents of `mymodule.eqx`:
 
