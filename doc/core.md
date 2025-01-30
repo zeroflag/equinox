@@ -152,7 +152,7 @@ end
 
 In the example above, we chose `idx` as the loop variable name.
 
-Unlike with `do` loops this type of loop expect the parameters in the opposite order thereofre it looks more like a for loop in other languges.
+Unlike with `do` loops this type of loop expect the parameters in the opposite order therefore it looks more like a for loop in other languges.
 
 The `limit` is *inclusive*, so the loop will exit when idx is greater than 10.
 
