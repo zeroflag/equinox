@@ -27,7 +27,7 @@ mymod:access .  \ prints out 6
 
 ```
 
-Equinox uses the same method call syntax as Lua, denoted by a colon (:), where an implicit self parameter is passed to refer to the module itself.
+Equinox uses the same method call syntax as Lua, denoted by a colon (`:`), where an implicit self parameter is passed to refer to the module itself.
 
 ## Classes & Objects
 
