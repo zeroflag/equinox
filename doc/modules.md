@@ -64,7 +64,6 @@ Contents of `game.eqx`:
 
 player1.x . \ prints out 3
 player1.y . \ prints out 1.5
-cr
 
 ```
 
