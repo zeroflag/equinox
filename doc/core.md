@@ -118,10 +118,11 @@ drop
 ```
 
 ```forth
-0
-begin
-  dup 5 < if 1 + else dup * exit then
-again
+: tst
+  0
+  begin
+    dup 5 < if 1 + else dup * exit then
+  again ;
 
 \ leaves 25 on the stack
 
