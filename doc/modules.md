@@ -33,7 +33,7 @@ Equinox uses the same method call syntax as Lua, denoted by a colon (`:`), where
 
 If you need multiple instances of the same type of object, you can simulate classes using Lua's metatable support.
 
-The `__index` is a metatable field that allows table lookups to fall back to another table or function when a key is missing.
+The `__index` is a metatable field that allows table lookups to fall back to another table when a key is missing.
 
 This makes it possible for multiple objects to share the same set of "methods", essentially simulating classes.
 
