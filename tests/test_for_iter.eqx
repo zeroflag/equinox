@@ -1,0 +1,16 @@
+depth 0 =assert
+adepth 0 =assert
+
+alias: gmatch #( string.gmatch 2 )
+
+0
+"1,2,3,4,5" "[^,]+" gmatch iter: each
+  each >num +
+end
+
+dup . cr
+
+15 =assert
+
+depth 0 =assert
+adepth 0 =assert

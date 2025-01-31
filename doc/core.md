@@ -130,7 +130,7 @@ drop
 
 ### New-Style Loops
 
-Equinox is equipped with four new-style loops as well.
+Equinox is equipped with five new-style loops as well.
 
 #### To Loop
 
@@ -222,6 +222,28 @@ end
 \ k2 20
 \ k3 30
 ```
+
+#### Iter Loop
+
+The `iter` loop is a general `for-each` loop used to traverse iterators, such as the result of `gmatch`.
+
+```forth
+<iterator> iter: <name>
+  <body>
+end
+```
+
+For example:
+
+```forth
+alias: gmatch #( string.gmatch 2 )
+
+"1,2,3,4,5" "[^,]+" gmatch iter: each
+  each >num +
+end
+```
+
+The previously mentioned `pairs:` and `ipairs:` loops are special cases of this, as they automatically wrap a table into an iterator.
 
 ## Word Definition
 

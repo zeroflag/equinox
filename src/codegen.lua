@@ -75,9 +75,15 @@ function CodeGen:gen(ast)
         self:gen(ast.step))
   end
   if "for_each" == ast.name then
+    if ast.loop_var1 and ast.loop_var2 then
       return string.format(
         "for %s,%s in %s do",
         ast.loop_var1, ast.loop_var2, self:gen(ast.iterable))
+    else
+      return string.format(
+        "for %s in %s do",
+        ast.loop_var1, self:gen(ast.iterable))
+    end
   end
   if "pairs" == ast.name then
     return string.format("pairs(%s)", self:gen(ast.iterable))

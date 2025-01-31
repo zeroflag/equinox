@@ -476,6 +476,13 @@ function macros.for_pairs(compiler)
   return ast._foreach(var_name1, var_name2, ast._pairs(ast.pop()))
 end
 
+function macros.for_each(compiler)
+  local var_name = compiler:word()
+  compiler:new_env('ITER_LOOP')
+  compiler:def_var(var_name)
+  return ast._foreach(var_name, nil, ast.pop())
+end
+
 function macros._to(compiler)
   local loop_var = compiler:word()
   compiler:new_env('TO_LOOP')

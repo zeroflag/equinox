@@ -688,9 +688,15 @@ function CodeGen:gen(ast)
         self:gen(ast.step))
   end
   if "for_each" == ast.name then
+    if ast.loop_var1 and ast.loop_var2 then
       return string.format(
         "for %s,%s in %s do",
         ast.loop_var1, ast.loop_var2, self:gen(ast.iterable))
+    else
+      return string.format(
+        "for %s in %s do",
+        ast.loop_var1, self:gen(ast.iterable))
+    end
   end
   if "pairs" == ast.name then
     return string.format("pairs(%s)", self:gen(ast.iterable))
@@ -1234,6 +1240,7 @@ function Dict:init()
   self:def_macro("loop", "macros._loop")
   self:def_macro("ipairs:", "macros.for_ipairs")
   self:def_macro("pairs:", "macros.for_pairs")
+  self:def_macro("iter:", "macros.for_each")
   self:def_macro("to:", "macros._to")
   self:def_macro("step:", "macros._step")
   self:def_macro("#(", "macros.arity_call_lua")
@@ -1930,6 +1937,13 @@ function macros.for_pairs(compiler)
   compiler:def_var(var_name1)
   compiler:def_var(var_name2)
   return ast._foreach(var_name1, var_name2, ast._pairs(ast.pop()))
+end
+
+function macros.for_each(compiler)
+  local var_name = compiler:word()
+  compiler:new_env('ITER_LOOP')
+  compiler:def_var(var_name)
+  return ast._foreach(var_name, nil, ast.pop())
 end
 
 function macros._to(compiler)
@@ -2752,7 +2766,7 @@ return utils
 end
 end
 
-__VERSION__="0.1-25"
+__VERSION__="0.1-29"
 
 local Compiler = require("compiler")
 local Optimizer = require("ast_optimizer")
