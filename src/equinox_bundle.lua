@@ -1611,9 +1611,12 @@ function macros.cr()
   return ast.func_call("print")
 end
 
-function macros.def_alias(compiler)
+function macros.def_alias(compiler, item)
   local forth_name = compiler:word()
   local exp = compiler:next_item()
+  if not forth_name or not exp then
+    compiler:err("alias needs a name and an expression", item)
+  end
   compiler:alias(compiler:compile_token(exp), forth_name)
 end
 
@@ -1797,13 +1800,22 @@ end
 
 function macros.assignment(compiler, item)
   local name = compiler:word()
+  if not name then
+    compiler:err("Missing variable name.", item)
+  end
   if name == "var" then
     -- declare and assign of a new var
     name = compiler:word()
+    if not name then
+      compiler:err("Missing variable name.", item)
+    end
     return ast.init_local(compiler:def_var(name), ast.pop())
   elseif name == "global" then
     -- declare and assign of a new global
     name = compiler:word()
+    if not name then
+      compiler:err("Missing variable name.", item)
+    end
     return ast.init_global(compiler:def_global(name), ast.pop())
   else
     -- assignment of existing var
@@ -1921,40 +1933,55 @@ function macros._loop(compiler, item)
   return ast.keyword("end")
 end
 
-function macros.for_ipairs(compiler)
+function macros.for_ipairs(compiler, item)
   local var_name1 = compiler:word()
   local var_name2 = compiler:word()
+  if not var_name1 or not var_name2 then
+    compiler:err("ipairs needs two loop variables", item)
+  end
   compiler:new_env('IPAIRS_LOOP')
   compiler:def_var(var_name1)
   compiler:def_var(var_name2)
   return ast._foreach(var_name1, var_name2, ast._ipairs(ast.pop()))
 end
 
-function macros.for_pairs(compiler)
+function macros.for_pairs(compiler, item)
   local var_name1 = compiler:word()
   local var_name2 = compiler:word()
+  if not var_name1 or not var_name2 then
+    compiler:err("pairs needs two loop variables", item)
+  end
   compiler:new_env('PAIRS_LOOP')
   compiler:def_var(var_name1)
   compiler:def_var(var_name2)
   return ast._foreach(var_name1, var_name2, ast._pairs(ast.pop()))
 end
 
-function macros.for_each(compiler)
+function macros.for_each(compiler, item)
   local var_name = compiler:word()
+  if not var_name then
+    compiler:err("iter needs one loop variable", item)
+  end
   compiler:new_env('ITER_LOOP')
   compiler:def_var(var_name)
   return ast._foreach(var_name, nil, ast.pop())
 end
 
-function macros._to(compiler)
+function macros._to(compiler, item)
   local loop_var = compiler:word()
+  if not loop_var then
+    compiler:err("to loop needs a loop variable.", item)
+  end
   compiler:new_env('TO_LOOP')
   compiler:def_var(loop_var)
   return ast._for(loop_var, ast.pop2nd(), ast.pop(), nil)
 end
 
-function macros._step(compiler)
+function macros._step(compiler, item)
   local loop_var = compiler:word()
+  if not loop_var then
+    compiler:err("step loop needs a loop variable.", item)
+  end
   compiler:new_env('STEP_LOOP')
   compiler:def_var(loop_var)
   return ast._for(loop_var, ast.pop3rd(), ast.pop2nd(), ast.pop(), nil)
@@ -1978,7 +2005,9 @@ end
 
 function macros.see(compiler, item)
   local name = compiler:word()
-  if not name then return end
+  if not name then
+    compiler:err("See needs a word name", item)
+  end
   local word = compiler:find(name)
   if not word then
     compiler:err(name .. " is not found in dictionary", item)
@@ -2766,7 +2795,7 @@ return utils
 end
 end
 
-__VERSION__="0.1-29"
+__VERSION__="0.1-31"
 
 local Compiler = require("compiler")
 local Optimizer = require("ast_optimizer")
