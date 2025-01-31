@@ -209,6 +209,9 @@ end
 
 function macros.tick(compiler, item)
   local name = compiler:word()
+  if not name then
+    compiler:err("A word is required for '", item)
+  end
   local word = compiler:find(name)
   if not word then
     compiler:err(name .. " is not found in dictionary", item)
