@@ -150,23 +150,26 @@ function Repl:process_commands(input)
     print("Optimization turned off")
     return true
   end
-  local path = command:match(commands.load_file .. "%s+(.+)")
-  if path then
-    if not utils.exists(path) and not utils.extension(path) then
-      path = path .. ".eqx"
+  if command:sub(1, #commands.load_file) == commands.load_file
+  then
+    local path = trim(command:sub(#commands.load_file + 1))
+    if path then
+      if not utils.exists(path) and not utils.extension(path) then
+        path = path .. ".eqx"
+      end
+      if not utils.exists(path) and
+        not (string.find(path, "/") or
+              string.find(path, "\\"))
+      then
+        path = utils.join(self.ext_dir, path)
+      end
+      if utils.exists(path) then
+        self:safe_call(function() self.compiler:eval_file(path) end)
+      else
+        print("File does not exist: " .. path)
+      end
+      return true
     end
-    if not utils.exists(path) and
-       not (string.find(path, "/") or
-            string.find(path, "\\"))
-    then
-      path = utils.join(self.ext_dir, path)
-    end
-    if utils.exists(path) then
-      self:safe_call(function() self.compiler:eval_file(path) end)
-    else
-      print("File does not exist: " .. path)
-    end
-    return true
   end
   return false
 end
