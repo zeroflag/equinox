@@ -16,7 +16,8 @@ Equinox is a Forth programming language that compiles to Lua.
 }
 
 dependencies = {
-  "lua >= 5.1"
+  "lua >= 5.1",
+  "linenoise >= 0.9"
 }
 
 build = {
