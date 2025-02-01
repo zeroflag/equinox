@@ -40,7 +40,7 @@ Equinox requires Lua 5.1 or later.
 $ equinox
 ```
 
-<img src="imgs/screenshot.png" alt="logo" width="800"/>
+<img src="imgs/fib.gif" alt="fib" />
 
 
 If you're a first-time Forth user, I suggest you start with the built-in tutorial.
