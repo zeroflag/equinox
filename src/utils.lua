@@ -23,6 +23,14 @@ function utils.in_home(file)
   return utils.join(utils.home(), file)
 end
 
+function utils.values(tbl)
+  local vals = {}
+  for k, v in pairs(tbl) do
+    table.insert(vals, v)
+  end
+  return vals
+end
+
 function utils.extension(filename)
   return filename:match("^.+(%.[^%.]+)$")
 end

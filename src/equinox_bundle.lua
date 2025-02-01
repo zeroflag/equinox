@@ -1509,9 +1509,10 @@ ln.enableutf8()
 
 local Backend = {}
 
-function Backend:new(compiler, history_file)
+function Backend:new(compiler, history_file, commands)
   local obj = {compiler = compiler,
                input = "",
+               commands = commands,
                history_file = history_file}
   setmetatable(obj, {__index = self})
   if history_file then
@@ -1541,6 +1542,11 @@ function Backend:completer(input)
     end
     if word:find("^" .. after) then
       table.insert(matches, before .. word)
+    end
+  end
+  for _, cmd in ipairs(self.commands) do
+    if cmd:find("^" .. input) then
+      table.insert(matches, cmd)
     end
   end
   return matches
@@ -2343,9 +2349,9 @@ local console = require("console")
 local Source = require("source")
 
 local function load_backend(preferred, fallback)
-  local success, module = pcall(require, preferred)
+  local success, mod = pcall(require, preferred)
   if success then
-    return require(preferred)
+    return mod
   else
     return require(fallback)
   end
@@ -2355,9 +2361,24 @@ local Repl = {}
 
 local repl_ext = "repl_ext.eqx"
 
+local commands = {
+  bye = "bye",
+  help = "help",
+  log_on = "log-on",
+  log_off = "log-off",
+  stack_on = "stack-on",
+  stack_off = "stack-off",
+  opt_on = "opt-on",
+  opt_off = "opt-off",
+  load_file = "load-file"
+}
+
 function Repl:new(compiler, optimizer)
   local ReplBackend = load_backend("ln_repl_backend", "simple_repl_backend")
-  local obj = {backend = ReplBackend:new(compiler,  utils.in_home(".equinox_repl_history")),
+  local obj = {backend = ReplBackend:new(
+                 compiler,
+                 utils.in_home(".equinox_repl_history"),
+                 utils.values(commands)),
                compiler = compiler,
                optimizer = optimizer,
                ext_dir = os.getenv("EQUINOX_EXT_DIR") or "./ext",
@@ -2420,8 +2441,7 @@ local function show_help()
 - stack-on "always show stack after each input"
 - stack-off "don't show stack after each input"
 - bye "exit repl"
-- help "show this help"
-  ]])
+- help "show this help"]])
 end
 
 function Repl:read()
@@ -2434,24 +2454,24 @@ end
 
 function Repl:process_commands(input)
   local command = trim(input)
-  if command == "bye" then
+  if command == commands.bye then
     os.exit(0)
   end
-  if command == "help" then
+  if command == commands.help then
     show_help()
     return true
   end
-  if command == "log-on" then
+  if command == commands.log_on then
     self.log_result = true
     print("Log turned on")
     return true
   end
-  if command == "log-off" then
+  if command == commands.log_off then
     self.log_result = false
     print("Log turned off")
     return true
   end
-  if command == "stack-on" then
+  if command == commands.stack_on then
     if self.repl_ext_loaded then
       self.always_show_stack = true
       print("Show stack after input is on")
@@ -2460,22 +2480,22 @@ function Repl:process_commands(input)
     end
     return true
   end
-  if command == "stack-off" then
+  if command == commands.stack_off then
     self.always_show_stack = off
     print("Show stack after input is off")
     return true
   end
-  if command == "opt-on" then
+  if command == commands.opt_on then
     self.optimizer:enable(true)
     print("Optimization turned on")
     return true
   end
-  if command == "opt-off" then
+  if command == commands.opt_off then
     self.optimizer:enable(false)
     print("Optimization turned off")
     return true
   end
-  local path = command:match("load%-file%s+(.+)")
+  local path = command:match(commands.load_file .. "%s+(.+)")
   if path then
     if not utils.exists(path) and not utils.extension(path) then
       path = path .. ".eqx"
@@ -2891,6 +2911,14 @@ function utils.in_home(file)
   return utils.join(utils.home(), file)
 end
 
+function utils.values(tbl)
+  local vals = {}
+  for k, v in pairs(tbl) do
+    table.insert(vals, v)
+  end
+  return vals
+end
+
 function utils.extension(filename)
   return filename:match("^.+(%.[^%.]+)$")
 end
@@ -2929,7 +2957,7 @@ return utils
 end
 end
 
-__VERSION__="0.1-47"
+__VERSION__="0.1-51"
 
 local Compiler = require("compiler")
 local Optimizer = require("ast_optimizer")

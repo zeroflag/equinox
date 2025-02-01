@@ -5,9 +5,10 @@ ln.enableutf8()
 
 local Backend = {}
 
-function Backend:new(compiler, history_file)
+function Backend:new(compiler, history_file, commands)
   local obj = {compiler = compiler,
                input = "",
+               commands = commands,
                history_file = history_file}
   setmetatable(obj, {__index = self})
   if history_file then
@@ -37,6 +38,11 @@ function Backend:completer(input)
     end
     if word:find("^" .. after) then
       table.insert(matches, before .. word)
+    end
+  end
+  for _, cmd in ipairs(self.commands) do
+    if cmd:find("^" .. input) then
+      table.insert(matches, cmd)
     end
   end
   return matches
