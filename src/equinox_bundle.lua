@@ -1095,6 +1095,47 @@ end
 
 do
 local _ENV = _ENV
+package.preload[ "console" ] = function( ... ) local arg = _G.arg;
+local console = {}
+
+local is_windows = (os.getenv("OS") and string.find(os.getenv("OS"), "Windows"))
+  or package.config:sub(1,1) == '\\'
+
+console.RED    = "\27[91m"
+console.GREEN  = "\27[92m"
+console.CYAN   = "\27[1;96m"
+console.PURPLE = "\27[1;95m"
+console.RESET  = "\27[0m"
+
+function console.message(text, color, no_cr)
+  if no_cr then
+    new_line = ""
+  else
+    new_line = "\n"
+  end
+  if is_windows then
+    color = ""
+    reset = ""
+  else
+    reset = console.RESET
+  end
+  io.write(string.format("%s%s%s%s", color, text, reset, new_line))
+end
+
+function console.colorize(text, color)
+  if is_windows then
+    return text
+  else
+    return string.format("%s%s%s", color, text, console.RESET)
+  end
+end
+
+return console
+end
+end
+
+do
+local _ENV = _ENV
 package.preload[ "dict" ] = function( ... ) local arg = _G.arg;
 local interop = require("interop")
 
@@ -1455,6 +1496,80 @@ function LineMapping:resolve_target(tag, target_line_num)
 end
 
 return LineMapping
+end
+end
+
+do
+local _ENV = _ENV
+package.preload[ "ln_repl_backend" ] = function( ... ) local arg = _G.arg;
+local console = require("console")
+local ln = require("linenoise")
+
+ln.enableutf8()
+
+local Backend = {}
+
+function Backend:new(compiler, history_file)
+  local obj = {compiler = compiler,
+               input = "",
+               history_file = history_file}
+  setmetatable(obj, {__index = self})
+  if history_file then
+    ln.historyload(history_file)
+  end
+  obj:setup()
+  return obj
+end
+
+function Backend:setup()
+  ln.setcompletion(function(completion, str)
+    for _, match in ipairs(self:completer(str)) do
+        completion:add(match)
+    end
+  end)
+end
+
+function Backend:completer(input)
+  local matches = {}
+  for _, word in ipairs(self.compiler:word_list()) do
+    if word:find("^" .. input) then
+      table.insert(matches, word)
+    end
+  end
+  return matches
+end
+
+function Backend:prompt()
+  if self.multi_line then
+    return "..."
+  else
+    return "#"
+  end
+end
+
+function Backend:read()
+  local prompt = console.colorize(self:prompt(), console.PURPLE)
+  if self.multi_line then
+    self.input = self.input .. "\n" .. ln.linenoise(prompt .. " ")
+  else
+    self.input = ln.linenoise(prompt .. " ")
+  end
+  if self.input:match("%S") and
+     self.history_file and
+     not self.multi_line
+  then
+    ln.historyadd(self.input)
+    ln.historysave(self.history_file)
+  end
+  return self.input
+end
+
+function Backend:set_multiline(bool)
+  self.multi_line = bool
+  ln.setmultiline(bool)
+end
+
+return Backend
 end
 end
 
@@ -2217,23 +2332,30 @@ local _ENV = _ENV
 package.preload[ "repl" ] = function( ... ) local arg = _G.arg;
 local stack = require("stack")
 local utils = require("utils")
+local console = require("console")
 local Source = require("source")
 
-local SINGLE_LINE = 1
-local MULTI_LINE = 2
+local function load_backend(preferred, fallback)
+  local success, module = pcall(require, preferred)
+  if success then
+    return require(preferred)
+  else
+    return require(fallback)
+  end
+end
 
 local Repl = {}
 
 local repl_ext = "repl_ext.eqx"
 
 function Repl:new(compiler, optimizer)
-  local obj = {compiler = compiler,
+  local ReplBackend = load_backend("ln_repl_backend", "simple_repl_backend")
+  local obj = {backend = ReplBackend:new(compiler,  utils.in_home(".equinox_repl_history")),
+               compiler = compiler,
                optimizer = optimizer,
-               mode = SINGLE_LINE,
                ext_dir = os.getenv("EQUINOX_EXT_DIR") or "./ext",
                always_show_stack = false,
                repl_ext_loaded = false,
-               input = "",
                log_result = false }
   setmetatable(obj, {__index = self})
   return obj
@@ -2265,34 +2387,10 @@ local messages = {
 
 math.randomseed(os.time())
 
-local is_windows = (os.getenv("OS") and string.find(os.getenv("OS"), "Windows"))
-  or package.config:sub(1,1) == '\\'
-
-local RED    = "\27[91m"
-local GREEN  = "\27[92m"
-local CYAN   = "\27[1;96m"
-local PURPLE = "\27[1;95m"
-local RESET  = "\27[0m"
-
-local function message(text, color, no_cr)
-  if no_cr then
-    new_line = ""
-  else
-    new_line = "\n"
-  end
-  if is_windows then
-    color = ""
-    reset = ""
-  else
-    reset = RESET
-  end
-  io.write(string.format("%s%s%s%s", color, text, reset, new_line))
-end
-
 function Repl:welcome(version)
   print("Equinox Forth Console (" .. _VERSION .. ") @ Delta Quadrant.")
   print(messages[math.random(1, #messages)])
-  message(string.format([[
+  console.message(string.format([[
  __________________          _-_
  \__(=========/_=_/ ____.---'---`---.___
             \_ \    \----._________.---/
@@ -2300,7 +2398,7 @@ function Repl:welcome(version)
          ___,--`.`-'..'-_
         /____          (|
               `--.____,-'   v%s
-]], version), CYAN)
+]], version), console.CYAN)
   print("Type 'words' for wordlist, 'bye' to exit or 'help'.")
   print("First time Forth user? Type: load-file tutorial")
 end
@@ -2319,32 +2417,16 @@ local function show_help()
   ]])
 end
 
-function Repl:prompt()
-  if self.mode == SINGLE_LINE then
-    return "#"
-  else
-    return "..."
-  end
-end
-
-function Repl:show_prompt()
-  message(self:prompt() .. " ", PURPLE, true)
-end
-
 function Repl:read()
-  if self.mode == SINGLE_LINE then
-    self.input = io.read()
-  else
-    self.input = self.input .. "\n" .. io.read()
-  end
+  return self.backend:read()
 end
 
 local function trim(str)
   return str:match("^%s*(.-)%s*$")
 end
 
-function Repl:process_commands()
-  local command = trim(self.input)
+function Repl:process_commands(input)
+  local command = trim(input)
   if command == "bye" then
     os.exit(0)
   end
@@ -2408,18 +2490,18 @@ function Repl:process_commands()
 end
 
 function Repl:print_err(result)
-  message("Red Alert: ", RED, true)
+  console.message("Red Alert: ", console.RED, true)
   print(tostring(result))
 end
 
 function Repl:print_ok()
   if stack:depth() > 0 then
-    message("OK(".. stack:depth()  .. ")", GREEN)
+    console.message("OK(".. stack:depth()  .. ")", console.GREEN)
     if self.always_show_stack and self.repl_ext_loaded then
       self.compiler:eval_text(".s")
     end
   else
-    message("OK", GREEN)
+    console.message("OK", console.GREEN)
   end
 end
 
@@ -2438,22 +2520,20 @@ function Repl:start()
     self.compiler:eval_file(ext)
     self.repl_ext_loaded = true
   end
-  local prompt = "#"
   while true do
-    self:show_prompt()
-    self:read()
-    if not self:process_commands() then
+    local input = self:read()
+    if not self:process_commands(input) then
       local success, result = pcall(function ()
           return self.compiler:compile_and_load(
-            Source:from_text(self.input), self.log_result)
+            Source:from_text(input), self.log_result)
       end)
       if not success then
         self:print_err(result)
       elseif not result then
-        self.mode = MULTI_LINE
+        self.backend:set_multiline(true)
         self.compiler:reset_state()
       else
-        self.mode = SINGLE_LINE
+        self.backend:set_multiline(false)
         self:safe_call(function() result() end)
       end
     end
@@ -2461,6 +2541,45 @@ function Repl:start()
 end
 
 return Repl
+end
+end
+
+do
+local _ENV = _ENV
+package.preload[ "simple_repl_backend" ] = function( ... ) local arg = _G.arg;
+local console = require("console")
+
+local Backend = {}
+
+function Backend:new()
+  local obj = {input = ""}
+  setmetatable(obj, {__index = self})
+  return obj
+end
+
+function Backend:prompt()
+  if self.multi_line then
+    return "..."
+  else
+    return "#"
+  end
+end
+
+function Backend:read()
+  console.message(self:prompt() .. " ", console.PURPLE, true)
+  if self.multi_line then
+    self.input = self.input .. "\n" .. io.read()
+  else
+    self.input = io.read()
+  end
+  return self.input
+end
+
+function Backend:set_multiline(bool)
+  self.multi_line = bool
+end
+
+return Backend
 end
 end
 
@@ -2757,6 +2876,14 @@ function utils.deepcopy(orig)
   return copy
 end
 
+function utils.home()
+  return os.getenv("USERPROFILE") or os.getenv("HOME")
+end
+
+function utils.in_home(file)
+  return utils.join(utils.home(), file)
+end
+
 function utils.extension(filename)
   return filename:match("^.+(%.[^%.]+)$")
 end
@@ -2795,7 +2922,7 @@ return utils
 end
 end
 
-__VERSION__="0.1-31"
+__VERSION__="0.1-44"
 
 local Compiler = require("compiler")
 local Optimizer = require("ast_optimizer")

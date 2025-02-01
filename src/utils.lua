@@ -15,6 +15,14 @@ function utils.deepcopy(orig)
   return copy
 end
 
+function utils.home()
+  return os.getenv("USERPROFILE") or os.getenv("HOME")
+end
+
+function utils.in_home(file)
+  return utils.join(utils.home(), file)
+end
+
 function utils.extension(filename)
   return filename:match("^.+(%.[^%.]+)$")
 end
