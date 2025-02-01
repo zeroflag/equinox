@@ -1532,8 +1532,15 @@ end
 function Backend:completer(input)
   local matches = {}
   for _, word in ipairs(self.compiler:word_list()) do
-    if word:find("^" .. input) then
-      table.insert(matches, word)
+    local before, after = input:match("^(.*)%s(.*)$")
+    if not after then
+      after = input
+      before = ""
+    else
+      before = before .. " "
+    end
+    if word:find("^" .. after) then
+      table.insert(matches, before .. word)
     end
   end
   return matches
@@ -2922,7 +2929,7 @@ return utils
 end
 end
 
-__VERSION__="0.1-46"
+__VERSION__="0.1-47"
 
 local Compiler = require("compiler")
 local Optimizer = require("ast_optimizer")

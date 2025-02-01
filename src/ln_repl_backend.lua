@@ -28,8 +28,15 @@ end
 function Backend:completer(input)
   local matches = {}
   for _, word in ipairs(self.compiler:word_list()) do
-    if word:find("^" .. input) then
-      table.insert(matches, word)
+    local before, after = input:match("^(.*)%s(.*)$")
+    if not after then
+      after = input
+      before = ""
+    else
+      before = before .. " "
+    end
+    if word:find("^" .. after) then
+      table.insert(matches, before .. word)
     end
   end
   return matches
