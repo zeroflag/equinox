@@ -153,7 +153,7 @@ function Repl:process_commands(input)
   if command:sub(1, #commands.load_file) == commands.load_file
   then
     local path = trim(command:sub(#commands.load_file + 1))
-    if path then
+    if path and path ~= "" then
       if not utils.exists(path) and not utils.extension(path) then
         path = path .. ".eqx"
       end
@@ -168,8 +168,10 @@ function Repl:process_commands(input)
       else
         print("File does not exist: " .. path)
       end
-      return true
+    else
+      print("Missing file path.")
     end
+    return true
   end
   return false
 end
