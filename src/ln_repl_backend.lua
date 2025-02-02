@@ -36,7 +36,7 @@ local function add_completions(input, words, result)
     else
       before = before .. " "
     end
-    if word:find("^" .. after) then
+    if utils.startswith(word, after) then
       table.insert(result, before .. word)
     end
   end
@@ -63,7 +63,7 @@ local function add_props(input, result)
   if not prefix then prefix = "" end
   local last = input:match("[^%.]+$")
   for key, val in pairs(obj) do
-    if not last or key:find("^" .. last) then
+    if not last or utils.startswith(key, last) then
       table.insert(result, prefix .. key)
     end
   end
@@ -71,7 +71,7 @@ end
 
 local function add_commands(input, result, commands)
   for _, cmd in ipairs(commands) do
-    if cmd:find("^" .. input) then
+    if utils.startswith(cmd, input) then
       table.insert(result, cmd)
     end
   end

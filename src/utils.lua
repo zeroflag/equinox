@@ -85,4 +85,8 @@ function utils.keys(tbl)
   return result
 end
 
+function utils.startswith(str, prefix)
+  return string.sub(str, 1, #prefix) == prefix
+end
+
 return utils
