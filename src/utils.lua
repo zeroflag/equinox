@@ -77,4 +77,12 @@ function utils.unique(tbl)
   return result
 end
 
+function utils.keys(tbl)
+  local result = {}
+  for key, _ in pairs(tbl) do
+    table.insert(result, key)
+  end
+  return result
+end
+
 return utils

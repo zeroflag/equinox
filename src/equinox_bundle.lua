@@ -1563,15 +1563,58 @@ local function add_completions(input, words, result)
   end
 end
 
+local function resolve(input)
+  local obj = _G
+  for part in input:gmatch("[^%.]+") do
+    if obj[part] then
+      obj = obj[part]
+    else
+      return obj
+    end
+  end
+  return obj
+end
+
+local function add_props(input, result)
+  local obj = resolve(input)
+  if type(obj) ~= "table" then return end
+  local prefix = input:match("(.+%.)")
+  if not prefix then prefix = "" end
+  local last = input:match("[^%.]+$")
+  for key, val in pairs(obj) do
+    if not last or key:find("^" .. last) then
+      table.insert(result, prefix .. key)
+    end
+  end
+end
+
+local function add_commands(input, result, commands)
+  for _, cmd in ipairs(commands) do
+    if cmd:find("^" .. input) then
+      table.insert(result, cmd)
+    end
+  end
+end
+
+local function modules()
+  local result = {}
+  for key, val in pairs(_G) do
+    if type(val) == "table" then
+      table.insert(result, key)
+    end
+  end
+  return result
+end
+
 function Backend:completer(input)
   local matches = {}
   add_completions(input, self.compiler:word_list(), matches)
   add_completions(input, self.compiler:var_names(), matches)
-
-  for _, cmd in ipairs(self.commands) do
-    if cmd:find("^" .. input) then
-      table.insert(matches, cmd)
-    end
+  add_commands(input, matches, self.commands)
+  if input:find("%.") then
+    add_props(input, matches)
+  else
+    add_completions(input, modules(), matches)
   end
   return utils.unique(matches)
 end
@@ -2994,11 +3037,19 @@ function utils.unique(tbl)
   return result
 end
 
+function utils.keys(tbl)
+  local result = {}
+  for key, _ in pairs(tbl) do
+    table.insert(result, key)
+  end
+  return result
+end
+
 return utils
 end
 end
 
-__VERSION__="0.1-61"
+__VERSION__="0.1-62"
 
 local Compiler = require("compiler")
 local Optimizer = require("ast_optimizer")
