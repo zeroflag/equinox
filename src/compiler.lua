@@ -86,6 +86,10 @@ function Compiler:find_var(name)
   return self.env:find_var(name)
 end
 
+function Compiler:var_names()
+  return self.env:var_names()
+end
+
 function Compiler:word()
   local item = self:next_item()
   if item then

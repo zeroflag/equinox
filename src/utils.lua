@@ -65,4 +65,16 @@ function utils.file_exists_in_any_of(filename, dirs)
   return nil
 end
 
+function utils.unique(tbl)
+  local seen = {}
+  local result = {}
+  for _, v in ipairs(tbl) do
+    if not seen[v] then
+      seen[v] = true
+      table.insert(result, v)
+    end
+  end
+  return result
+end
+
 return utils

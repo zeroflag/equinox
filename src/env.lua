@@ -34,4 +34,17 @@ function Env:find_var(forth_name)
   return self.parent and self.parent:find_var(forth_name)
 end
 
+function Env:var_names()
+  local result
+  if not self.parent then
+    result = {}
+  else
+    result = self.parent:var_names()
+  end
+  for _, each in ipairs(self.vars) do
+    table.insert(result, each.forth_name)
+  end
+  return result
+end
+
 return Env

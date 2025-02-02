@@ -862,6 +862,10 @@ function Compiler:find_var(name)
   return self.env:find_var(name)
 end
 
+function Compiler:var_names()
+  return self.env:var_names()
+end
+
 function Compiler:word()
   local item = self:next_item()
   if item then
@@ -1347,6 +1351,19 @@ function Env:find_var(forth_name)
   return self.parent and self.parent:find_var(forth_name)
 end
 
+function Env:var_names()
+  local result
+  if not self.parent then
+    result = {}
+  else
+    result = self.parent:var_names()
+  end
+  for _, each in ipairs(self.vars) do
+    table.insert(result, each.forth_name)
+  end
+  return result
+end
+
 return Env
 end
 end
@@ -1503,6 +1520,7 @@ do
 local _ENV = _ENV
 package.preload[ "ln_repl_backend" ] = function( ... ) local arg = _G.arg;
 local console = require("console")
+local utils = require("utils")
 local ln = require("linenoise")
 
 ln.enableutf8()
@@ -1525,14 +1543,13 @@ end
 function Backend:setup()
   ln.setcompletion(function(completion, str)
     for _, match in ipairs(self:completer(str)) do
-        completion:add(match)
+      completion:add(match)
     end
   end)
 end
 
-function Backend:completer(input)
-  local matches = {}
-  for _, word in ipairs(self.compiler:word_list()) do
+local function add_completions(input, words, result)
+  for _, word in ipairs(words) do
     local before, after = input:match("^(.*)%s(.*)$")
     if not after then
       after = input
@@ -1541,15 +1558,22 @@ function Backend:completer(input)
       before = before .. " "
     end
     if word:find("^" .. after) then
-      table.insert(matches, before .. word)
+      table.insert(result, before .. word)
     end
   end
+end
+
+function Backend:completer(input)
+  local matches = {}
+  add_completions(input, self.compiler:word_list(), matches)
+  add_completions(input, self.compiler:var_names(), matches)
+
   for _, cmd in ipairs(self.commands) do
     if cmd:find("^" .. input) then
       table.insert(matches, cmd)
     end
   end
-  return matches
+  return utils.unique(matches)
 end
 
 function Backend:prompt()
@@ -2958,11 +2982,23 @@ function utils.file_exists_in_any_of(filename, dirs)
   return nil
 end
 
+function utils.unique(tbl)
+  local seen = {}
+  local result = {}
+  for _, v in ipairs(tbl) do
+    if not seen[v] then
+      seen[v] = true
+      table.insert(result, v)
+    end
+  end
+  return result
+end
+
 return utils
 end
 end
 
-__VERSION__="0.1-59"
+__VERSION__="0.1-61"
 
 local Compiler = require("compiler")
 local Optimizer = require("ast_optimizer")

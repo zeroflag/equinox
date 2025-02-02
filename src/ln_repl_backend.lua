@@ -1,4 +1,5 @@
 local console = require("console")
+local utils = require("utils")
 local ln = require("linenoise")
 
 ln.enableutf8()
@@ -21,14 +22,13 @@ end
 function Backend:setup()
   ln.setcompletion(function(completion, str)
     for _, match in ipairs(self:completer(str)) do
-        completion:add(match)
+      completion:add(match)
     end
   end)
 end
 
-function Backend:completer(input)
-  local matches = {}
-  for _, word in ipairs(self.compiler:word_list()) do
+local function add_completions(input, words, result)
+  for _, word in ipairs(words) do
     local before, after = input:match("^(.*)%s(.*)$")
     if not after then
       after = input
@@ -37,15 +37,22 @@ function Backend:completer(input)
       before = before .. " "
     end
     if word:find("^" .. after) then
-      table.insert(matches, before .. word)
+      table.insert(result, before .. word)
     end
   end
+end
+
+function Backend:completer(input)
+  local matches = {}
+  add_completions(input, self.compiler:word_list(), matches)
+  add_completions(input, self.compiler:var_names(), matches)
+
   for _, cmd in ipairs(self.commands) do
     if cmd:find("^" .. input) then
       table.insert(matches, cmd)
     end
   end
-  return matches
+  return utils.unique(matches)
 end
 
 function Backend:prompt()
