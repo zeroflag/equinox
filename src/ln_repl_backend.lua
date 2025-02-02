@@ -56,7 +56,9 @@ end
 
 local function add_props(input, result)
   local obj = resolve(input)
-  if type(obj) ~= "table" then return end
+  if type(obj) ~= "table" or obj == _G then
+    return
+  end
   local prefix = input:match("(.+%.)")
   if not prefix then prefix = "" end
   local last = input:match("[^%.]+$")

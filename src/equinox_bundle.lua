@@ -1577,7 +1577,9 @@ end
 
 local function add_props(input, result)
   local obj = resolve(input)
-  if type(obj) ~= "table" then return end
+  if type(obj) ~= "table" or obj == _G then
+    return
+  end
   local prefix = input:match("(.+%.)")
   if not prefix then prefix = "" end
   local last = input:match("[^%.]+$")
@@ -3049,7 +3051,7 @@ return utils
 end
 end
 
-__VERSION__="0.1-62"
+__VERSION__="0.1-64"
 
 local Compiler = require("compiler")
 local Optimizer = require("ast_optimizer")
