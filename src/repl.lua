@@ -178,8 +178,8 @@ function Repl:print_err(result)
 end
 
 function Repl:print_ok()
-  if stack:depth() > 0 then
-    console.message("OK(".. stack:depth()  .. ")", console.GREEN)
+  if depth() > 0 then
+    console.message("OK(".. depth()  .. ")", console.GREEN)
     if self.always_show_stack and self.repl_ext_loaded then
       self.compiler:eval_text(".s")
     end

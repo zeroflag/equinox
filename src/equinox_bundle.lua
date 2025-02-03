@@ -623,19 +623,19 @@ function CodeGen:gen(ast)
   if "stack_op" == ast.name
     or "stack_consume" == ast.name
     or "stack_peek" == ast.name then
-    return "stack:" .. ast.op .. "()"
+    return ast.op .. "()"
   end
   if "aux_op" == ast.name then
-    return "aux:" .. ast.op .. "()"
+    return "a" .. ast.op .. "()"
   end
   if "push" == ast.name then
-    return string.format("stack:push(%s)", self:gen(ast.item))
+    return string.format("push(%s)", self:gen(ast.item))
   end
   if "push_many" == ast.name then
-    return string.format("stack:push_many(%s)", self:gen(ast.func_call))
+    return string.format("push_many(%s)", self:gen(ast.func_call))
   end
   if "push_aux" == ast.name then
-    return string.format("aux:push(%s)", self:gen(ast.item))
+    return string.format("apush(%s)", self:gen(ast.item))
   end
   if "unary_op" == ast.name then
     return string.format("%s %s", ast.op, self:gen(ast.exp))
@@ -720,7 +720,7 @@ function CodeGen:gen(ast)
   end
   if "keyword" == ast.name then return ast.keyword end
   if "identifier" == ast.name then return ast.id end
-  if "table_new" == ast.name then return "stack:push({})" end
+  if "table_new" == ast.name then return "push({})" end
   if "table_at" == ast.name then
     return string.format("%s[%s]",
                          self:gen(ast.tbl), self:gen(ast.key))
@@ -1798,7 +1798,7 @@ function macros.from_aux()
 end
 
 function macros.pick()
-  return ast.push(ast.func_call("stack:at", ast.pop()))
+  return ast.push(ast.func_call("pick", ast.pop()))
 end
 
 function macros.dot()
@@ -1891,7 +1891,7 @@ function macros.tick(compiler, item)
 end
 
 function macros.exec(compiler)
-  return ast.func_call("stack:pop()")
+  return ast.func_call("pop()")
 end
 
 function macros.ret(compiler)
@@ -2596,8 +2596,8 @@ function Repl:print_err(result)
 end
 
 function Repl:print_ok()
-  if stack:depth() > 0 then
-    console.message("OK(".. stack:depth()  .. ")", console.GREEN)
+  if depth() > 0 then
+    console.message("OK(".. depth()  .. ")", console.GREEN)
     if self.always_show_stack and self.repl_ext_loaded then
       self.compiler:eval_text(".s")
     end
@@ -2760,47 +2760,20 @@ end
 do
 local _ENV = _ENV
 package.preload[ "stack" ] = function( ... ) local arg = _G.arg;
-local Stack = require("stack_def")
-local stack = Stack:new("data-stack")
-
-return stack
-end
-end
-
-do
-local _ENV = _ENV
-package.preload[ "stack_aux" ] = function( ... ) local arg = _G.arg;
-local Stack = require("stack_def")
-local aux = Stack:new("aux-stack")
-
-return aux
-end
-end
-
-do
-local _ENV = _ENV
-package.preload[ "stack_def" ] = function( ... ) local arg = _G.arg;
-local Stack = {}
+local stack = {}
 local NIL = {} -- nil cannot be stored in table, use this placeholder
+local name = "data-stack"
 
-function Stack:new(name)
-  local obj = {stack = {nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil,nil},
-               name = name}
-  setmetatable(obj, {__index = self})
-  return obj
-end
-
-function Stack:push(e)
+function push(e)
   if e ~= nil then
-    self.stack[#self.stack + 1] = e
+    stack[#stack + 1] = e
   else
-    self.stack[#self.stack + 1] = NIL
+    stack[#stack + 1] = NIL
   end
 end
 
-function Stack:push_many(...)
+function push_many(...)
   local args = {...}
-  local stack = self.stack
   local n = #stack
   for i = 1, #args do
     if args[i] ~= nil then
@@ -2811,22 +2784,20 @@ function Stack:push_many(...)
   end
 end
 
-function Stack:pop()
-  local stack = self.stack
+function pop()
   local size = #stack
   if size == 0 then
-    error("Stack underflow: " .. self.name)
+    error("Stack underflow: " .. name)
   end
   local item = stack[size]
   stack[size] = nil
   if item ~= NIL then return item else return nil end
 end
 
-function Stack:pop2nd()
-  local stack = self.stack
+function pop2nd()
   local n = #stack
   if n < 2 then
-    error("Stack underflow: " .. self.name)
+    error("Stack underflow: " .. name)
   end
   local item = stack[n - 1]
   stack[n -1] = stack[n]
@@ -2834,87 +2805,80 @@ function Stack:pop2nd()
   if item ~= NIL then return item else return nil end
 end
 
-function Stack:pop3rd()
-  local n = #self.stack
+function pop3rd()
+  local n = #stack
   if n < 3 then
-    error("Stack underflow: " .. self.name)
+    error("Stack underflow: " .. name)
   end
-  local item = table.remove(self.stack, n - 2)
+  local item = table.remove(stack, n - 2)
   if item ~= NIL then return item else return nil end
 end
 
-function Stack:swap()
-  local stack = self.stack
+function swap()
   local n = #stack
   if n < 2 then
-    error("Stack underflow: " .. self.name)
+    error("Stack underflow: " .. name)
   end
   stack[n], stack[n - 1] = stack[n - 1], stack[n]
 end
 
-function Stack:rot()
-  local stack = self.stack
+function rot()
   local n = #stack
   if n < 3 then
-    error("Stack underflow: " .. self.name)
+    error("Stack underflow: " .. name)
   end
   local new_top = stack[n -2]
   table.remove(stack, n - 2)
   stack[n] = new_top
 end
 
-function Stack:mrot()
-  local stack = self.stack
+function mrot()
   local n = #stack
   if n < 3 then
-    error("Stack underflow: " .. self.name)
+    error("Stack underflow: " .. name)
   end
   local temp = stack[n]
   stack[n] = nil
   table.insert(stack, n - 2, temp)
 end
 
-function Stack:over()
-  local stack = self.stack
+function over()
   local n = #stack
   if n < 2 then
-    error("Stack underflow: " .. self.name)
+    error("Stack underflow: " .. name)
   end
   stack[n + 1] = stack[n - 1]
 end
 
-function Stack:tuck()
-  local n = #self.stack
-  if n < 2 then
-    error("Stack underflow: " .. self.name)
-  end
-  table.insert(self.stack, n - 1, self.stack[n])
-end
-
-function Stack:nip()
-  local stack = self.stack
+function tuck()
   local n = #stack
   if n < 2 then
-    error("Stack underflow: " .. self.name)
+    error("Stack underflow: " .. name)
+  end
+  table.insert(stack, n - 1, stack[n])
+end
+
+function nip()
+  local n = #stack
+  if n < 2 then
+    error("Stack underflow: " .. name)
   end
   stack[n - 1] = stack[n]
   stack[n] = nil
 end
 
-function Stack:dup()
-  local stack = self.stack
+function dup()
   local n = #stack
   if n < 1 then
-    error("Stack underflow: " .. self.name)
+    error("Stack underflow: " .. name)
   end
   stack[n + 1] = stack[n]
 end
 
-function Stack:dup2()
-  local stack = self.stack
+function dup2()
   local n = #stack
   if n < 2 then
-    error("Stack underflow: " .. self.name)
+    error("Stack underflow: " .. name)
   end
   local tos1 = stack[n]
   local tos2 = stack[n - 1]
@@ -2922,45 +2886,78 @@ function Stack:dup2()
   stack[n + 2] = tos1
 end
 
-function Stack:tos()
-  local item = self.stack[#self.stack]
+function tos()
+  local item = stack[#stack]
   if item == nil then
-    error("Stack underflow: " .. self.name)
+    error("Stack underflow: " .. name)
   end
   if item ~= NIL then return item else return nil end
 end
 
-function Stack:tos2()
-  local item = self.stack[#self.stack - 1]
+function tos2()
+  local item = stack[#stack - 1]
   if item == nil then
-    error("Stack underflow: " .. self.name)
+    error("Stack underflow: " .. name)
   end
   if item ~= NIL then return item else return nil end
 end
 
-function Stack:_and()
-  local a, b = self:pop(), self:pop()
-  self:push(a and b)
+function _and()
+  local a, b = pop(), pop()
+  push(a and b)
 end
 
-function Stack:_or()
-  local a, b = self:pop(), self:pop()
-  self:push(a or b)
+function _or()
+  local a, b = pop(), pop()
+  push(a or b)
 end
 
-function Stack:depth()
-  return #self.stack
+function depth()
+  return #stack
 end
 
-function Stack:at(index)
-  local item = self.stack[#self.stack - index]
+function pick(index)
+  local item = stack[#stack - index]
   if item == nil then
-    error("Stack underflow: " .. self.name)
+    error("Stack underflow: " .. name)
   end
   if item ~= NIL then return item else return nil end
 end
 
-return Stack
+return stack
+end
+end
+
+do
+local _ENV = _ENV
+package.preload[ "stack_aux" ] = function( ... ) local arg = _G.arg;
+local stack = {}
+local NIL = {} -- nil cannot be stored in table, use this placeholder
+local name = "aux-stack"
+
+function apush(e)
+  if e ~= nil then
+    stack[#stack + 1] = e
+  else
+    stack[#stack + 1] = NIL
+  end
+end
+
+function apop()
+  local size = #stack
+  if size == 0 then
+    error("Stack underflow: " .. name)
+  end
+  local item = stack[size]
+  stack[size] = nil
+  if item ~= NIL then return item else return nil end
+end
+
+function adepth()
+  return #stack
+end
+
+return stack
 end
 end
 
@@ -3066,7 +3063,7 @@ return utils
 end
 end
 
-__VERSION__="0.1-71"
+__VERSION__="0.1-77"
 
 local Compiler = require("compiler")
 local Optimizer = require("ast_optimizer")

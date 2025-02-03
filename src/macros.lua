@@ -134,7 +134,7 @@ function macros.from_aux()
 end
 
 function macros.pick()
-  return ast.push(ast.func_call("stack:at", ast.pop()))
+  return ast.push(ast.func_call("pick", ast.pop()))
 end
 
 function macros.dot()
@@ -227,7 +227,7 @@ function macros.tick(compiler, item)
 end
 
 function macros.exec(compiler)
-  return ast.func_call("stack:pop()")
+  return ast.func_call("pop()")
 end
 
 function macros.ret(compiler)

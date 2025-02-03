@@ -10,19 +10,19 @@ function CodeGen:gen(ast)
   if "stack_op" == ast.name
     or "stack_consume" == ast.name
     or "stack_peek" == ast.name then
-    return "stack:" .. ast.op .. "()"
+    return ast.op .. "()"
   end
   if "aux_op" == ast.name then
-    return "aux:" .. ast.op .. "()"
+    return "a" .. ast.op .. "()"
   end
   if "push" == ast.name then
-    return string.format("stack:push(%s)", self:gen(ast.item))
+    return string.format("push(%s)", self:gen(ast.item))
   end
   if "push_many" == ast.name then
-    return string.format("stack:push_many(%s)", self:gen(ast.func_call))
+    return string.format("push_many(%s)", self:gen(ast.func_call))
   end
   if "push_aux" == ast.name then
-    return string.format("aux:push(%s)", self:gen(ast.item))
+    return string.format("apush(%s)", self:gen(ast.item))
   end
   if "unary_op" == ast.name then
     return string.format("%s %s", ast.op, self:gen(ast.exp))
@@ -107,7 +107,7 @@ function CodeGen:gen(ast)
   end
   if "keyword" == ast.name then return ast.keyword end
   if "identifier" == ast.name then return ast.id end
-  if "table_new" == ast.name then return "stack:push({})" end
+  if "table_new" == ast.name then return "push({})" end
   if "table_at" == ast.name then
     return string.format("%s[%s]",
                          self:gen(ast.tbl), self:gen(ast.key))

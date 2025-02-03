@@ -7,12 +7,12 @@ local compiler = Compiler:new(Optimizer:new(), CodeGen:new())
 
 function assert_tos(result, code)
   compiler:eval_text(code)
-  assert(stack:depth() == 1,
-         "'" .. code .. "' depth: " .. stack:depth())
-  assert(stack:tos() == result,
-         "'" .. code .. "' " .. tostring(stack:tos())
+  assert(depth() == 1,
+         "'" .. code .. "' depth: " .. depth())
+  assert(tos() == result,
+         "'" .. code .. "' " .. tostring(tos())
          .. " <> " .. tostring(result))
-  stack:pop()
+  pop()
 end
 
 assert_tos(2, "1 2 #( math.max 2 )")
