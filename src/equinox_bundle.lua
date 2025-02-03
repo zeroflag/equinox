@@ -630,13 +630,14 @@ local function lit_unary_op(ast)
 end
 
 local function inline_push(item)
-  return "stack[#stack+1]=" .. item
+  return "stack[#stack +1] = " .. item
 end
 
 function CodeGen:gen(ast)
   if "stack_op" == ast.name
     or "stack_consume" == ast.name
-    or "stack_peek" == ast.name then
+    or "stack_peek" == ast.name
+  then
     return ast.op .. "()"
   end
   if "aux_op" == ast.name then
@@ -3081,7 +3082,7 @@ return utils
 end
 end
 
-__VERSION__="0.1-90"
+__VERSION__="0.1-94"
 
 local Compiler = require("compiler")
 local Optimizer = require("ast_optimizer")

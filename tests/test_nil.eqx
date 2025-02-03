@@ -1,0 +1,7 @@
+depth 0 =assert
+adepth 0 =assert
+
+nil dup = assert-true
+
+depth 0 =assert
+adepth 0 =assert
