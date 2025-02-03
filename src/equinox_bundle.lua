@@ -2760,9 +2760,15 @@ end
 do
 local _ENV = _ENV
 package.preload[ "stack" ] = function( ... ) local arg = _G.arg;
-local stack = {}
+local stack
 local NIL = {} -- nil cannot be stored in table, use this placeholder
 local name = "data-stack"
+
+if table.create then
+  stack = table.create(32)
+else
+  stack = {nil, nil, nil, nil, nil, nil, nil, nil}
+end
 
 function push(e)
   if e ~= nil then
@@ -3063,7 +3069,7 @@ return utils
 end
 end
 
-__VERSION__="0.1-77"
+__VERSION__="0.1-79"
 
 local Compiler = require("compiler")
 local Optimizer = require("ast_optimizer")

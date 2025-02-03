@@ -1,6 +1,12 @@
-local stack = {}
+local stack
 local NIL = {} -- nil cannot be stored in table, use this placeholder
 local name = "data-stack"
+
+if table.create then
+  stack = table.create(32)
+else
+  stack = {nil, nil, nil, nil, nil, nil, nil, nil}
+end
 
 function push(e)
   if e ~= nil then
