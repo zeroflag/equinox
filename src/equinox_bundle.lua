@@ -619,6 +619,20 @@ function CodeGen:new()
   return obj
 end
 
+local function lit_bin_op(ast)
+  return ast.name == "bin_op"
+    and ast.p1.name == "literal"
+    and ast.p2.name == "literal"
+end
+
+local function lit_unary_op(ast)
+  return ast.name == "unary_op" and ast.exp.name == "literal"
+end
+
+local function inline_push(item)
+  return "stack[#stack+1]=" .. item
+end
+
 function CodeGen:gen(ast)
   if "stack_op" == ast.name
     or "stack_consume" == ast.name
@@ -629,7 +643,15 @@ function CodeGen:gen(ast)
     return "a" .. ast.op .. "()"
   end
   if "push" == ast.name then
-    return string.format("push(%s)", self:gen(ast.item))
+    if ast.item.name == "literal" or
+       lit_bin_op(ast.item) or
+       lit_unary_op(ast.item)
+    then
+      -- bypass NIL check
+      return inline_push(self:gen(ast.item))
+    else
+      return string.format("push(%s)", self:gen(ast.item))
+    end
   end
   if "push_many" == ast.name then
     return string.format("push_many(%s)", self:gen(ast.func_call))
@@ -669,7 +691,7 @@ function CodeGen:gen(ast)
     return ast.value
   end
   if "while" == ast.name then
-    return string.format("while(%s)do", self:gen(ast.cond))
+    return string.format("while (%s) do", self:gen(ast.cond))
   end
   if "until" == ast.name then
     return string.format("until %s", self:gen(ast.cond))
@@ -720,7 +742,7 @@ function CodeGen:gen(ast)
   end
   if "keyword" == ast.name then return ast.keyword end
   if "identifier" == ast.name then return ast.id end
-  if "table_new" == ast.name then return "push({})" end
+  if "table_new" == ast.name then return inline_push("{}") end
   if "table_at" == ast.name then
     return string.format("%s[%s]",
                          self:gen(ast.tbl), self:gen(ast.key))
@@ -739,16 +761,6 @@ function CodeGen:gen(ast)
       end
     end
     return string.format("%s(%s)", ast.func_name, params)
-  end
-  if "code_seq" == ast.name then
-    local result = ""
-    for i, c in ipairs(ast.code) do
-      result = result .. self:gen(c)
-      if i < #ast.code then
-        result = result .. "\n"
-      end
-    end
-    return result
   end
   if "func_header" == ast.name then
     local prefix = ""
@@ -3069,7 +3081,7 @@ return utils
 end
 end
 
-__VERSION__="0.1-79"
+__VERSION__="0.1-90"
 
 local Compiler = require("compiler")
 local Optimizer = require("ast_optimizer")
