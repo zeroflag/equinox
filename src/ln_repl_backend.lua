@@ -126,16 +126,10 @@ function Backend:read()
   else
     self.input = self:read_line(prompt)
   end
-  if self.input:match("%S") and not self.multi_line then
-    self:save_history(self.input)
-  end
   return self.input
 end
 
 function Backend:set_multiline(bool)
-  if self.multi_line and not bool then
-    self:save_history(self.input:gsub("[\n\r]", " "))
-  end
   self.multi_line = bool
   ln.setmultiline(bool)
 end

@@ -205,7 +205,9 @@ function Repl:start()
   end
   while true do
     local input = self:read()
-    if not self:process_commands(input) then
+    if self:process_commands(input) then
+      self.backend:save_history(input)
+    else
       local success, result = pcall(function ()
           return self.compiler:compile_and_load(
             Source:from_text(input), self.log_result)
@@ -218,6 +220,7 @@ function Repl:start()
       else
         self.backend:set_multiline(false)
         self:safe_call(function() result() end)
+        self.backend:save_history(input:gsub("[\r\n]", " "))
       end
     end
   end

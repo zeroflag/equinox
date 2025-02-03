@@ -1530,7 +1530,6 @@ local Backend = {}
 function Backend:new(compiler, history_file, commands)
   local obj = {compiler = compiler,
                input = "",
-               multi_line_buffer = "",
                commands = commands,
                history_file = history_file}
   setmetatable(obj, {__index = self})
@@ -1631,30 +1630,22 @@ function Backend:prompt()
 end
 
 function Backend:save_history(input)
-  ln.historyadd(input)
-  ln.historysave(self.history_file)
+  if self.history_file then
+    ln.historyadd(input)
+    ln.historysave(self.history_file)
+  end
+end
+
+function Backend:read_line(prompt)
+  return utils.trim(ln.linenoise(prompt .. " "))
 end
 
 function Backend:read()
   local prompt = console.colorize(self:prompt(), console.PURPLE)
   if self.multi_line then
-    self.input = self.input .. "\n" .. ln.linenoise(prompt .. " ")
-    if self.history_file then
-      self.multi_line_buffer = self.input
-    end
+    self.input = self.input .. "\n" .. self:read_line(prompt)
   else
-    self.input = ln.linenoise(prompt .. " ")
-  end
-  if self.input:match("%S") and
-     self.history_file and
-     not self.multi_line
-  then
-    if self.multi_line_buffer ~= "" then
-      self:save_history(self.multi_line_buffer)
-      self.multi_line_buffer = ""
-    else
-      self:save_history(self.input)
-    end
+    self.input = self:read_line(prompt)
   end
   return self.input
 end
@@ -2530,12 +2521,8 @@ function Repl:read()
   return self.backend:read()
 end
 
-local function trim(str)
-  return str:match("^%s*(.-)%s*$")
-end
-
 function Repl:process_commands(input)
-  local command = trim(input)
+  local command = utils.trim(input)
   if command == commands.bye then
     os.exit(0)
   end
@@ -2579,7 +2566,7 @@ function Repl:process_commands(input)
   end
   if command:sub(1, #commands.load_file) == commands.load_file
   then
-    local path = trim(command:sub(#commands.load_file + 1))
+    local path = utils.trim(command:sub(#commands.load_file + 1))
     if path and path ~= "" then
       if not utils.exists(path) and not utils.extension(path) then
         path = path .. ".eqx"
@@ -2636,7 +2623,9 @@ function Repl:start()
   end
   while true do
     local input = self:read()
-    if not self:process_commands(input) then
+    if self:process_commands(input) then
+      self.backend:save_history(input)
+    else
       local success, result = pcall(function ()
           return self.compiler:compile_and_load(
             Source:from_text(input), self.log_result)
@@ -2649,6 +2638,7 @@ function Repl:start()
       else
         self.backend:set_multiline(false)
         self:safe_call(function() result() end)
+        self.backend:save_history(input:gsub("[\r\n]", " "))
       end
     end
   end
@@ -2677,6 +2667,10 @@ function Backend:prompt()
   else
     return "#"
   end
+end
+
+function Backend:save_history(input)
+  -- unsupported
 end
 
 function Backend:read()
@@ -2975,6 +2969,10 @@ local _ENV = _ENV
 package.preload[ "utils" ] = function( ... ) local arg = _G.arg;
 local utils = {}
 
+function utils.trim(str)
+  return str:match("^%s*(.-)%s*$")
+end
+
 function utils.deepcopy(orig)
   local orig_type = type(orig)
   local copy
@@ -3068,7 +3066,7 @@ return utils
 end
 end
 
-__VERSION__="0.1-67"
+__VERSION__="0.1-70"
 
 local Compiler = require("compiler")
 local Optimizer = require("ast_optimizer")
