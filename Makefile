@@ -1,6 +1,6 @@
 LUA54 = lua5.4
 LUA51 = lua5.1
-LUA_VERSIONS := $(LUA54) $(LUA51) lua
+LUA_VERSIONS := $(LUA54) $(LUA51) luajit lua
 SRC_DIR = src
 TEST_DIR = tests
 TEST_LUA_FILES = $(wildcard $(TEST_DIR)/test_*.lua)

@@ -644,14 +644,15 @@ function CodeGen:gen(ast)
     return "a" .. ast.op .. "()"
   end
   if "push" == ast.name then
-    --if ast.item.name == "literal" or
-    --   lit_bin_op(ast.item) or
-    --   lit_unary_op(ast.item)
-    --then
-    --  return inline_push(self:gen(ast.item)) -- bypass NIL check
-    --else
+    -- TODO breaks red alert, might be a jit problem
+    if ast.item.name == "literal" or
+       lit_bin_op(ast.item) or
+       lit_unary_op(ast.item)
+    then
+      return inline_push(self:gen(ast.item)) -- bypass NIL check
+    else
       return string.format("push(%s)", self:gen(ast.item))
-    --end
+    end
   end
   if "push_many" == ast.name then
     return string.format("push_many(%s)", self:gen(ast.func_call))
@@ -3081,7 +3082,7 @@ return utils
 end
 end
 
-__VERSION__="0.1-99"
+__VERSION__="0.1-106"
 
 local Compiler = require("compiler")
 local Optimizer = require("ast_optimizer")
