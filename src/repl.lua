@@ -103,12 +103,8 @@ function Repl:read()
   return self.backend:read()
 end
 
-local function trim(str)
-  return str:match("^%s*(.-)%s*$")
-end
-
 function Repl:process_commands(input)
-  local command = trim(input)
+  local command = utils.trim(input)
   if command == commands.bye then
     os.exit(0)
   end
@@ -152,7 +148,7 @@ function Repl:process_commands(input)
   end
   if command:sub(1, #commands.load_file) == commands.load_file
   then
-    local path = trim(command:sub(#commands.load_file + 1))
+    local path = utils.trim(command:sub(#commands.load_file + 1))
     if path and path ~= "" then
       if not utils.exists(path) and not utils.extension(path) then
         path = path .. ".eqx"

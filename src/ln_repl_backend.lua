@@ -108,24 +108,34 @@ function Backend:prompt()
   end
 end
 
+function Backend:save_history(input)
+  if self.history_file then
+    ln.historyadd(input)
+    ln.historysave(self.history_file)
+  end
+end
+
+function Backend:read_line(prompt)
+  return utils.trim(ln.linenoise(prompt .. " "))
+end
+
 function Backend:read()
   local prompt = console.colorize(self:prompt(), console.PURPLE)
   if self.multi_line then
-    self.input = self.input .. "\n" .. ln.linenoise(prompt .. " ")
+    self.input = self.input .. "\n" .. self:read_line(prompt)
   else
-    self.input = ln.linenoise(prompt .. " ")
+    self.input = self:read_line(prompt)
   end
-  if self.input:match("%S") and
-     self.history_file and
-     not self.multi_line
-  then
-    ln.historyadd(self.input)
-    ln.historysave(self.history_file)
+  if self.input:match("%S") and not self.multi_line then
+    self:save_history(self.input)
   end
   return self.input
 end
 
 function Backend:set_multiline(bool)
+  if self.multi_line and not bool then
+    self:save_history(self.input:gsub("[\n\r]", " "))
+  end
   self.multi_line = bool
   ln.setmultiline(bool)
 end

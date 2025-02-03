@@ -1,5 +1,9 @@
 local utils = {}
 
+function utils.trim(str)
+  return str:match("^%s*(.-)%s*$")
+end
+
 function utils.deepcopy(orig)
   local orig_type = type(orig)
   local copy

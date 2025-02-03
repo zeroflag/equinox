@@ -1530,6 +1530,7 @@ local Backend = {}
 function Backend:new(compiler, history_file, commands)
   local obj = {compiler = compiler,
                input = "",
+               multi_line_buffer = "",
                commands = commands,
                history_file = history_file}
   setmetatable(obj, {__index = self})
@@ -1629,10 +1630,18 @@ function Backend:prompt()
   end
 end
 
+function Backend:save_history(input)
+  ln.historyadd(input)
+  ln.historysave(self.history_file)
+end
+
 function Backend:read()
   local prompt = console.colorize(self:prompt(), console.PURPLE)
   if self.multi_line then
     self.input = self.input .. "\n" .. ln.linenoise(prompt .. " ")
+    if self.history_file then
+      self.multi_line_buffer = self.input
+    end
   else
     self.input = ln.linenoise(prompt .. " ")
   end
@@ -1640,8 +1649,12 @@ function Backend:read()
      self.history_file and
      not self.multi_line
   then
-    ln.historyadd(self.input)
-    ln.historysave(self.history_file)
+    if self.multi_line_buffer ~= "" then
+      self:save_history(self.multi_line_buffer)
+      self.multi_line_buffer = ""
+    else
+      self:save_history(self.input)
+    end
   end
   return self.input
 end
@@ -3055,7 +3068,7 @@ return utils
 end
 end
 
-__VERSION__="0.1-66"
+__VERSION__="0.1-67"
 
 local Compiler = require("compiler")
 local Optimizer = require("ast_optimizer")
