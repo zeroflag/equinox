@@ -644,7 +644,6 @@ function CodeGen:gen(ast)
     return "a" .. ast.op .. "()"
   end
   if "push" == ast.name then
-    -- TODO breaks red alert, might be a jit problem
     if ast.item.name == "literal" or
        lit_bin_op(ast.item) or
        lit_unary_op(ast.item)
@@ -3082,7 +3081,7 @@ return utils
 end
 end
 
-__VERSION__="0.1-106"
+__VERSION__="0.1-109"
 
 local Compiler = require("compiler")
 local Optimizer = require("ast_optimizer")
