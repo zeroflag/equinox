@@ -35,6 +35,10 @@ function Optimizer:optimize_iteratively(ast)
     self:log(string.format(
           "Iteration: %d finished. Number of optimizations: %d",
           iterations, num_of_optimizations))
+    if iterations > 100 then
+      print("Aborting optimizer. This is likely a bug.")
+      break
+    end
   until num_of_optimizations == 0
   return ast
 end
