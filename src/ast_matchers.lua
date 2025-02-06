@@ -76,16 +76,11 @@ local function is_push_binop_pop(ast)
     and is_stack_consume(ast.item.p2)
 end
 
-local function is_push_binop_const(ast)
-  return is_push_binop(ast)
-    and is_const(ast.item.p1)
-    and is_const(ast.item.p2)
-end
-
-local function is_push_binop_tos_tos(ast) -- TODO generalize
-  return is_push_binop(ast) and
-    (is_stack_peek(ast.item.p1, "tos") and
-     is_stack_peek(ast.item.p2, "tos"))
+local function is_push_non_destructive_op(ast)
+  return (is_push_binop(ast)
+          and not is_stack_consume(ast.item.p1)
+          and not is_stack_consume(ast.item.p2))
+    or (is_push_unop(ast) and not is_stack_consume(ast.item.exp))
 end
 
 local function is_push_binop_pop_p1_or_p2(ast)
@@ -117,10 +112,6 @@ end
 
 local function is_if(ast)
   return is(ast, "if") and is_stack_consume(ast.exp)
-end
-
-local function is_if_with_bin_pop(ast)
-  return is(ast, "if") and is_binop(ast.exp)
 end
 
 local function is_init_local(ast)
@@ -411,8 +402,7 @@ return {
 
   BinaryConstBinaryInline:new(
     "binary const binary inline",
-    {OR(is_push_binop_const,
-        is_push_binop_tos_tos),
+     {is_push_non_destructive_op,
      is_push_binop_pop_p1_or_p2}),
 
   StackOpBinaryInline:new(
