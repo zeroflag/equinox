@@ -97,6 +97,10 @@ assert-false
 assert-false
 assert-true
 
+1 2 < 3 4 1 - >
+assert-false
+assert-true
+
 9999 =assert
 depth 0 =assert
 adepth 0 =assert

@@ -51,7 +51,7 @@ function CodeGen:gen(ast)
   end
   if "bin_op" == ast.name then
     return string.format(
-      "%s %s %s", self:gen(ast.p1), ast.op, self:gen(ast.p2))
+      "(%s %s %s)", self:gen(ast.p1), ast.op, self:gen(ast.p2))
   end
   if "local" == ast.name then
     return "local " .. ast.var

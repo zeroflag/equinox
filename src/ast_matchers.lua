@@ -3,8 +3,14 @@ local AstMatcher = {}
 local function is(ast, name) return ast.name == name end
 local function is_literal(ast) return is(ast, "literal") end
 local function is_identifier(ast) return is(ast, "identifier") end
-local function is_stack_consume(ast) return is(ast, "stack_consume") end
 local function any(ast) return ast ~= nil end
+
+local function is_stack_consume(ast, op_name)
+  if is(ast, "stack_consume") then
+    return op_name == nil or ast.op == op_name
+  end
+  return false
+end
 
 local function is_literal_tbl_at(ast)
   return is(ast, "table_at")
@@ -45,8 +51,16 @@ local function is_stack_op(op)
   end
 end
 
+local function is_binop(ast)
+  return is(ast, "bin_op")
+end
+
 local function is_push_binop(ast)
-  return is(ast, "push") and is(ast.item, "bin_op")
+  return is(ast, "push") and is_binop(ast.item)
+end
+
+local function is_push_unop(ast)
+  return is(ast, "push") and is(ast.item, "unary_op")
 end
 
 local function is_push_binop_pop(ast)
@@ -55,8 +69,16 @@ local function is_push_binop_pop(ast)
     and is_stack_consume(ast.item.p2)
 end
 
-local function is_push_unop(ast)
-  return is(ast, "push") and is(ast.item, "unary_op")
+local function is_push_binop_const(ast)
+  return is_push_binop(ast)
+    and is_const(ast.item.p1)
+    and is_const(ast.item.p2)
+end
+
+local function is_push_binop_pop_p1_or_p2(ast)
+  return is_push_binop(ast) and
+    (is_stack_consume(ast.item.p1, "pop") or
+     is_stack_consume(ast.item.p2, "pop"))
 end
 
 local function is_push_unop_pop(ast)
@@ -82,6 +104,10 @@ end
 
 local function is_if(ast)
   return is(ast, "if") and is_stack_consume(ast.exp)
+end
+
+local function is_if_with_bin_pop(ast)
+  return is(ast, "if") and is_binop(ast.exp)
 end
 
 local function is_init_local(ast)
@@ -126,6 +152,7 @@ PutParamsInline = AstMatcher:new()
 StackOpBinaryInline = AstMatcher:new()
 BinaryInline = AstMatcher:new()
 BinaryInlineP2 = AstMatcher:new()
+BinaryConstBinaryInline = AstMatcher:new()
 InlineGeneralUnary = AstMatcher:new()
 
 --[[
@@ -183,6 +210,32 @@ end
   8.) [ 1 2 3 ] DUP size   =>   PUSH(#TOS)
   9.) true false over not => PUSH(NOT TOS2)
 ]]--
+function InlineGeneralUnary:optimize(ast, i, result)
+  local p1, operator = ast[i], ast[i + 1]
+  local target
+  if is_push_unop_pop(operator) then
+    -- unary is embedded into a push
+    target = operator.item
+  else
+    target = operator
+  end
+
+  if is_stack_op("dup")(p1) then
+    self:log(operator.name .. " (dup)")
+    target.exp.op = "tos"
+    target.exp.name ="stack_peek"
+  elseif is_stack_op("over")(p1) then
+    self:log(operator.name .. " (over)")
+    target.exp.op = "tos2"
+    target.exp.name ="stack_peek"
+  else
+    self:log(operator.name)
+    target.exp = p1.item
+  end
+
+  table.insert(result, operator)
+end
+
 function InlineGeneralUnary:optimize(ast, i, result)
   local p1, operator = ast[i], ast[i + 1]
   local target
@@ -298,6 +351,29 @@ function BinaryInlineP2:optimize(ast, i, result)
   table.insert(result, op)
 end
 
+function BinaryConstBinaryInline:optimize(ast, i, result)
+  self:log("inlining binary to binary opertor")
+  local bin, op = ast[i], ast[i + 1]
+  if op.item.p1.op == "pop" then
+    op.item.p1 = bin.item
+    if op.item.p2.op == "tos" then
+      op.item.p2 = bin.item
+    elseif op.item.p2.op == "pop2nd" then
+      op.item.p2.op = "pop"
+    end
+  elseif op.item.p2.op == "pop" then
+    op.item.p2 = bin.item
+    if op.item.p1.op == "tos" then
+      op.item.p1 = bin.item
+    elseif op.item.p1.op == "pop2nd" then
+      op.item.p1.op = "pop"
+    end
+  else -- shouldn't happen
+    error("one of binary operator's param was expected to be stack_consime")
+  end
+  table.insert(result, op)
+end
+
 return {
 
   PutParamsInline:new(
@@ -320,6 +396,10 @@ return {
     "binary p2 inline",
     {NOT(is_push_const), is_push_const, is_push_binop_pop}),
 
+  BinaryConstBinaryInline:new(
+    "binary const binary inline",
+    {is_push_binop_const, is_push_binop_pop_p1_or_p2}),
+
   StackOpBinaryInline:new(
     "stackop binary inline",
     {any, OR(is_stack_op("dup"),
@@ -337,5 +417,4 @@ return {
         is_assignment,
         is_if,
         is_push_unop_pop)}),
-
 }

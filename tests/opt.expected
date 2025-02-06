@@ -40,9 +40,12 @@
 [OPTI] stackop binary inline: over
 [OPTI] stackop binary inline: over
 [OPTI] inline general unary: push (over)
-[OPTI] Iteration: 1 finished. Number of optimizations: 34
+[OPTI] binary inline: inlining binary operator params
+[OPTI] binary inline: inlining binary operator params
+[OPTI] Iteration: 1 finished. Number of optimizations: 36
 [OPTI] inline general unary: if
 [OPTI] inline general unary: if
 [OPTI] inline general unary: if
-[OPTI] Iteration: 2 finished. Number of optimizations: 3
+[OPTI] binary const binary inline: inlining binary to binary opertor
+[OPTI] Iteration: 2 finished. Number of optimizations: 4
 [OPTI] Iteration: 3 finished. Number of optimizations: 0
