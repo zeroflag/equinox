@@ -207,6 +207,13 @@ local function is_stack_consume(ast, op_name)
   return false
 end
 
+local function is_stack_peek(ast, op_name)
+  if is(ast, "stack_peek") then
+    return op_name == nil or ast.op == op_name
+  end
+  return false
+end
+
 local function is_literal_tbl_at(ast)
   return is(ast, "table_at")
     and (is_identifier(ast.tbl) or is_literal(ast.tbl))
@@ -268,6 +275,12 @@ local function is_push_binop_const(ast)
   return is_push_binop(ast)
     and is_const(ast.item.p1)
     and is_const(ast.item.p2)
+end
+
+local function is_push_binop_tos_tos(ast) -- TODO generalize
+  return is_push_binop(ast) and
+    (is_stack_peek(ast.item.p1, "tos") and
+     is_stack_peek(ast.item.p2, "tos"))
 end
 
 local function is_push_binop_pop_p1_or_p2(ast)
@@ -593,7 +606,9 @@ return {
 
   BinaryConstBinaryInline:new(
     "binary const binary inline",
-    {is_push_binop_const, is_push_binop_pop_p1_or_p2}),
+    {OR(is_push_binop_const,
+        is_push_binop_tos_tos),
+     is_push_binop_pop_p1_or_p2}),
 
   StackOpBinaryInline:new(
     "stackop binary inline",
@@ -3136,7 +3151,7 @@ return utils
 end
 end
 
-__VERSION__="0.1-158"
+__VERSION__="0.1-162"
 
 local Compiler = require("compiler")
 local Optimizer = require("ast_optimizer")
