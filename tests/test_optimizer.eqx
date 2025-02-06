@@ -101,6 +101,12 @@ assert-true
 assert-false
 assert-true
 
+25264
+dup dup *
+1000000 %
+269696 =
+assert-true drop
+
 9999 =assert
 depth 0 =assert
 adepth 0 =assert

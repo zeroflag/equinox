@@ -42,10 +42,17 @@
 [OPTI] inline general unary: push (over)
 [OPTI] binary inline: inlining binary operator params
 [OPTI] binary inline: inlining binary operator params
-[OPTI] Iteration: 1 finished. Number of optimizations: 36
+[OPTI] stackop binary inline: dup dup
+[OPTI] binary p2 inline: inlining binary operator's 2nd param
+[OPTI] Iteration: 1 finished. Number of optimizations: 38
 [OPTI] inline general unary: if
 [OPTI] inline general unary: if
 [OPTI] inline general unary: if
-[OPTI] binary const binary inline: inlining binary to binary opertor
-[OPTI] Iteration: 2 finished. Number of optimizations: 4
-[OPTI] Iteration: 3 finished. Number of optimizations: 0
+[OPTI] binary const binary inline: inlining binary to binary operator
+[OPTI] binary p2 inline: inlining binary operator's 2nd param
+[OPTI] Iteration: 2 finished. Number of optimizations: 5
+[OPTI] binary const binary inline: inlining binary to binary operator
+[OPTI] Iteration: 3 finished. Number of optimizations: 1
+[OPTI] binary const binary inline: inlining binary to binary operator
+[OPTI] Iteration: 4 finished. Number of optimizations: 1
+[OPTI] Iteration: 5 finished. Number of optimizations: 0

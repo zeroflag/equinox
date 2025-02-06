@@ -89,6 +89,12 @@ local function is_push_binop_pop_p1_or_p2(ast)
      is_stack_consume(ast.item.p2, "pop"))
 end
 
+local function is_if_binop_p1_or_p2(ast)
+  return is(ast, 'if') and is_binop(ast.exp) and
+    (is_stack_consume(ast.exp.p1, "pop") or
+     is_stack_consume(ast.exp.p2, "pop"))
+end
+
 local function is_push_unop_pop(ast)
   return is_push_unop(ast) and is_stack_consume(ast.item.exp)
 end
@@ -356,21 +362,27 @@ function BinaryInlineP2:optimize(ast, i, result)
 end
 
 function BinaryConstBinaryInline:optimize(ast, i, result)
-  self:log("inlining binary to binary opertor")
+  self:log("inlining binary to binary operator")
   local bin, op = ast[i], ast[i + 1]
-  if op.item.p1.op == "pop" then
-    op.item.p1 = bin.item
-    if op.item.p2.op == "tos" then
-      op.item.p2 = bin.item
-    elseif op.item.p2.op == "pop2nd" then
-      op.item.p2.op = "pop"
+  local target = op
+  if is(op, "if") then
+    target = op.exp
+  else
+    target = op.item
+  end
+  if target.p1.op == "pop" then
+    target.p1 = bin.item
+    if target.p2.op == "tos" then
+      target.p2 = bin.item
+    elseif target.p2.op == "pop2nd" then
+      target.p2.op = "pop"
     end
-  elseif op.item.p2.op == "pop" then
-    op.item.p2 = bin.item
-    if op.item.p1.op == "tos" then
-      op.item.p1 = bin.item
-    elseif op.item.p1.op == "pop2nd" then
-      op.item.p1.op = "pop"
+  elseif target.p2.op == "pop" then
+    target.p2 = bin.item
+    if target.p1.op == "tos" then
+      target.p1 = bin.item
+    elseif target.p1.op == "pop2nd" then
+      target.p1.op = "pop"
     end
   else -- shouldn't happen
     error("one of binary operator's param was expected to be stack_consime")
@@ -403,7 +415,7 @@ return {
   BinaryConstBinaryInline:new(
     "binary const binary inline",
      {is_push_non_destructive_op,
-     is_push_binop_pop_p1_or_p2}),
+      OR(is_push_binop_pop_p1_or_p2, is_if_binop_p1_or_p2)}),
 
   StackOpBinaryInline:new(
     "stackop binary inline",
