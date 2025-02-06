@@ -77,9 +77,17 @@ local function is_push_binop_pop(ast)
 end
 
 local function is_push_non_destructive_op(ast)
-  return (is_push_binop(ast)
-          and not is_stack_consume(ast.item.p1)
-          and not is_stack_consume(ast.item.p2))
+  return
+    (is_push_binop(ast)
+     and
+     ((not is_stack_consume(ast.item.p1) and
+      not is_stack_consume(ast.item.p2))
+     or
+     (is_stack_consume(ast.item.p1, "pop") and
+      not is_stack_consume(ast.item.p2))
+     or
+     (is_stack_consume(ast.item.p2, "pop") and
+      not is_stack_consume(ast.item.p1))))
     or (is_push_unop(ast) and not is_stack_consume(ast.item.exp))
 end
 

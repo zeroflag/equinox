@@ -272,9 +272,17 @@ local function is_push_binop_pop(ast)
 end
 
 local function is_push_non_destructive_op(ast)
-  return (is_push_binop(ast)
-          and not is_stack_consume(ast.item.p1)
-          and not is_stack_consume(ast.item.p2))
+  return
+    (is_push_binop(ast)
+     and
+     ((not is_stack_consume(ast.item.p1) and
+      not is_stack_consume(ast.item.p2))
+     or
+     (is_stack_consume(ast.item.p1, "pop") and
+      not is_stack_consume(ast.item.p2))
+     or
+     (is_stack_consume(ast.item.p2, "pop") and
+      not is_stack_consume(ast.item.p1))))
     or (is_push_unop(ast) and not is_stack_consume(ast.item.exp))
 end
 
@@ -3153,7 +3161,7 @@ return utils
 end
 end
 
-__VERSION__="0.1-178"
+__VERSION__="0.1-185"
 
 local Compiler = require("compiler")
 local Optimizer = require("ast_optimizer")
