@@ -284,12 +284,12 @@ local is_push_binop_pop = AND(
              has_p1(is_stack_consume),
              has_p2(is_stack_consume))))
 
-local is_push_binop_tos = AND(
-  has_name("push"),
+local is_wrapped_binop_tos = AND(
+  has("exp", any),
   has_exp(AND(
              has_name("bin_op"),
              OR(
-               AND(has_p1(is_tos), NOT(has_p2(is_stack_consume))),
+               AND(has_p1(is_tos)),
                AND(has_p2(is_tos), NOT(has_p1(is_stack_consume)))))))
 
 local is_wrapped_binop_free_operand = AND(
@@ -637,7 +637,7 @@ return {
 
   TosBinaryInline:new(
     "tos binary inline",
-    {is_push_const, is_push_binop_tos}),
+    {is_push_const, is_wrapped_binop_tos}),
 
   InlineGeneralUnary:new(
     "inline general unary",
@@ -3174,7 +3174,7 @@ return utils
 end
 end
 
-__VERSION__="0.1-256"
+__VERSION__="0.1-260"
 
 local Compiler = require("compiler")
 local Optimizer = require("ast_optimizer")
