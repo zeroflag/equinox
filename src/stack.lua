@@ -136,6 +136,12 @@ function _inc()
   stack[n] = stack[n] + 1
 end
 
+function _neg()
+  local n = #stack
+  if n < 1 then error("Stack underflow: " .. name) end
+  stack[n] = not stack[n]
+end
+
 function depth()
   return #stack
 end

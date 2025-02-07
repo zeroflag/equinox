@@ -1,10 +1,11 @@
+[OPTI] inline neg: inlining neg
 [OPTI] binary p2 inline: inlining binary operator's 2nd param
 [OPTI] binary p2 inline: inlining binary operator's 2nd param
 [OPTI] binary p2 inline: inlining binary operator's 2nd param
 [OPTI] inline general unary: if
 [OPTI] inline general unary: init_local
 [OPTI] binary p2 inline: inlining binary operator's 2nd param
-[OPTI] Iteration: 1 finished. Number of optimizations: 6
+[OPTI] Iteration: 1 finished. Number of optimizations: 7
 [OPTI] binary p2 inline: inlining binary operator's 2nd param
 [OPTI] Iteration: 2 finished. Number of optimizations: 1
 [OPTI] binary const binary inline: inlining binary to binary operator
@@ -58,7 +59,8 @@
 [OPTI] stackop binary inline: inlining stack op in binary
 [OPTI] stackop binary inline: dup dup
 [OPTI] binary p2 inline: inlining binary operator's 2nd param
-[OPTI] Iteration: 1 finished. Number of optimizations: 41
+[OPTI] inline neg: inlining neg
+[OPTI] Iteration: 1 finished. Number of optimizations: 42
 [OPTI] tos binary inline: inlining binary tos operand
 [OPTI] tos binary inline: inlining binary tos operand
 [OPTI] tos binary inline: inlining binary tos operand

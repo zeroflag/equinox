@@ -261,6 +261,7 @@ local is_if = AND(has_name("if"), has_exp(is_stack_consume))
 local is_init_local = AND(has_name("init_local"), has_exp(is_stack_consume))
 local is_push_binop = AND(has_name("push"), has_exp(has_name("bin_op")))
 local is_push_unop  = AND(has_name("push"), has_exp(has_name("unary_op")))
+local is_pop = AND(is_stack_consume, has_op("pop"))
 
 local is_literal_tbl_at = AND(
   has_name("table_at"),
@@ -311,6 +312,13 @@ local is_inc = AND(
             OR(
               AND(has_p1_pop, has_p2(has_value(1))),
               AND(has_p2_pop, has_p1(has_value(1)))))))
+
+local is_neg = AND(
+  has_name("push"),
+  has_exp(AND(
+            has_name("unary_op"),
+            has_exp(is_pop),
+            has_op("not"))))
 
 local is_wrapped_binop_free_operand = AND(
   has("exp", any),
@@ -387,6 +395,7 @@ BinaryConstBinaryInline = AstMatcher:new()
 InlineGeneralUnary = AstMatcher:new()
 TosBinaryInline = AstMatcher:new()
 IncInline = AstMatcher:new()
+NegInline = AstMatcher:new()
 
 --[[
  Inline table at parameters
@@ -627,6 +636,11 @@ function IncInline:optimize(ast, i, result)
   table.insert(result, asts.stack_op("_inc"))
 end
 
+function NegInline:optimize(ast, i, result)
+  self:log("inlining neg")
+  table.insert(result, asts.stack_op("_neg"))
+end
+
 return {
 
   PutParamsInline:new(
@@ -665,8 +679,6 @@ return {
     "tos binary inline",
     {is_push_const, is_wrapped_binop_tos}),
 
-  IncInline:new("inline inc", {is_inc}),
-
   InlineGeneralUnary:new(
     "inline general unary",
     {OR(is_dup,
@@ -678,6 +690,9 @@ return {
         is_assignment,
         is_if,
         is_push_unop_pop)}),
+
+  IncInline:new("inline inc", {is_inc}),
+  NegInline:new("inline neg", {is_neg}),
 }
 end
 end
@@ -3059,6 +3074,12 @@ function _inc()
   stack[n] = stack[n] + 1
 end
 
+function _neg()
+  local n = #stack
+  if n < 1 then error("Stack underflow: " .. name) end
+  stack[n] = not stack[n]
+end
+
 function depth()
   return #stack
 end
@@ -3208,7 +3229,7 @@ return utils
 end
 end
 
-__VERSION__="0.1-271"
+__VERSION__="0.1-274"
 
 local Compiler = require("compiler")
 local Optimizer = require("ast_optimizer")

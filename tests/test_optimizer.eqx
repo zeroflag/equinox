@@ -117,6 +117,9 @@ assert-true
 
 3 ++ 4 =assert
 
+: tst not ;
+false tst assert-true
+
 9999 =assert
 depth 0 =assert
 adepth 0 =assert
