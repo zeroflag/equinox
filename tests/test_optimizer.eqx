@@ -110,6 +110,9 @@ assert-true drop
 10 5 % 0 =
 assert-true
 
+3 dup dup * 9 =assert
+3 =assert
+
 9999 =assert
 depth 0 =assert
 adepth 0 =assert

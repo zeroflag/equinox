@@ -268,9 +268,12 @@ local is_literal_tbl_at = AND(
 local is_const = OR(is_identifier, is_literal, is_literal_tbl_at)
 local is_push_const = AND(has_name("push"), has_exp(is_const))
 local is_push_unop_pop = AND(is_push_unop, has_exp(has_exp(is_stack_consume)))
-local is_dup  = AND(has_name("stack_op"), has_op("dup"))
-local is_2dup = AND(has_name("stack_op"), has_op("dup2"))
-local is_over = AND(has_name("stack_op"), has_op("over"))
+local is_stack_op = has_name("stack_op")
+local is_stack_peek = has_name("stack_peek")
+local is_dup  = AND(is_stack_op, has_op("dup"))
+local is_2dup = AND(is_stack_op, has_op("dup2"))
+local is_over = AND(is_stack_op, has_op("over"))
+local is_tos  = AND(is_stack_peek, has_op("tos"))
 local has_p1_pop = has_p1(has_op("pop"))
 local has_p2_pop = has_p2(has_op("pop"))
 
@@ -280,6 +283,14 @@ local is_push_binop_pop = AND(
              has_name("bin_op"),
              has_p1(is_stack_consume),
              has_p2(is_stack_consume))))
+
+local is_push_binop_tos = AND(
+  has_name("push"),
+  has_exp(AND(
+             has_name("bin_op"),
+             OR(
+               AND(has_p1(is_tos), NOT(has_p2(is_stack_consume))),
+               AND(has_p2(is_tos), NOT(has_p1(is_stack_consume)))))))
 
 local is_wrapped_binop_free_operand = AND(
   has("exp", any),
@@ -354,6 +365,7 @@ BinaryInline = AstMatcher:new()
 BinaryInlineP2 = AstMatcher:new()
 BinaryConstBinaryInline = AstMatcher:new()
 InlineGeneralUnary = AstMatcher:new()
+TosBinaryInline = AstMatcher:new()
 
 --[[
  Inline table at parameters
@@ -473,6 +485,7 @@ end
 ]]--
 function StackOpBinaryInline:optimize(ast, i, result)
   local p1, p2, op = ast[i], ast[i + 1], ast[i + 2]
+  self:log("inlining stack op in binary")
   if is_dup(p1) and is_dup(p2) then
     -- double dup
     self:log("dup dup")
@@ -500,7 +513,7 @@ function StackOpBinaryInline:optimize(ast, i, result)
     -- single over
     self:log("over")
     op.exp.p1.op = "pop"
-    op.exp.p1.name = "stack_peek"
+    op.exp.p1.name = "stack_consume"
     op.exp.p2.op = "tos"
     op.exp.p2.name = "stack_peek"
     table.insert(result, p1)
@@ -570,8 +583,21 @@ function BinaryConstBinaryInline:optimize(ast, i, result)
       target.p1.op = "pop"
     end
   else -- shouldn't happen
-    error("one of binary operator's param was expected to be stack_consime")
+    error("one of binary operator's param was expected to be stack_consume")
   end
+  table.insert(result, op)
+end
+
+function TosBinaryInline:optimize(ast, i, result)
+  self:log("inlining binary tos operand")
+  local cons, op = ast[i], ast[i + 1]
+  if op.exp.p1.op == "tos" then
+    op.exp.p1 = cons.exp
+  end
+  if op.exp.p2.op == "tos" then
+    op.exp.p2 = cons.exp
+  end
+  table.insert(result, cons)
   table.insert(result, op)
 end
 
@@ -608,6 +634,10 @@ return {
     {any, OR(is_dup,
              is_2dup,
              is_over), is_push_binop_pop}),
+
+  TosBinaryInline:new(
+    "tos binary inline",
+    {is_push_const, is_push_binop_tos}),
 
   InlineGeneralUnary:new(
     "inline general unary",
@@ -3144,7 +3174,7 @@ return utils
 end
 end
 
-__VERSION__="0.1-252"
+__VERSION__="0.1-256"
 
 local Compiler = require("compiler")
 local Optimizer = require("ast_optimizer")

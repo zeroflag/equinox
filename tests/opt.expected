@@ -18,8 +18,11 @@
 [OPTI] binary inline: inlining binary operator params
 [OPTI] binary inline: inlining binary operator params
 [OPTI] binary p2 inline: inlining binary operator's 2nd param
+[OPTI] stackop binary inline: inlining stack op in binary
 [OPTI] stackop binary inline: single dup
+[OPTI] stackop binary inline: inlining stack op in binary
 [OPTI] stackop binary inline: dup dup
+[OPTI] stackop binary inline: inlining stack op in binary
 [OPTI] stackop binary inline: 2dup
 [OPTI] inline general unary: push
 [OPTI] inline general unary: push
@@ -37,25 +40,36 @@
 [OPTI] inline general unary: push (dup)
 [OPTI] inline general unary: if (dup)
 [OPTI] inline general unary: if (over)
+[OPTI] stackop binary inline: inlining stack op in binary
 [OPTI] stackop binary inline: over
+[OPTI] stackop binary inline: inlining stack op in binary
 [OPTI] stackop binary inline: over
 [OPTI] inline general unary: push (over)
 [OPTI] binary inline: inlining binary operator params
 [OPTI] binary inline: inlining binary operator params
+[OPTI] stackop binary inline: inlining stack op in binary
 [OPTI] stackop binary inline: dup dup
 [OPTI] binary p2 inline: inlining binary operator's 2nd param
 [OPTI] binary inline: inlining binary operator params
-[OPTI] Iteration: 1 finished. Number of optimizations: 39
+[OPTI] stackop binary inline: inlining stack op in binary
+[OPTI] stackop binary inline: dup dup
+[OPTI] Iteration: 1 finished. Number of optimizations: 40
+[OPTI] tos binary inline: inlining binary tos operand
+[OPTI] tos binary inline: inlining binary tos operand
+[OPTI] tos binary inline: inlining binary tos operand
 [OPTI] inline general unary: if
 [OPTI] inline general unary: if
 [OPTI] inline general unary: if
 [OPTI] binary const binary inline: inlining binary to binary operator
+[OPTI] tos binary inline: inlining binary tos operand
 [OPTI] binary p2 inline: inlining binary operator's 2nd param
+[OPTI] tos binary inline: inlining binary tos operand
+[OPTI] Iteration: 2 finished. Number of optimizations: 10
 [OPTI] binary p2 inline: inlining binary operator's 2nd param
-[OPTI] Iteration: 2 finished. Number of optimizations: 6
-[OPTI] binary const binary inline: inlining binary to binary operator
 [OPTI] binary const binary inline: inlining binary to binary operator
 [OPTI] Iteration: 3 finished. Number of optimizations: 2
 [OPTI] binary const binary inline: inlining binary to binary operator
 [OPTI] Iteration: 4 finished. Number of optimizations: 1
-[OPTI] Iteration: 5 finished. Number of optimizations: 0
+[OPTI] binary const binary inline: inlining binary to binary operator
+[OPTI] Iteration: 5 finished. Number of optimizations: 1
+[OPTI] Iteration: 6 finished. Number of optimizations: 0
