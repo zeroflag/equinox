@@ -1,40 +1,5 @@
 local AstMatcher = {}
 
-local function is(ast, name) return ast.name == name end
-local function any(ast) return ast ~= nil end
-
-local function has(name, matcher)
-  return function (ast)
-    return matcher(ast[name])
-  end
-end
-
-local function eq(expected)
-  return function (val)
-    return val == expected
-  end
-end
-
-local function has_name(name) return has("name", eq(name)) end
-local function has_op(name) return has("op", eq(name)) end
-local function has_item(matcher) return has("item", matcher) end
-local function has_exp(matcher) return has("exp", matcher) end
-local function has_tbl(matcher) return has("tbl", matcher) end
-local function has_key(matcher) return has("key", matcher) end
-local function has_p1(matcher) return has("p1", matcher) end
-local function has_p2(matcher) return has("p2", matcher) end
-
-local is_identifier = has_name("identifier")
-local is_literal = has_name("literal")
-local is_stack_consume = has_name("stack_consume")
-
-local function is_stack_consume(ast, op_name)
-  if is(ast, "stack_consume") then
-    return op_name == nil or ast.op == op_name
-  end
-  return false
-end
-
 local function OR(...)
   local fs = {...}
   return function(ast)
@@ -67,12 +32,51 @@ local function NOT(f)
   end
 end
 
-local function is_stack_op(op)
-  return AND(has_name("stack_op"), has_op(op))
+local function is(ast, name) return ast.name == name end
+local function any(ast) return ast ~= nil end
+
+local function has(name, matcher)
+  return function (ast)
+    return matcher(ast[name])
+  end
 end
 
+local function eq(expected)
+  return function (val)
+    return val == expected
+  end
+end
+
+local function has_name(name) return has("name", eq(name)) end
+local function has_op(name) return has("op", eq(name)) end
+local function has_item(matcher) return has("item", matcher) end
+local function has_exp(matcher) return has("exp", matcher) end
+local function has_tbl(matcher) return has("tbl", matcher) end
+local function has_key(matcher) return has("key", matcher) end
+local function has_p1(matcher) return has("p1", matcher) end
+local function has_p2(matcher) return has("p2", matcher) end
+
+local is_identifier = has_name("identifier")
+local is_literal = has_name("literal")
+local is_stack_consume = has_name("stack_consume")
+local is_assignment = AND(has_name("assignment"), has_exp(is_stack_consume))
+local is_if = AND(has_name("if"), has_exp(is_stack_consume))
+local is_init_local = AND(has_name("init_local"), has_exp(is_stack_consume))
 local is_push_binop = AND(has_name("push"), has_item(has_name("bin_op")))
 local is_push_unop  = AND(has_name("push"), has_item(has_name("unary_op")))
+
+local is_literal_tbl_at = AND(
+  has_name("table_at"),
+  AND(
+    OR(has_tbl(is_identifier), has_tbl(is_literal)),
+    OR(has_key(is_identifier), has_key(is_literal))))
+
+local is_const = OR(is_identifier, is_literal, is_literal_tbl_at)
+local is_push_const = AND(has_name("push"), has_item(is_const))
+local is_push_unop_pop = AND(is_push_unop, has_item(has_exp(is_stack_consume)))
+local is_dup  = AND(has_name("stack_op"), has_op("dup"))
+local is_2dup = AND(has_name("stack_op"), has_op("dup2"))
+local is_over = AND(has_name("stack_op"), has_op("over"))
 
 local is_push_binop_pop = AND(
   has_name("push"),
@@ -80,7 +84,6 @@ local is_push_binop_pop = AND(
              has_name("bin_op"),
              has_p1(is_stack_consume),
              has_p2(is_stack_consume))))
-
 
 local is_push_binop_pop_p1_or_p2 = AND(
   has_name("push"),
@@ -96,36 +99,14 @@ local is_if_binop_p1_or_p2 = AND(
              OR(has_p1(has_op("pop")),
                 has_p2(has_op("pop"))))))
 
-local is_literal_tbl_at = AND(
-  has_name("table_at"),
+local is_push_non_destructive_op = OR(
   AND(
-    OR(has_tbl(is_identifier), has_tbl(is_literal)),
-    OR(has_key(is_identifier), has_key(is_literal))))
-
-local is_const = OR(is_identifier, is_literal, is_literal_tbl_at)
-
-local is_push_const = AND(
-  has_name("push"),
-  has_item(is_const))
-
-local function is_push_non_destructive_op(ast)
-  return
-    (is_push_binop(ast)
-     and
-     ((not is_stack_consume(ast.item.p1) and
-      not is_stack_consume(ast.item.p2))
-     or
-     (is_stack_consume(ast.item.p1, "pop") and
-      not is_stack_consume(ast.item.p2))
-     or
-     (is_stack_consume(ast.item.p2, "pop") and
-      not is_stack_consume(ast.item.p1))))
-    or (is_push_unop(ast) and not is_stack_consume(ast.item.exp))
-end
-
-local function is_push_unop_pop(ast)
-  return is_push_unop(ast) and is_stack_consume(ast.item.exp)
-end
+    is_push_binop,
+    OR(
+      AND(NOT(has_item(has_p1(is_stack_consume)), NOT(has_item(has_p2(is_stack_consume))))),
+      AND(has_item(has_p1(AND(is_stack_consume, has_op("pop")))), NOT(has_item(has_p2(is_stack_consume)))),
+      AND(has_item(has_p2(AND(is_stack_consume, has_op("pop")))), NOT(has_item(has_p1(is_stack_consume)))))),
+    AND(is_push_unop, NOT(has_item(has_exp(is_stack_consume)))))
 
 local is_tbl_at = AND(
   has_name("push"),
@@ -139,18 +120,6 @@ local is_tbl_put = AND(
   has_name("table_put"),
   has_tbl(is_stack_consume),
   has_key(is_stack_consume))
-
-local function is_assignment(ast)
-  return is(ast, "assignment") and is_stack_consume(ast.exp)
-end
-
-local function is_if(ast)
-  return is(ast, "if") and is_stack_consume(ast.exp)
-end
-
-local function is_init_local(ast)
-  return is(ast, "init_local") and is_stack_consume(ast.exp)
-end
 
 function AstMatcher:new(name, parts)
   local obj = {name = name, parts = parts, logging = false}
@@ -258,11 +227,11 @@ function InlineGeneralUnary:optimize(ast, i, result)
     target = operator
   end
 
-  if is_stack_op("dup")(p1) then
+  if is_dup(p1) then
     self:log(operator.name .. " (dup)")
     target.exp.op = "tos"
     target.exp.name ="stack_peek"
-  elseif is_stack_op("over")(p1) then
+  elseif is_over(p1) then
     self:log(operator.name .. " (over)")
     target.exp.op = "tos2"
     target.exp.name ="stack_peek"
@@ -284,11 +253,11 @@ function InlineGeneralUnary:optimize(ast, i, result)
     target = operator
   end
 
-  if is_stack_op("dup")(p1) then
+  if is_dup(p1) then
     self:log(operator.name .. " (dup)")
     target.exp.op = "tos"
     target.exp.name ="stack_peek"
-  elseif is_stack_op("over")(p1) then
+  elseif is_over(p1) then
     self:log(operator.name .. " (over)")
     target.exp.op = "tos2"
     target.exp.name ="stack_peek"
@@ -311,7 +280,7 @@ end
 ]]--
 function StackOpBinaryInline:optimize(ast, i, result)
   local p1, p2, op = ast[i], ast[i + 1], ast[i + 2]
-  if is_stack_op("dup")(p1) and is_stack_op("dup")(p2) then
+  if is_dup(p1) and is_dup(p2) then
     -- double dup
     self:log("dup dup")
     op.item.p1.op = "tos"
@@ -319,7 +288,7 @@ function StackOpBinaryInline:optimize(ast, i, result)
     op.item.p1.name = "stack_peek"
     op.item.p2.name = "stack_peek"
     table.insert(result, op)
-  elseif is_stack_op("dup2")(p2) then
+  elseif is_2dup(p2) then
     self:log("2dup")
     op.item.p1.op = "tos2"
     op.item.p2.op = "tos"
@@ -327,14 +296,14 @@ function StackOpBinaryInline:optimize(ast, i, result)
     op.item.p2.name = "stack_peek"
     table.insert(result, p1)
     table.insert(result, op)
-  elseif is_stack_op("dup")(p2) then
+  elseif is_dup(p2) then
     -- single dup
     self:log("single dup")
     op.item.p1.op = "tos"
     op.item.p1.name = "stack_peek"
     table.insert(result, p1)
     table.insert(result, op)
-  elseif is_stack_op("over")(p2) then
+  elseif is_over(p2) then
     -- single over
     self:log("over")
     op.item.p1.op = "pop"
@@ -377,13 +346,13 @@ function BinaryInlineP2:optimize(ast, i, result)
     if op.item.p1.op == "pop2nd" then
       op.item.p1.op = "pop"
     end
-    if is_stack_op("dup")(p1) then
+    if is_dup(p1) then
       op.item.p1.op = "tos" -- inline if dup
       op.item.p1.name = "stack_peek"
     end
   end
   op.item.p2 = p2.item -- inline const param
-  if not is_stack_op("dup")(p1) then -- dup was inlined skip it
+  if not is_dup(p1) then -- dup was inlined skip it
     table.insert(result, p1)
   end
   table.insert(result, op)
@@ -447,14 +416,14 @@ return {
 
   StackOpBinaryInline:new(
     "stackop binary inline",
-    {any, OR(is_stack_op("dup"),
-             is_stack_op("dup2"), -- 2dup
-             is_stack_op("over")), is_push_binop_pop}),
+    {any, OR(is_dup,
+             is_2dup,
+             is_over), is_push_binop_pop}),
 
   InlineGeneralUnary:new(
     "inline general unary",
-    {OR(is_stack_op("dup"),
-        is_stack_op("over"),
+    {OR(is_dup,
+        is_over,
         is_push_const,
         is_push_unop,
         is_push_binop),
