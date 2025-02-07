@@ -196,74 +196,38 @@ package.preload[ "ast_matchers" ] = function( ... ) local arg = _G.arg;
 local AstMatcher = {}
 
 local function is(ast, name) return ast.name == name end
-local function is_literal(ast) return is(ast, "literal") end
-local function is_identifier(ast) return is(ast, "identifier") end
 local function any(ast) return ast ~= nil end
-local function is_binop(ast) return is(ast, "bin_op") end
-local function is_unop(ast) return is(ast, "unary_op") end
 
-local function has_name(name)
+local function has(name, matcher)
   return function (ast)
-    return ast.name == name
+    return matcher(ast[name])
   end
 end
 
-local function has_item(matcher)
-  return function (ast)
-    return matcher(ast.item)
+local function eq(expected)
+  return function (val)
+    return val == expected
   end
 end
 
-local function has_p1(matcher)
-  return function (ast)
-    return matcher(ast.p1)
-  end
-end
+local function has_name(name) return has("name", eq(name)) end
+local function has_op(name) return has("op", eq(name)) end
+local function has_item(matcher) return has("item", matcher) end
+local function has_exp(matcher) return has("exp", matcher) end
+local function has_tbl(matcher) return has("tbl", matcher) end
+local function has_key(matcher) return has("key", matcher) end
+local function has_p1(matcher) return has("p1", matcher) end
+local function has_p2(matcher) return has("p2", matcher) end
 
-local function has_p2(matcher)
-  return function (ast)
-    return matcher(ast.p2)
-  end
-end
-
-local function is_push(ast, item_pred)
-  if not is(ast, "push") then
-    return false
-  end
-  if item_pred == nil then
-    return true
-  end
-  return item_pred(ast.item)
-end
+local is_identifier = has_name("identifier")
+local is_literal = has_name("literal")
+local is_stack_consume = has_name("stack_consume")
 
 local function is_stack_consume(ast, op_name)
   if is(ast, "stack_consume") then
     return op_name == nil or ast.op == op_name
   end
   return false
-end
-
-local function is_stack_peek(ast, op_name)
-  if is(ast, "stack_peek") then
-    return op_name == nil or ast.op == op_name
-  end
-  return false
-end
-
-local function is_literal_tbl_at(ast)
-  return is(ast, "table_at")
-    and (is_identifier(ast.tbl) or is_literal(ast.tbl))
-    and (is_identifier(ast.key) or is_literal(ast.key))
-end
-
-local function is_const(ast)
-  return is_identifier(ast)
-    or is_literal(ast)
-    or is_literal_tbl_at(ast)
-end
-
-local function is_push_const(ast)
-  return is_push(ast, is_const)
 end
 
 local function OR(...)
@@ -299,12 +263,11 @@ local function NOT(f)
 end
 
 local function is_stack_op(op)
-  return function(ast)
-    return is(ast, "stack_op") and ast.op == op
-  end
+  return AND(has_name("stack_op"), has_op(op))
 end
 
 local is_push_binop = AND(has_name("push"), has_item(has_name("bin_op")))
+local is_push_unop  = AND(has_name("push"), has_item(has_name("unary_op")))
 
 local is_push_binop_pop = AND(
   has_name("push"),
@@ -314,9 +277,31 @@ local is_push_binop_pop = AND(
              has_p2(is_stack_consume))))
 
 
-local function is_push_unop(ast)
-  return is_push(ast, is_unop)
-end
+local is_push_binop_pop_p1_or_p2 = AND(
+  has_name("push"),
+  has_item(AND(
+             has_name("bin_op"),
+             OR(has_p1(has_op("pop")),
+                has_p2(has_op("pop"))))))
+
+local is_if_binop_p1_or_p2 = AND(
+  has_name("if"),
+  has_exp(AND(
+             has_name("bin_op"),
+             OR(has_p1(has_op("pop")),
+                has_p2(has_op("pop"))))))
+
+local is_literal_tbl_at = AND(
+  has_name("table_at"),
+  AND(
+    OR(has_tbl(is_identifier), has_tbl(is_literal)),
+    OR(has_key(is_identifier), has_key(is_literal))))
+
+local is_const = OR(is_identifier, is_literal, is_literal_tbl_at)
+
+local is_push_const = AND(
+  has_name("push"),
+  has_item(is_const))
 
 local function is_push_non_destructive_op(ast)
   return
@@ -333,34 +318,22 @@ local function is_push_non_destructive_op(ast)
     or (is_push_unop(ast) and not is_stack_consume(ast.item.exp))
 end
 
-local function is_push_binop_pop_p1_or_p2(ast)
-  return is_push_binop(ast) and
-    (is_stack_consume(ast.item.p1, "pop") or
-     is_stack_consume(ast.item.p2, "pop"))
-end
-
-local function is_if_binop_p1_or_p2(ast)
-  return is(ast, 'if') and is_binop(ast.exp) and
-    (is_stack_consume(ast.exp.p1, "pop") or
-     is_stack_consume(ast.exp.p2, "pop"))
-end
-
 local function is_push_unop_pop(ast)
   return is_push_unop(ast) and is_stack_consume(ast.item.exp)
 end
 
-local function is_tbl_at(ast)
-  return is_push(ast)
-    and is(ast.item, "table_at")
-    and is_stack_consume(ast.item.tbl)
-    and is_stack_consume(ast.item.key)
-end
+local is_tbl_at = AND(
+  has_name("push"),
+  has_item(
+    AND(
+      has_name("table_at"),
+      has_tbl(is_stack_consume),
+      has_key(is_stack_consume))))
 
-local function is_tbl_put(ast)
-  return is(ast, "table_put") -- no push here
-    and is_stack_consume(ast.tbl)
-    and is_stack_consume(ast.key)
-end
+local is_tbl_put = AND(
+  has_name("table_put"),
+  has_tbl(is_stack_consume),
+  has_key(is_stack_consume))
 
 local function is_assignment(ast)
   return is(ast, "assignment") and is_stack_consume(ast.exp)
@@ -3208,7 +3181,7 @@ return utils
 end
 end
 
-__VERSION__="0.1-207"
+__VERSION__="0.1-222"
 
 local Compiler = require("compiler")
 local Optimizer = require("ast_optimizer")
