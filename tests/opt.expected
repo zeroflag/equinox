@@ -5,7 +5,11 @@
 [OPTI] inline general unary: init_local
 [OPTI] binary p2 inline: inlining binary operator's 2nd param
 [OPTI] Iteration: 1 finished. Number of optimizations: 6
-[OPTI] Iteration: 2 finished. Number of optimizations: 0
+[OPTI] binary p2 inline: inlining binary operator's 2nd param
+[OPTI] Iteration: 2 finished. Number of optimizations: 1
+[OPTI] binary const binary inline: inlining binary to binary operator
+[OPTI] Iteration: 3 finished. Number of optimizations: 1
+[OPTI] Iteration: 4 finished. Number of optimizations: 0
 [OPTI] inline general unary: assignment
 [OPTI] inline general unary: assignment
 [OPTI] inline general unary: assignment

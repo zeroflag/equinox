@@ -288,6 +288,13 @@ local is_push_binop_pop = AND(
              has_p1(is_stack_consume),
              has_p2(is_stack_consume))))
 
+local is_exp_binop_pop = AND(
+  has("exp", any),
+  has_exp(AND(
+             has_name("bin_op"),
+             has_p1(is_stack_consume),
+             has_p2(is_stack_consume))))
+
 local is_wrapped_binop_tos = AND(
   has("exp", any),
   has_exp(AND(
@@ -636,11 +643,11 @@ return {
 
   BinaryInline:new(
     "binary inline",
-    {is_push_const, is_push_const, is_push_binop_pop}),
+    {is_push_const, is_push_const, is_exp_binop_pop}),
 
   BinaryInlineP2:new(
     "binary p2 inline",
-    {NOT(is_push_const), is_push_const, is_push_binop_pop}),
+    {NOT(is_push_const), is_push_const, is_exp_binop_pop}),
 
   BinaryConstBinaryInline:new(
     "binary const binary inline",
@@ -3201,7 +3208,7 @@ return utils
 end
 end
 
-__VERSION__="0.1-268"
+__VERSION__="0.1-271"
 
 local Compiler = require("compiler")
 local Optimizer = require("ast_optimizer")
