@@ -3,8 +3,19 @@ local AstMatcher = {}
 local function is(ast, name) return ast.name == name end
 local function is_literal(ast) return is(ast, "literal") end
 local function is_identifier(ast) return is(ast, "identifier") end
-local function is_push(ast) return is(ast, "push") end
 local function any(ast) return ast ~= nil end
+local function is_binop(ast) return is(ast, "bin_op") end
+local function is_unop(ast) return is(ast, "unary_op") end
+
+local function is_push(ast, item_pred)
+  if not is(ast, "push") then
+    return false
+  end
+  if item_pred == nil then
+    return true
+  end
+  return item_pred(ast.item)
+end
 
 local function is_stack_consume(ast, op_name)
   if is(ast, "stack_consume") then
@@ -34,7 +45,7 @@ end
 
 
 local function is_push_const(ast)
-  return is_push(ast) and is_const(ast.item)
+  return is_push(ast, is_const)
 end
 
 local function OR(...)
@@ -60,16 +71,12 @@ local function is_stack_op(op)
   end
 end
 
-local function is_binop(ast)
-  return is(ast, "bin_op")
-end
-
 local function is_push_binop(ast)
-  return is_push(ast) and is_binop(ast.item)
+  return is_push(ast, is_binop)
 end
 
 local function is_push_unop(ast)
-  return is_push(ast) and is(ast.item, "unary_op")
+  return is_push(ast, is_unop)
 end
 
 local function is_push_binop_pop(ast)
@@ -77,8 +84,6 @@ local function is_push_binop_pop(ast)
     and is_stack_consume(ast.item.p1)
     and is_stack_consume(ast.item.p2)
 end
-
-
 
 local function is_push_non_destructive_op(ast)
   return
