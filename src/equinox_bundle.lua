@@ -193,6 +193,8 @@ end
 do
 local _ENV = _ENV
 package.preload[ "ast_matchers" ] = function( ... ) local arg = _G.arg;
+local asts = require("ast")
+
 local AstMatcher = {}
 
 local function OR(...)
@@ -249,6 +251,7 @@ local function has_tbl(matcher) return has("tbl", matcher) end
 local function has_key(matcher) return has("key", matcher) end
 local function has_p1(matcher) return has("p1", matcher) end
 local function has_p2(matcher) return has("p2", matcher) end
+local function has_value(val) return has("value", eq(val)) end
 
 local is_identifier = has_name("identifier")
 local is_literal = has_name("literal")
@@ -276,6 +279,7 @@ local is_over = AND(is_stack_op, has_op("over"))
 local is_tos  = AND(is_stack_peek, has_op("tos"))
 local has_p1_pop = has_p1(has_op("pop"))
 local has_p2_pop = has_p2(has_op("pop"))
+local has_lit_value = AND(is_literal, has("value", eq(1)))
 
 local is_push_binop_pop = AND(
   has_name("push"),
@@ -291,6 +295,15 @@ local is_wrapped_binop_tos = AND(
              OR(
                AND(has_p1(is_tos)),
                AND(has_p2(is_tos), NOT(has_p1(is_stack_consume)))))))
+
+local is_inc = AND(
+  has_name("push"),
+  has_exp(AND(
+            has_name("bin_op"),
+            has_op("+"),
+            OR(
+              AND(has_p1_pop, has_p2(has_value(1))),
+              AND(has_p2_pop, has_p1(has_value(1)))))))
 
 local is_wrapped_binop_free_operand = AND(
   has("exp", any),
@@ -366,6 +379,7 @@ BinaryInlineP2 = AstMatcher:new()
 BinaryConstBinaryInline = AstMatcher:new()
 InlineGeneralUnary = AstMatcher:new()
 TosBinaryInline = AstMatcher:new()
+IncInline = AstMatcher:new()
 
 --[[
  Inline table at parameters
@@ -601,6 +615,11 @@ function TosBinaryInline:optimize(ast, i, result)
   table.insert(result, op)
 end
 
+function IncInline:optimize(ast, i, result)
+  self:log("inlining inc")
+  table.insert(result, asts.stack_op("_inc"))
+end
+
 return {
 
   PutParamsInline:new(
@@ -638,6 +657,8 @@ return {
   TosBinaryInline:new(
     "tos binary inline",
     {is_push_const, is_wrapped_binop_tos}),
+
+  IncInline:new("inline inc", {is_inc}),
 
   InlineGeneralUnary:new(
     "inline general unary",
@@ -3025,6 +3046,12 @@ function _or()
   push(a or b)
 end
 
+function _inc()
+  local n = #stack
+  if n < 1 then error("Stack underflow: " .. name) end
+  stack[n] = stack[n] + 1
+end
+
 function depth()
   return #stack
 end
@@ -3174,7 +3201,7 @@ return utils
 end
 end
 
-__VERSION__="0.1-260"
+__VERSION__="0.1-265"
 
 local Compiler = require("compiler")
 local Optimizer = require("ast_optimizer")

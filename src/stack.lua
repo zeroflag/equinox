@@ -130,6 +130,12 @@ function _or()
   push(a or b)
 end
 
+function _inc()
+  local n = #stack
+  if n < 1 then error("Stack underflow: " .. name) end
+  stack[n] = stack[n] + 1
+end
+
 function depth()
   return #stack
 end
