@@ -55,16 +55,16 @@ function ast.aux_op(operation)
   return {name = "aux_op", op = operation}
 end
 
-function ast.push(item)
-  return {name  = "push", item = item}
+function ast.push(exp)
+  return {name  = "push", exp = exp}
 end
 
 function ast.push_many(func_call)
   return {name  = "push_many", func_call = func_call}
 end
 
-function ast.aux_push(item)
-  return {name  = "push_aux", item = item}
+function ast.aux_push(exp)
+  return {name  = "push_aux", exp = exp}
 end
 
 function ast._while(cond)
@@ -244,7 +244,6 @@ end
 
 local function has_name(name) return has("name", eq(name)) end
 local function has_op(name) return has("op", eq(name)) end
-local function has_item(matcher) return has("item", matcher) end
 local function has_exp(matcher) return has("exp", matcher) end
 local function has_tbl(matcher) return has("tbl", matcher) end
 local function has_key(matcher) return has("key", matcher) end
@@ -257,8 +256,8 @@ local is_stack_consume = has_name("stack_consume")
 local is_assignment = AND(has_name("assignment"), has_exp(is_stack_consume))
 local is_if = AND(has_name("if"), has_exp(is_stack_consume))
 local is_init_local = AND(has_name("init_local"), has_exp(is_stack_consume))
-local is_push_binop = AND(has_name("push"), has_item(has_name("bin_op")))
-local is_push_unop  = AND(has_name("push"), has_item(has_name("unary_op")))
+local is_push_binop = AND(has_name("push"), has_exp(has_name("bin_op")))
+local is_push_unop  = AND(has_name("push"), has_exp(has_name("unary_op")))
 
 local is_literal_tbl_at = AND(
   has_name("table_at"),
@@ -267,28 +266,21 @@ local is_literal_tbl_at = AND(
     OR(has_key(is_identifier), has_key(is_literal))))
 
 local is_const = OR(is_identifier, is_literal, is_literal_tbl_at)
-local is_push_const = AND(has_name("push"), has_item(is_const))
-local is_push_unop_pop = AND(is_push_unop, has_item(has_exp(is_stack_consume)))
+local is_push_const = AND(has_name("push"), has_exp(is_const))
+local is_push_unop_pop = AND(is_push_unop, has_exp(has_exp(is_stack_consume)))
 local is_dup  = AND(has_name("stack_op"), has_op("dup"))
 local is_2dup = AND(has_name("stack_op"), has_op("dup2"))
 local is_over = AND(has_name("stack_op"), has_op("over"))
 
 local is_push_binop_pop = AND(
   has_name("push"),
-  has_item(AND(
+  has_exp(AND(
              has_name("bin_op"),
              has_p1(is_stack_consume),
              has_p2(is_stack_consume))))
 
 local is_push_binop_pop_p1_or_p2 = AND(
-  has_name("push"),
-  has_item(AND(
-             has_name("bin_op"),
-             OR(has_p1(has_op("pop")),
-                has_p2(has_op("pop"))))))
-
-local is_if_binop_p1_or_p2 = AND(
-  has_name("if"),
+  OR(has_name("if"), has_name("push")),
   has_exp(AND(
              has_name("bin_op"),
              OR(has_p1(has_op("pop")),
@@ -298,14 +290,14 @@ local is_push_non_destructive_op = OR(
   AND(
     is_push_binop,
     OR(
-      AND(NOT(has_item(has_p1(is_stack_consume)), NOT(has_item(has_p2(is_stack_consume))))),
-      AND(has_item(has_p1(AND(is_stack_consume, has_op("pop")))), NOT(has_item(has_p2(is_stack_consume)))),
-      AND(has_item(has_p2(AND(is_stack_consume, has_op("pop")))), NOT(has_item(has_p1(is_stack_consume)))))),
-    AND(is_push_unop, NOT(has_item(has_exp(is_stack_consume)))))
+      AND(NOT(has_exp(has_p1(is_stack_consume)), NOT(has_exp(has_p2(is_stack_consume))))),
+      AND(has_exp(has_p1(AND(is_stack_consume, has_op("pop")))), NOT(has_exp(has_p2(is_stack_consume)))),
+      AND(has_exp(has_p2(AND(is_stack_consume, has_op("pop")))), NOT(has_exp(has_p1(is_stack_consume)))))),
+    AND(is_push_unop, NOT(has_exp(has_exp(is_stack_consume)))))
 
 local is_tbl_at = AND(
   has_name("push"),
-  has_item(
+  has_exp(
     AND(
       has_name("table_at"),
       has_tbl(is_stack_consume),
@@ -364,8 +356,8 @@ InlineGeneralUnary = AstMatcher:new()
 function AtParamsInline:optimize(ast, i, result)
   self:log("inlining tbl at params")
   local tbl, idx, op = ast[i], ast[i + 1], ast[i + 2]
-  op.item.tbl = tbl.item
-  op.item.key = idx.item
+  op.exp.tbl = tbl.exp
+  op.exp.key = idx.exp
   table.insert(result, op)
 end
 
@@ -376,12 +368,12 @@ end
 function AtParamsInlineP2:optimize(ast, i, result)
   self:log("inlining tbl at 2nd param")
   local tbl, idx, op = ast[i], ast[i + 1], ast[i + 2]
-  if op.item.tbl.name == "stack_consume" and
-     op.item.tbl.op == "pop2nd"
+  if op.exp.tbl.name == "stack_consume" and
+     op.exp.tbl.op == "pop2nd"
   then
-    op.item.tbl.op = "pop"
+    op.exp.tbl.op = "pop"
   end
-  op.item.key = idx.item
+  op.exp.key = idx.exp
   table.insert(result, tbl)
   table.insert(result, op)
 end
@@ -393,9 +385,9 @@ end
 function PutParamsInline:optimize(ast, i, result)
   self:log("inlining tbl put params")
   local tbl, key, val, op = ast[i], ast[i + 1], ast[i + 2], ast[i + 3]
-  op.tbl = tbl.item
-  op.key = key.item
-  op.value = val.item
+  op.tbl = tbl.exp
+  op.key = key.exp
+  op.value = val.exp
   table.insert(result, op)
 end
 
@@ -417,7 +409,7 @@ function InlineGeneralUnary:optimize(ast, i, result)
   local target
   if is_push_unop_pop(operator) then
     -- unary is embedded into a push
-    target = operator.item
+    target = operator.exp
   else
     target = operator
   end
@@ -432,7 +424,7 @@ function InlineGeneralUnary:optimize(ast, i, result)
     target.exp.name ="stack_peek"
   else
     self:log(operator.name)
-    target.exp = p1.item
+    target.exp = p1.exp
   end
 
   table.insert(result, operator)
@@ -443,7 +435,7 @@ function InlineGeneralUnary:optimize(ast, i, result)
   local target
   if is_push_unop_pop(operator) then
     -- unary is embedded into a push
-    target = operator.item
+    target = operator.exp
   else
     target = operator
   end
@@ -458,7 +450,7 @@ function InlineGeneralUnary:optimize(ast, i, result)
     target.exp.name ="stack_peek"
   else
     self:log(operator.name)
-    target.exp = p1.item
+    target.exp = p1.exp
   end
 
   table.insert(result, operator)
@@ -478,33 +470,33 @@ function StackOpBinaryInline:optimize(ast, i, result)
   if is_dup(p1) and is_dup(p2) then
     -- double dup
     self:log("dup dup")
-    op.item.p1.op = "tos"
-    op.item.p2.op = "tos"
-    op.item.p1.name = "stack_peek"
-    op.item.p2.name = "stack_peek"
+    op.exp.p1.op = "tos"
+    op.exp.p2.op = "tos"
+    op.exp.p1.name = "stack_peek"
+    op.exp.p2.name = "stack_peek"
     table.insert(result, op)
   elseif is_2dup(p2) then
     self:log("2dup")
-    op.item.p1.op = "tos2"
-    op.item.p2.op = "tos"
-    op.item.p1.name = "stack_peek"
-    op.item.p2.name = "stack_peek"
+    op.exp.p1.op = "tos2"
+    op.exp.p2.op = "tos"
+    op.exp.p1.name = "stack_peek"
+    op.exp.p2.name = "stack_peek"
     table.insert(result, p1)
     table.insert(result, op)
   elseif is_dup(p2) then
     -- single dup
     self:log("single dup")
-    op.item.p1.op = "tos"
-    op.item.p1.name = "stack_peek"
+    op.exp.p1.op = "tos"
+    op.exp.p1.name = "stack_peek"
     table.insert(result, p1)
     table.insert(result, op)
   elseif is_over(p2) then
     -- single over
     self:log("over")
-    op.item.p1.op = "pop"
-    op.item.p1.name = "stack_peek"
-    op.item.p2.op = "tos"
-    op.item.p2.name = "stack_peek"
+    op.exp.p1.op = "pop"
+    op.exp.p1.name = "stack_peek"
+    op.exp.p2.op = "tos"
+    op.exp.p2.name = "stack_peek"
     table.insert(result, p1)
     table.insert(result, op)
   else
@@ -522,8 +514,8 @@ end
 function BinaryInline:optimize(ast, i, result)
   self:log("inlining binary operator params")
   local p1, p2, op = ast[i], ast[i + 1], ast[i + 2]
-  op.item.p1 = p1.item
-  op.item.p2 = p2.item
+  op.exp.p1 = p1.exp
+  op.exp.p2 = p2.exp
   table.insert(result, op)
 end
 
@@ -537,16 +529,16 @@ end
 function BinaryInlineP2:optimize(ast, i, result)
   self:log("inlining binary operator's 2nd param")
   local p1, p2, op = ast[i], ast[i + 1], ast[i + 2]
-  if op.item.p1.name == "stack_consume" then
-    if op.item.p1.op == "pop2nd" then
-      op.item.p1.op = "pop"
+  if op.exp.p1.name == "stack_consume" then
+    if op.exp.p1.op == "pop2nd" then
+      op.exp.p1.op = "pop"
     end
     if is_dup(p1) then
-      op.item.p1.op = "tos" -- inline if dup
-      op.item.p1.name = "stack_peek"
+      op.exp.p1.op = "tos" -- inline if dup
+      op.exp.p1.name = "stack_peek"
     end
   end
-  op.item.p2 = p2.item -- inline const param
+  op.exp.p2 = p2.exp -- inline const param
   if not is_dup(p1) then -- dup was inlined skip it
     table.insert(result, p1)
   end
@@ -556,23 +548,18 @@ end
 function BinaryConstBinaryInline:optimize(ast, i, result)
   self:log("inlining binary to binary operator")
   local bin, op = ast[i], ast[i + 1]
-  local target = op
-  if is(op, "if") then
-    target = op.exp
-  else
-    target = op.item
-  end
+  local target = op.exp
   if target.p1.op == "pop" then
-    target.p1 = bin.item
+    target.p1 = bin.exp
     if target.p2.op == "tos" then
-      target.p2 = bin.item
+      target.p2 = bin.exp
     elseif target.p2.op == "pop2nd" then
       target.p2.op = "pop"
     end
   elseif target.p2.op == "pop" then
-    target.p2 = bin.item
+    target.p2 = bin.exp
     if target.p1.op == "tos" then
-      target.p1 = bin.item
+      target.p1 = bin.exp
     elseif target.p1.op == "pop2nd" then
       target.p1.op = "pop"
     end
@@ -607,7 +594,7 @@ return {
   BinaryConstBinaryInline:new(
     "binary const binary inline",
      {is_push_non_destructive_op,
-      OR(is_push_binop_pop_p1_or_p2, is_if_binop_p1_or_p2)}),
+      is_push_binop_pop_p1_or_p2}),
 
   StackOpBinaryInline:new(
     "stackop binary inline",
@@ -726,8 +713,8 @@ local function lit_unary_op(ast)
   return ast.name == "unary_op" and ast.exp.name == "literal"
 end
 
-local function inline_push(item)
-  return "stack[#stack +1] = " .. item
+local function inline_push(exp)
+  return "stack[#stack +1] = " .. exp
 end
 
 function CodeGen:gen(ast)
@@ -741,20 +728,20 @@ function CodeGen:gen(ast)
     return "a" .. ast.op .. "()"
   end
   if "push" == ast.name then
-    if ast.item.name == "literal" or
-       lit_bin_op(ast.item) or
-       lit_unary_op(ast.item)
+    if ast.exp.name == "literal" or
+       lit_bin_op(ast.exp) or
+       lit_unary_op(ast.exp)
     then
-      return inline_push(self:gen(ast.item)) -- bypass NIL check
+      return inline_push(self:gen(ast.exp)) -- bypass NIL check
     else
-      return string.format("push(%s)", self:gen(ast.item))
+      return string.format("push(%s)", self:gen(ast.exp))
     end
   end
   if "push_many" == ast.name then
     return string.format("push_many(%s)", self:gen(ast.func_call))
   end
   if "push_aux" == ast.name then
-    return string.format("apush(%s)", self:gen(ast.item))
+    return string.format("apush(%s)", self:gen(ast.exp))
   end
   if "unary_op" == ast.name then
     return string.format("%s %s", ast.op, self:gen(ast.exp))
@@ -3150,7 +3137,7 @@ return utils
 end
 end
 
-__VERSION__="0.1-235"
+__VERSION__="0.1-240"
 
 local Compiler = require("compiler")
 local Optimizer = require("ast_optimizer")

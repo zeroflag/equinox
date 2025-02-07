@@ -52,16 +52,16 @@ function ast.aux_op(operation)
   return {name = "aux_op", op = operation}
 end
 
-function ast.push(item)
-  return {name  = "push", item = item}
+function ast.push(exp)
+  return {name  = "push", exp = exp}
 end
 
 function ast.push_many(func_call)
   return {name  = "push_many", func_call = func_call}
 end
 
-function ast.aux_push(item)
-  return {name  = "push_aux", item = item}
+function ast.aux_push(exp)
+  return {name  = "push_aux", exp = exp}
 end
 
 function ast._while(cond)

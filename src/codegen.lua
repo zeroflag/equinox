@@ -16,8 +16,8 @@ local function lit_unary_op(ast)
   return ast.name == "unary_op" and ast.exp.name == "literal"
 end
 
-local function inline_push(item)
-  return "stack[#stack +1] = " .. item
+local function inline_push(exp)
+  return "stack[#stack +1] = " .. exp
 end
 
 function CodeGen:gen(ast)
@@ -31,20 +31,20 @@ function CodeGen:gen(ast)
     return "a" .. ast.op .. "()"
   end
   if "push" == ast.name then
-    if ast.item.name == "literal" or
-       lit_bin_op(ast.item) or
-       lit_unary_op(ast.item)
+    if ast.exp.name == "literal" or
+       lit_bin_op(ast.exp) or
+       lit_unary_op(ast.exp)
     then
-      return inline_push(self:gen(ast.item)) -- bypass NIL check
+      return inline_push(self:gen(ast.exp)) -- bypass NIL check
     else
-      return string.format("push(%s)", self:gen(ast.item))
+      return string.format("push(%s)", self:gen(ast.exp))
     end
   end
   if "push_many" == ast.name then
     return string.format("push_many(%s)", self:gen(ast.func_call))
   end
   if "push_aux" == ast.name then
-    return string.format("apush(%s)", self:gen(ast.item))
+    return string.format("apush(%s)", self:gen(ast.exp))
   end
   if "unary_op" == ast.name then
     return string.format("%s %s", ast.op, self:gen(ast.exp))
