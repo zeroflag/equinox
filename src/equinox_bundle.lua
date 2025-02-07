@@ -202,6 +202,30 @@ local function any(ast) return ast ~= nil end
 local function is_binop(ast) return is(ast, "bin_op") end
 local function is_unop(ast) return is(ast, "unary_op") end
 
+local function has_name(name)
+  return function (ast)
+    return ast.name == name
+  end
+end
+
+local function has_item(matcher)
+  return function (ast)
+    return matcher(ast.item)
+  end
+end
+
+local function has_p1(matcher)
+  return function (ast)
+    return matcher(ast.p1)
+  end
+end
+
+local function has_p2(matcher)
+  return function (ast)
+    return matcher(ast.p2)
+  end
+end
+
 local function is_push(ast, item_pred)
   if not is(ast, "push") then
     return false
@@ -253,6 +277,21 @@ local function OR(...)
   end
 end
 
+local function AND(...)
+  local fs = {...}
+  return function(ast)
+    local result = nil
+    for i, f in ipairs(fs) do
+      if result == nil then
+        result = f(ast)
+      else
+        result = result and f(ast)
+      end
+    end
+    return result
+  end
+end
+
 local function NOT(f)
   return function(ast)
     return not f(ast)
@@ -265,22 +304,15 @@ local function is_stack_op(op)
   end
 end
 
-local function is_push_binop(ast, match_p1, match_p2)
-  if not is_push(ast, is_binop) then
-    return false
-  end
-  if match_p1 ~= nil and not match_p1(ast.item.p1) then
-    return false
-  end
-  if match_p2 ~= nil and not match_p2(ast.item.p2) then
-    return false
-  end
-  return true
-end
+local is_push_binop = AND(has_name("push"), has_item(has_name("bin_op")))
 
-local function is_push_binop_pop(ast)
-  return is_push_binop(ast, is_stack_consume, is_stack_consume)
-end
+local is_push_binop_pop = AND(
+  has_name("push"),
+  has_item(AND(
+             has_name("bin_op"),
+             has_p1(is_stack_consume),
+             has_p2(is_stack_consume))))
+
 
 local function is_push_unop(ast)
   return is_push(ast, is_unop)
@@ -3176,7 +3208,7 @@ return utils
 end
 end
 
-__VERSION__="0.1-199"
+__VERSION__="0.1-207"
 
 local Compiler = require("compiler")
 local Optimizer = require("ast_optimizer")
