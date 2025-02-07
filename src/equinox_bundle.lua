@@ -198,6 +198,7 @@ local AstMatcher = {}
 local function is(ast, name) return ast.name == name end
 local function is_literal(ast) return is(ast, "literal") end
 local function is_identifier(ast) return is(ast, "identifier") end
+local function is_push(ast) return is(ast, "push") end
 local function any(ast) return ast ~= nil end
 
 local function is_stack_consume(ast, op_name)
@@ -226,8 +227,9 @@ local function is_const(ast)
     or is_literal_tbl_at(ast)
 end
 
+
 local function is_push_const(ast)
-  return is(ast, "push") and is_const(ast.item)
+  return is_push(ast) and is_const(ast.item)
 end
 
 local function OR(...)
@@ -258,11 +260,11 @@ local function is_binop(ast)
 end
 
 local function is_push_binop(ast)
-  return is(ast, "push") and is_binop(ast.item)
+  return is_push(ast) and is_binop(ast.item)
 end
 
 local function is_push_unop(ast)
-  return is(ast, "push") and is(ast.item, "unary_op")
+  return is_push(ast) and is(ast.item, "unary_op")
 end
 
 local function is_push_binop_pop(ast)
@@ -270,6 +272,8 @@ local function is_push_binop_pop(ast)
     and is_stack_consume(ast.item.p1)
     and is_stack_consume(ast.item.p2)
 end
+
+
 
 local function is_push_non_destructive_op(ast)
   return
@@ -303,7 +307,7 @@ local function is_push_unop_pop(ast)
 end
 
 local function is_tbl_at(ast)
-  return is(ast, "push")
+  return is_push(ast)
     and is(ast.item, "table_at")
     and is_stack_consume(ast.item.tbl)
     and is_stack_consume(ast.item.key)
@@ -3161,7 +3165,7 @@ return utils
 end
 end
 
-__VERSION__="0.1-189"
+__VERSION__="0.1-191"
 
 local Compiler = require("compiler")
 local Optimizer = require("ast_optimizer")
