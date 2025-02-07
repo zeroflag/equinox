@@ -279,8 +279,8 @@ local is_push_binop_pop = AND(
              has_p1(is_stack_consume),
              has_p2(is_stack_consume))))
 
-local is_push_binop_pop_p1_or_p2 = AND(
-  OR(has_name("if"), has_name("push")),
+local is_wrapped_binop_free_operand = AND(
+  has("exp", any),
   has_exp(AND(
              has_name("bin_op"),
              OR(has_p1(has_op("pop")),
@@ -594,7 +594,7 @@ return {
   BinaryConstBinaryInline:new(
     "binary const binary inline",
      {is_push_non_destructive_op,
-      is_push_binop_pop_p1_or_p2}),
+      is_wrapped_binop_free_operand}),
 
   StackOpBinaryInline:new(
     "stackop binary inline",
@@ -3137,7 +3137,7 @@ return utils
 end
 end
 
-__VERSION__="0.1-240"
+__VERSION__="0.1-245"
 
 local Compiler = require("compiler")
 local Optimizer = require("ast_optimizer")
