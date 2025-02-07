@@ -43,7 +43,6 @@ local function is_const(ast)
     or is_literal_tbl_at(ast)
 end
 
-
 local function is_push_const(ast)
   return is_push(ast, is_const)
 end
@@ -71,18 +70,25 @@ local function is_stack_op(op)
   end
 end
 
-local function is_push_binop(ast)
-  return is_push(ast, is_binop)
+local function is_push_binop(ast, match_p1, match_p2)
+  if not is_push(ast, is_binop) then
+    return false
+  end
+  if match_p1 ~= nil and not match_p1(ast.item.p1) then
+    return false
+  end
+  if match_p2 ~= nil and not match_p2(ast.item.p2) then
+    return false
+  end
+  return true
+end
+
+local function is_push_binop_pop(ast)
+  return is_push_binop(ast, is_stack_consume, is_stack_consume)
 end
 
 local function is_push_unop(ast)
   return is_push(ast, is_unop)
-end
-
-local function is_push_binop_pop(ast)
-  return is_push_binop(ast)
-    and is_stack_consume(ast.item.p1)
-    and is_stack_consume(ast.item.p2)
 end
 
 local function is_push_non_destructive_op(ast)
