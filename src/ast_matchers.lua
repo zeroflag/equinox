@@ -76,6 +76,8 @@ local is_push_unop_pop = AND(is_push_unop, has_exp(has_exp(is_stack_consume)))
 local is_dup  = AND(has_name("stack_op"), has_op("dup"))
 local is_2dup = AND(has_name("stack_op"), has_op("dup2"))
 local is_over = AND(has_name("stack_op"), has_op("over"))
+local has_p1_pop = has_p1(has_op("pop"))
+local has_p2_pop = has_p2(has_op("pop"))
 
 local is_push_binop_pop = AND(
   has_name("push"),
@@ -88,17 +90,21 @@ local is_wrapped_binop_free_operand = AND(
   has("exp", any),
   has_exp(AND(
              has_name("bin_op"),
-             OR(has_p1(has_op("pop")),
-                has_p2(has_op("pop"))))))
+             OR(has_p1_pop,
+                has_p2_pop))))
 
-local is_push_non_destructive_op = OR(
-  AND(
-    is_push_binop,
-    OR(
-      AND(NOT(has_exp(has_p1(is_stack_consume)), NOT(has_exp(has_p2(is_stack_consume))))),
-      AND(has_exp(has_p1(AND(is_stack_consume, has_op("pop")))), NOT(has_exp(has_p2(is_stack_consume)))),
-      AND(has_exp(has_p2(AND(is_stack_consume, has_op("pop")))), NOT(has_exp(has_p1(is_stack_consume)))))),
-    AND(is_push_unop, NOT(has_exp(has_exp(is_stack_consume)))))
+local inlined_push_unop = AND(
+  is_push_unop,
+  NOT(has_exp(has_exp(is_stack_consume))))
+
+local inlined_push_binop = AND(
+  is_push_binop,
+  OR(
+    -- fully inlined
+    AND(NOT(has_exp(has_p1(is_stack_consume)), NOT(has_exp(has_p2(is_stack_consume))))),
+    -- partially inlined
+    AND(has_exp(has_p1_pop), NOT(has_exp(has_p2(is_stack_consume)))),
+    AND(has_exp(has_p2_pop), NOT(has_exp(has_p1(is_stack_consume))))))
 
 local is_tbl_at = AND(
   has_name("push"),
@@ -398,7 +404,8 @@ return {
 
   BinaryConstBinaryInline:new(
     "binary const binary inline",
-     {is_push_non_destructive_op,
+     {OR(inlined_push_binop,
+         inlined_push_unop),
       is_wrapped_binop_free_operand}),
 
   StackOpBinaryInline:new(
