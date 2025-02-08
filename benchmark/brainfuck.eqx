@@ -1,0 +1,76 @@
+alias: sub  #( string.sub 3 1 )
+alias: >chr #( string.char 1 1 )
+alias: write #( io.write 1 0 )
+alias: read #( io.read 0 1 )
+alias: ord #( string.byte 1 1 )
+
+var ptr
+var mem
+var input
+var index
+
+: alloc ( n -- )
+  [] -> mem
+  0 do mem 0 append loop ;
+
+: load ( -- n ) mem ptr @ ;
+: stor ( n -- ) mem ptr rot ! ;
+
+: chr ( -- c ) input index index sub ;
+: next ( -- )  index 1 + -> index ;
+
+: jmp ( dir tok -- )
+  begin
+    dup chr !=
+  while
+    over index + -> index
+  repeat
+  drop drop ;
+
+: print ( -- ) load >chr write ;
+
+: ?jmp-fwrd load 0  = if +1 $] jmp then ;
+: ?jmp-back load 0 != if -1 $[ jmp then ;
+
+: eval-token ( chr -- )
+  case
+    $> of ptr 1 + -> ptr endof
+    $< of ptr 1 - -> ptr endof
+    $+ of load 1 + stor endof
+    $- of load 1 - stor endof
+    $. of print endof
+    $, of read ord stor endof
+    $[ of ?jmp-fwrd endof
+    $] of ?jmp-back endof
+    drop
+  endcase ;
+
+: init ( str -- )
+    -> input
+  1 -> index
+  1 -> ptr
+  256 alloc ;
+
+: eval ( str -- )
+  init
+  begin
+    index input # <=
+  while
+    chr eval-token
+    next
+  repeat ;
+
+: test ( -- )
+  "++>+++++[<+>-]" eval
+  mem 1 @ 7 =assert
+  mem 2 @ 0 =assert ;
+
+: hello-world ( -- )
+  ">++++++++[<+++++++++>-]<.>++++[<+++++++>-]<+.+++++++..+++.>>++++++[<+++++++>-]<++.------------.>++++++[<+++++++++>-]<+.<.+++.------.--------.>>>++++[<++++++++>- ]<+."
+  eval ;
+
+: echo ( -- ) ",." eval ;
+
+test
+hello-world
+echo

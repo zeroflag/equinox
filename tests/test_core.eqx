@@ -188,5 +188,12 @@ depth 4 =assert
 2 =assert
 1 =assert
 
+1 2 3 4 rot >a swap over >a rot swap a> swap >a swap a> rot a> swap
+4 =assert
+2 =assert
+3 =assert
+1 =assert
+4 =assert
+
 depth 0 =assert
 adepth 0 =assert
