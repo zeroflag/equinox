@@ -268,17 +268,20 @@ function macros.arity_call_lua(compiler, item)
   if token ~= ")" then
     arity = tonumber(token)
     if not arity or arity < 0 then
-      compiler:err("expected arity number, got " .. tostring(token), item)
+      compiler:err("expected arity number, got '"
+                   .. tostring(token) .. "'", item)
     end
     token = compiler:word()
     if token ~= ")" then
       numret = tonumber(token)
       if not numret or numret < -1 or numret > 1 then
-        compiler:err("expected number of return values (0/1/-1), got " .. tostring(token), item)
+        compiler:err("expected number of return values (0/1/-1), got '"
+                     .. tostring(token) .. "'", item)
       end
       token = compiler:word()
       if token ~= ")" then
-        compiler:err("expected closing ), got " .. tostring(token), item)
+        compiler:err("expected closing ), got '"
+                     .. tostring(token) .. "'", item)
       end
     end
   end
