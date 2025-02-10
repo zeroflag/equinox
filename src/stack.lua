@@ -152,4 +152,13 @@ function pick(index)
   if item ~= NIL then return item else return nil end
 end
 
+function roll(index)
+  if index == 0 then return end
+  local n = #stack
+  if n <= index then error("Stack underflow: " .. name) end
+  local new_top = stack[n -index]
+  table.remove(stack, n - index)
+  stack[n] = new_top
+end
+
 return stack

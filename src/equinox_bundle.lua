@@ -1429,6 +1429,7 @@ function Dict:init()
   self:def_macro("tuck", "macros.tuck")
   self:def_macro("depth", "macros.depth")
   self:def_macro("pick", "macros.pick")
+  self:def_macro("roll", "macros.roll")
   self:def_macro("adepth", "macros.adepth")
   self:def_macro("not", "macros._not")
   self:def_macro("and", "macros._and")
@@ -1974,6 +1975,10 @@ end
 
 function macros.pick()
   return ast.push(ast.func_call("pick", ast.pop()))
+end
+
+function macros.roll()
+  return ast.func_call("roll", ast.pop())
 end
 
 function macros.dot()
@@ -3092,6 +3097,15 @@ function pick(index)
   if item ~= NIL then return item else return nil end
 end
 
+function roll(index)
+  if index == 0 then return end
+  local n = #stack
+  if n <= index then error("Stack underflow: " .. name) end
+  local new_top = stack[n -index]
+  table.remove(stack, n - index)
+  stack[n] = new_top
+end
+
 return stack
 end
 end
@@ -3231,7 +3245,7 @@ return utils
 end
 end
 
-__VERSION__="0.1-281"
+__VERSION__="0.1-285"
 
 local Compiler = require("compiler")
 local Optimizer = require("ast_optimizer")

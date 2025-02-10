@@ -137,6 +137,10 @@ function macros.pick()
   return ast.push(ast.func_call("pick", ast.pop()))
 end
 
+function macros.roll()
+  return ast.func_call("roll", ast.pop())
+end
+
 function macros.dot()
   return {
     ast.func_call("io.write", ast.func_call("tostring", ast.pop())),

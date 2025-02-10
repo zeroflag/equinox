@@ -188,6 +188,28 @@ depth 4 =assert
 2 =assert
 1 =assert
 
+1 2 3 4
+3 roll
+1 =assert
+4 =assert
+3 =assert
+2 =assert
+
+1 2
+1 roll
+1 =assert
+2 =assert
+
+42
+1 2 3
+2 roll
+1 =assert
+3 =assert
+2 =assert
+42 =assert
+
+0 roll
+
 1 2 3 4 rot >a swap over >a rot swap a> swap >a swap a> rot a> swap
 4 =assert
 2 =assert
