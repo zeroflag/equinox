@@ -100,6 +100,7 @@ However, this performance difference is expected to improve in the future.
  * [Lua Interop](doc/interop.md)
  * [Table Operations](doc/table.md)
  * [Modules](doc/modules.md)
+ * [Modules](doc/catalogue.md)
  
 ## The Name
 
