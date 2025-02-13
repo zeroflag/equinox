@@ -36,38 +36,38 @@
 | `pick`   | Copy nth item to top            | ( xn ... x1 n -- xn ... x1 xn )     | Yes       |
 | `roll`   | Rotate nth item to top          | ( xn ... x1 n -- x(n-1) ... x1 xn ) | Yes       |
 | `adepth` | Aux stack depth                 | ( -- n )                            | Yes       |
-| `>a`     | Moves top item to aux stack     | ( n -- )                            | Yes       |
-| `a>`     | Moves top of aux to data stack  | ( -- n )                            | Yes       |
+| `>a`     | Move top item to aux stack      | ( n -- )                            | Yes       |
+| `a>`     | Move top of aux to data stack   | ( -- n )                            | Yes       |
 
 
 ## IO
-| Word | Description                 | Stack Effect | Immediate |
-|------|-----------------------------|--------------|-----------|
-| `.`  | Prints out top of the stack | ( x --  )    | Yes       |
-| `cr` | Prints out a new line       | ( --  )      | Yes       |
-|      |                             |              |           |
+| Word | Description                | Stack Effect | Immediate |
+|------|----------------------------|--------------|-----------|
+| `.`  | Print out top of the stack | ( x --  )    | Yes       |
+| `cr` | Print out a new line       | ( --  )      | Yes       |
+|      |                            |              |           |
 
 ## Control Structures
 
 | Word      | Description                                         | Stack Effect            | Immediate |
 |-----------|-----------------------------------------------------|-------------------------|-----------|
 | `if`      | Conditional branch start                            | ( bool -- )             | Yes       |
-| `then`    | Ends an `if` block                                  | ( -- )                  | Yes       |
+| `then`    | End an `if` block                                   | ( -- )                  | Yes       |
 | `else`    | Alternate branch in `if`                            | ( -- )                  | Yes       |
 | `begin`   | Start of a loop                                     | ( -- )                  | Yes       |
 | `again`   | Infinite loop (for `begin`)                         | ( -- )                  | Yes       |
 | `until`   | Loop condition check (for `begin`)                  | ( bool -- )             | Yes       |
 | `while`   | Loop condition check (for `begin`)                  | ( bool -- )             | Yes       |
-| `repeat`  | Ends a `while` loop                                 | ( -- )                  | Yes       |
+| `repeat`  | End a `while` loop                                  | ( -- )                  | Yes       |
 | `case`    | Start of a case statement                           | ( x -- )                | Yes       |
 | `of`      | Case match clause                                   | ( x1 x2 -- )            | Yes       |
 | `endof`   | End of a case clause                                | ( -- )                  | Yes       |
 | `endcase` | End of case statement                               | ( -- )                  | Yes       |
 | `do`      | Start of a counted loop                             | ( limit start -- )      | Yes       |
 | `loop`    | End of a counted loop                               | ( -- )                  | Yes       |
-| `ipairs:` | Iterates over array pairs                           | ( array --  )           | Yes       |
-| `pairs:`  | Iterates over hash-table pairs                      | ( hash-tbl -- )         | Yes       |
-| `iter:`   | Iterates over an iterable                           | ( iterable -- )         | Yes       |
+| `ipairs:` | Iterate over array pairs                            | ( array --  )           | Yes       |
+| `pairs:`  | Iterate over hash-table pairs                       | ( hash-tbl -- )         | Yes       |
+| `iter:`   | Iterate over an iterable                            | ( iterable -- )         | Yes       |
 | `to:`     | Start a counted loop                                | ( start limit -- )      | Yes       |
 | `step:`   | Start a counted loop with a step                    | ( start limit step -- ) | Yes       |
 | `end`     | End a `to:` `step:` `pairs:` `ipairs:` `iter:` loop | ( -- )                  | Yes       |
@@ -78,14 +78,14 @@
 ## Debugging
 
 
-| Word           | Description                           | Stack Effect | Immediate |
-|----------------|---------------------------------------|--------------|-----------|
-| `.s`           | Prints out the stack (REPL only)      | ( -- )       | No        |
-| `clear`        | Clear the data stack (REPL only)      | ( .. -- )    | No        |
-| `inspect`      | Prints out a table (REPL only)        | ( x -- )     | No        |
-| `see`          | Decompiles a word                     | ( -- )       | Yes       |
-| `words`        | Show availale words                   | ( -- )       | Yes       |
-| `=assert`      | Checks if the top two items are equal | ( x1 x2 -- ) | No        |
-| `assert-true`  | Checks if top of the stack is true    | ( bool -- )  | No        |
-| `assert-false` | Checks if top of the stack is false   | ( bool -- )  | No        |
+| Word           | Description                          | Stack Effect | Immediate |
+|----------------|--------------------------------------|--------------|-----------|
+| `.s`           | Print out the stack (REPL only)      | ( -- )       | No        |
+| `clear`        | Clear the data stack (REPL only)     | ( .. -- )    | No        |
+| `inspect`      | Print out a table (REPL only)        | ( x -- )     | No        |
+| `see`          | Decompiles a word                    | ( -- )       | Yes       |
+| `words`        | Show availale words                  | ( -- )       | Yes       |
+| `=assert`      | Check if the top two items are equal | ( x1 x2 -- ) | No        |
+| `assert-true`  | Check if top of the stack is true    | ( bool -- )  | No        |
+| `assert-false` | Check if top of the stack is false   | ( bool -- )  | No        |
 
