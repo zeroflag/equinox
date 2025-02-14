@@ -75,6 +75,22 @@
 | `exec`    | Run an execution token (function ref.)              | ( xt -- )               | Yes       |
 | `return`  | Export a module / Return from Lua function          | ( x -- )                | Yes       |
 
+
+## Defining
+
+
+| Word        | Description                                     | Stack Effect | Immediate |
+|-------------|-------------------------------------------------|--------------|-----------|
+| `:`         | Define a new word                               | ( -- )       | Yes       |
+| `::`        | Define a new local word                         | ( -- )       | Yes       |
+| `var`       | Define a new variable (preferred over `global`) | ( -- )       | Yes       |
+| `global`    | Define a new global variable                    | ( -- )       | Yes       |
+| `->`        | Assign value to a variable                      | ( x -- )     | Yes       |
+| `alias:`    | Define an alias                                 | ( -- )       | Yes       |
+| `recursive` | Make a word recursive                           | ( -- )       | Yes       |
+| `(:`        | Define parameters for a Lua callback            | ( -- )       | Yes       |
+| `:)`        | End of Lua callback parameter list              | ( -- )       | Yes       |
+
 ## Debugging
 
 
