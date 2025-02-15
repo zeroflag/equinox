@@ -72,8 +72,6 @@
 | `end`     | End a `to:` `step:` `pairs:` `ipairs:` `iter:` loop | `( -- )`                  | Yes       |
 | `exit`    | Exit from a word definition                         | `( -- )`                  | Yes       |
 | `exec`    | Run an execution token (function ref.)              | `( xt -- )`               | Yes       |
-| `return`  | Export a module / Return from Lua function          | `( x -- )`                | Yes       |
-
 
 ## Defining
 
@@ -82,6 +80,7 @@
 |-------------|-------------------------------------------------|--------------|-----------|
 | `:`         | Define a new word                               | `( -- )`     | Yes       |
 | `::`        | Define a new local word                         | `( -- )`     | Yes       |
+| `;`         | End word definition                             | `( -- )`     | Yes       |
 | `var`       | Define a new variable (preferred over `global`) | `( -- )`     | Yes       |
 | `global`    | Define a new global variable                    | `( -- )`     | Yes       |
 | `->`        | Assign value to a variable                      | `( x -- )`   | Yes       |
@@ -109,8 +108,19 @@
 | `remove` | Remove element from table         | `( table key -- )`             | No        |                               |
 | `#`      | Size of a sequential table        | `( table -- n )`               | Yes       |                               |
 
-## Debugging
+## Modules
 
+| Word     | Description                                | Stack Effect        | Immediate | Example                      |
+| `need`   | Require a module                           | `( str -- module )` | Yes       | "dkjson" require -> var json |
+| `return` | Export a module / Return from Lua function | `( x -- )`          | Yes       |                              |
+
+## Misc
+
+| Word   | Description       | Stack Effect   | Immediate |
+| `>str` | Convert to string | `( n -- str )` | No        |
+| `>num` | Convert to number | `( str -- n )` | No        |
+
+## Debugging
 
 | Word           | Description                          | Stack Effect   | Immediate |
 |----------------|--------------------------------------|----------------|-----------|
