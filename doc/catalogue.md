@@ -90,6 +90,26 @@
 | `recursive` | Make a word recursive                           | ( -- )       | Yes       |
 | `(:`        | Define parameters for a Lua callback            | ( -- )       | Yes       |
 | `:)`        | End of Lua callback parameter list              | ( -- )       | Yes       |
+| ```         | Get the execution token of a word               | ( -- xt )    | Yes       |
+
+## Table Operations
+
+
+| Word     | Description                       | Stack Effect                 | Immediate | Example                           |
+|----------|-----------------------------------|------------------------------|-----------|-----------------------------------|
+| `[]`     | Empty sequential table            | ( -- table )                 | No        |                                   |
+| `{}`     | Empty hash table                  | ( -- table )                 | No        |                                   |
+| `[`      | Start creating a sequential table | ( -- )                       | No        | [ 1 2 dup * 3 ]                   |
+| `]`      | End creating a sequential table   | ( ... -- table )             | No        |                                   |
+| `{`      | Start creating a hash table       | ( -- )                       | No        | { :x 10 :y 20 }                   |
+| `}`      | End creating a hash table         | ( ... -- table )             | No        |                                   |
+| `@`      | Look up by index / key            | ( table key/index -- value ) | No        | array 3 @     tbl $x @            |
+| `!`      | Put/Update element into a table   | ( table key/index value -- ) | No        | array 1 30 !  tbl $x 30 !         |
+| `append` | Append to a sequential table      | ( table value --  )          | No        |                                   |
+| `insert` | Insert into a sequential table    | ( table index value --  )    | No        |                                   |
+| `remove` | Remove element from table         | ( table key -- )             | No        |                                   |
+| `#`      | Size of a sequential table        | ( table -- n )               | Yes       |                                   |
+| `$`      | Shorthand property names          | ( -- key value )             | Yes       | { $ x $ y } same as { $x x $y y } |
 
 ## Debugging
 
