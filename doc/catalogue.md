@@ -1,6 +1,7 @@
 # Word Catalog
 
 ## Arithmetic and Logical Operations
+
 | Word  | Description              | Stack Effect              | Immediate |
 |-------|--------------------------|---------------------------|-----------|
 | `+`   | Addition                 | `( n1 n2 -- sum )`        | Yes       |
@@ -21,6 +22,7 @@
 | `min` | Minimum of two values    | `( n1 n2 -- min )`        | No        |
 
 ## Stack Manipulation
+
 | Word     | Description                     | Stack Effect                          | Immediate |
 |----------|---------------------------------|---------------------------------------|-----------|
 | `swap`   | Swap top two items on stack     | `( x1 x2 -- x2 x1 )`                  | Yes       |
@@ -39,8 +41,8 @@
 | `>a`     | Move top item to aux stack      | `( n -- )`                            | Yes       |
 | `a>`     | Move top of aux to data stack   | `( -- n )`                            | Yes       |
 
-
 ## IO
+
 | Word | Description                | Stack Effect | Immediate |
 |------|----------------------------|--------------|-----------|
 | `.`  | Print out top of the stack | `( x --  )`  | Yes       |
@@ -74,7 +76,6 @@
 | `exec`    | Run an execution token (function ref.)              | `( xt -- )`               | Yes       |
 
 ## Defining
-
 
 | Word        | Description                                     | Stack Effect | Immediate |
 |-------------|-------------------------------------------------|--------------|-----------|
@@ -111,12 +112,14 @@
 ## Modules
 
 | Word     | Description                                | Stack Effect        | Immediate | Example                      |
+|----------|--------------------------------------------|---------------------|-----------|------------------------------|
 | `need`   | Require a module                           | `( str -- module )` | Yes       | "dkjson" require -> var json |
 | `return` | Export a module / Return from Lua function | `( x -- )`          | Yes       |                              |
 
 ## Misc
 
 | Word   | Description       | Stack Effect   | Immediate |
+|--------|-------------------|----------------|-----------|
 | `>str` | Convert to string | `( n -- str )` | No        |
 | `>num` | Convert to number | `( str -- n )` | No        |
 
