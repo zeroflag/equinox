@@ -103,8 +103,8 @@
 | `]`      | End creating a sequential table   | ( ... -- table )             | No        |                                   |
 | `{`      | Start creating a hash table       | ( -- )                       | No        | { :x 10 :y 20 }                   |
 | `}`      | End creating a hash table         | ( ... -- table )             | No        |                                   |
-| `@`      | Look up by index / key            | ( table key/index -- value ) | No        | array 3 @     tbl $x @            |
-| `!`      | Put/Update element into a table   | ( table key/index value -- ) | No        | array 1 30 !  tbl $x 30 !         |
+| `@`      | Look up by index / key            | ( table key/index -- value ) | No        | array 3 @   /  tbl $x @           |
+| `!`      | Put/Update element into a table   | ( table key/index value -- ) | No        | array 1 30 ! / tbl $x 30 !        |
 | `append` | Append to a sequential table      | ( table value --  )          | No        |                                   |
 | `insert` | Insert into a sequential table    | ( table index value --  )    | No        |                                   |
 | `remove` | Remove element from table         | ( table key -- )             | No        |                                   |
