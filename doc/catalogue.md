@@ -90,7 +90,7 @@
 | `recursive` | Make a word recursive                           | ( -- )       | Yes       |
 | `(:`        | Define parameters for a Lua callback            | ( -- )       | Yes       |
 | `:)`        | End of Lua callback parameter list              | ( -- )       | Yes       |
-| ````         | Get the execution token of a word               | ( -- xt )    | Yes       |
+| `\``         | Get the execution token of a word              | ( -- xt )    | Yes       |
 
 ## Table Operations
 
