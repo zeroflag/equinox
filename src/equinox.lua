@@ -31,6 +31,7 @@ alias: type #( type 1 1 )
 alias: max  #( math.max 2 1 )
 alias: min  #( math.min 2 1 )
 alias: # size
+alias: emit #( string.char 1 1 ) #( io.write 1 0 )
 
 : assert-true #( assert 1 0 ) ;
 : assert-false not assert-true ;

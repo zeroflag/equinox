@@ -152,8 +152,7 @@ end
 function Compiler:add_ast_nodes(nodes, item)
   if #nodes > 0 then
     for i, each in ipairs(nodes) do
-      each.forth_line_number = item.line_number
-      table.insert(self.ast, each)
+      self:add_ast_nodes(each, item)
     end
   else
     nodes.forth_line_number = item.line_number

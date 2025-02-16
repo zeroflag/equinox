@@ -43,10 +43,11 @@
 
 ## IO
 
-| Word | Description                | Stack Effect | Immediate |
-|------|----------------------------|--------------|-----------|
-| `.`  | Print out top of the stack | `( x --  )`  | Yes       |
-| `cr` | Print out a new line       | `( --  )`    | Yes       |
+| Word   | Description                           | Stack Effect | Immediate |
+|--------|---------------------------------------|--------------|-----------|
+| `.`    | Print out top of the stack            | `( x --  )`  | Yes       |
+| `emit` | Display a character by its ASCII code | `( n --  )`  | Yes       |
+| `cr`   | Print out a new line                  | `( --  )`    | Yes       |
 
 ## Control Structures
 

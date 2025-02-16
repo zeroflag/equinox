@@ -154,11 +154,24 @@ end
 
 function macros.def_alias(compiler, item)
   local forth_name = compiler:word()
-  local exp = compiler:next_item()
-  if not forth_name or not exp then
-    compiler:err("alias needs a name and an expression", item)
+  local alias = {}
+  if not forth_name then
+    compiler:err("Missing alias name", item)
   end
-  compiler:alias(compiler:compile_token(exp), forth_name)
+
+  repeat
+    local exp = compiler:next_item()
+    if exp then
+      table.insert(alias, compiler:compile_token(exp))
+    end
+  until not exp
+    or compiler:peek_chr() == "\n"
+    or compiler:peek_chr() == "\r"
+
+  if #alias == 0 then
+    compiler:err("Missing alias body", item)
+  end
+  compiler:alias(alias, forth_name)
 end
 
 local function def_word(compiler, is_global, item)

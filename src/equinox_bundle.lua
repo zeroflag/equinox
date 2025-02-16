@@ -1104,8 +1104,7 @@ end
 function Compiler:add_ast_nodes(nodes, item)
   if #nodes > 0 then
     for i, each in ipairs(nodes) do
-      each.forth_line_number = item.line_number
-      table.insert(self.ast, each)
+      self:add_ast_nodes(each, item)
     end
   else
     nodes.forth_line_number = item.line_number
@@ -1994,11 +1993,24 @@ end
 
 function macros.def_alias(compiler, item)
   local forth_name = compiler:word()
-  local exp = compiler:next_item()
-  if not forth_name or not exp then
-    compiler:err("alias needs a name and an expression", item)
+  local alias = {}
+  if not forth_name then
+    compiler:err("Missing alias name", item)
   end
-  compiler:alias(compiler:compile_token(exp), forth_name)
+
+  repeat
+    local exp = compiler:next_item()
+    if exp then
+      table.insert(alias, compiler:compile_token(exp))
+    end
+  until not exp
+    or compiler:peek_chr() == "\n"
+    or compiler:peek_chr() == "\r"
+
+  if #alias == 0 then
+    compiler:err("Missing alias body", item)
+  end
+  compiler:alias(alias, forth_name)
 end
 
 local function def_word(compiler, is_global, item)
@@ -3245,7 +3257,7 @@ return utils
 end
 end
 
-__VERSION__="0.1-286"
+__VERSION__="0.1-300"
 
 local Compiler = require("compiler")
 local Optimizer = require("ast_optimizer")
@@ -3278,6 +3290,7 @@ alias: type #( type 1 1 )
 alias: max  #( math.max 2 1 )
 alias: min  #( math.min 2 1 )
 alias: # size
+alias: emit #( string.char 1 1 ) #( io.write 1 0 )
 
 : assert-true #( assert 1 0 ) ;
 : assert-false not assert-true ;
