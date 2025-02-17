@@ -112,10 +112,10 @@
 
 ## Modules
 
-| Word     | Description                                | Stack Effect        | Immediate | Example                        |
-|----------|--------------------------------------------|---------------------|-----------|--------------------------------|
-| `need`   | Require a module                           | `( str -- module )` | Yes       | `"dkjson" require -> var json` |
-| `return` | Export a module / Return from Lua function | `( x -- )`          | Yes       |                                |
+| Word     | Description                                | Stack Effect        | Immediate | Example                     |
+|----------|--------------------------------------------|---------------------|-----------|-----------------------------|
+| `need`   | Require a module                           | `( str -- module )` | Yes       | `"dkjson" need -> var json` |
+| `return` | Export a module / Return from Lua function | `( x -- )`          | Yes       |                             |
 
 ## Misc
 
