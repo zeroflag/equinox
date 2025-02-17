@@ -36,5 +36,10 @@ alias: ADD2 ADD
 alias: cons 12
 cons 12 =assert
 
+alias: xx 10 20
+xx
+20 =assert
+10 =assert
+
 depth 0 =assert
 adepth 0 =assert
