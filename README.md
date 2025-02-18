@@ -64,8 +64,9 @@ $ equinox file.eqx
 ## ☕ Syntax That Fits on a Coffee Bean
 
 ```forth
- \ only numbers, words and strings
- "abc" # 1.25 + . 
+ \ only numbers, words and strings/symbols
+ "aString" # ( length )
+  $aSymbol # * 1.25 + . 
 ```
 
 #### Example:
