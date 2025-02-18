@@ -45,7 +45,7 @@ out_tests:
 	done
 
 opt_tests:
-	@echo "Running optimizer tests"; \
+	@echo "Running optimizer tests ($(luaver))"; \
 	$$luaver $(EQUINOX) -od "tests/test_optimizer.eqx" > "tests/opt.out" || exit 1; \
 	diff "tests/opt.out" "tests/opt.expected" || exit 1; \
 
