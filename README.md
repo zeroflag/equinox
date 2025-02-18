@@ -119,7 +119,7 @@ However, this performance difference is expected to improve in the future.
  * The majority of the Equinox words are macros (immediate words), including the arithmetic operators and stack manipulation words.
  * In the current version user defined immediate words are not supported.
 
-## Documentation
+## 📝 Documentation
  * [Core](doc/core.md)
  * [Variables](doc/vars.md)
  * [Lua Interop](doc/interop.md)
