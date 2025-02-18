@@ -49,7 +49,7 @@ A better approach is to define an alias with number of return values set to 0.
 
 
 ```forth
-[ "a" "b" "c" ] dup 2 #( table.remove 2 0 ) \ just remove "b" don't return i
+[ "a" "b" "c" ] dup 2 #( table.remove 2 0 ) \ just remove "b" don't return it
 inspect \ this will print [ "a" "c" ]
 ```
 
