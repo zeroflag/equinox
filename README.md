@@ -68,8 +68,7 @@ For Love2D sample project see this repository: [VimSnake](https://github.com/zer
 ```forth
 alias: 2^n 2 swap #( math.pow 2 1 )
 
-\ define a local word
-:: sum-of-pows ( -- n ) 0 10 0 do i 2^n + loop ;
+: sum-of-pows ( -- n ) 0 10 0 do i 2^n + loop ;
  
 var map
 { $key [ 1 2 "apple" sums-of-pows ] } -> map
