@@ -61,7 +61,13 @@ $ equinox file.eqx
 
 * For Love2D sample project see this repository: [VimSnake](https://github.com/zeroflag/vimsnake).
 
-## ✉️ Syntax That Fits on a Postcard
+## 🌾 Syntax That Fits on a Grain of Rice
+
+#### Syntax
+
+```forth
+ "abc" # 10 + .
+```
 
 #### Example:
 
