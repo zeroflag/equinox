@@ -78,7 +78,8 @@ map.key 3 @ . \ prints out 1023
 map.key 1 42 !
 
 \ define a Lua callback
-: love.keypressed (: key :) key $escape = if #( os.exit ) then ;
+: love.keypressed (: key :)
+  key $escape = if #( os.exit ) then ;
 ```
 
 ## 👍 Why Equinox?
