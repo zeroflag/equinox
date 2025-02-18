@@ -55,15 +55,25 @@ test:
 		if ! command -v $$luaver > /dev/null 2>&1; then \
 			echo "$$luaver is not installed skippping"; \
 		else \
-      $(MAKE) -s lua_tests luaver=$$luaver || exit 1; \
-      $(MAKE) -s eqx_tests luaver=$$luaver opt=-o0 || exit 1; \
-      $(MAKE) -s eqx_tests luaver=$$luaver opt=-o1 || exit 1; \
-      $(MAKE) -s out_tests luaver=$$luaver opt=-o0 || exit 1; \
-      $(MAKE) -s out_tests luaver=$$luaver opt=-o1 || exit 1; \
-			$(MAKE) -s opt_tests luaver=$$luaver || exit 1; \
+			if [ $$coverage = "true" ] && $$luaver -e 'require("luacov")' 2>/dev/null; then \
+				echo "luacov is installed"; \
+				luacmd="$$luaver -lluacov"; \
+			else \
+				echo "luacov is NOT installed"; \
+				luacmd="$$luaver"; \
+			fi ; \
+      $(MAKE) -s lua_tests luaver="$$luacmd" || exit 1; \
+      $(MAKE) -s eqx_tests luaver="$$luacmd" opt=-o0 || exit 1; \
+      $(MAKE) -s eqx_tests luaver="$$luacmd" opt=-o1 || exit 1; \
+      $(MAKE) -s out_tests luaver="$$luacmd" opt=-o0 || exit 1; \
+      $(MAKE) -s out_tests luaver="$$luacmd" opt=-o1 || exit 1; \
+			$(MAKE) -s opt_tests luaver="$$luacmd" || exit 1; \
 		fi; \
 	done ;
 	@echo "$(GREEN)All tests passed!$(NC)"
+
+coverage:
+	$(MAKE) -s test coverage="true" || exit 1; \
 
 version:
 	@echo "Increase patch version" ; \
@@ -97,4 +107,4 @@ clean:
 	rm -f $(BUNDLE) ; \
 
 # Add a phony directive to prevent file conflicts
-.PHONY: all test clean bundle rockspec repl version lua_tests eqx_tests opt_tests out_tests install
+.PHONY: all test clean bundle rockspec repl version lua_tests eqx_tests opt_tests out_tests install coverage

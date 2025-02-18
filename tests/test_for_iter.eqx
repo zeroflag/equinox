@@ -8,8 +8,6 @@ alias: gmatch #( string.gmatch 2 )
   each >num +
 end
 
-dup . cr
-
 15 =assert
 
 depth 0 =assert
