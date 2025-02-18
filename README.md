@@ -61,6 +61,26 @@ $ equinox file.eqx
 
 For Love2D sample project see this repository: [VimSnake](https://github.com/zeroflag/vimsnake).
 
+## Syntax That Fits on a Postcard
+
+#### Example:
+
+```forth
+alias: 2^n 2 swap #( math.pow 2 1 )
+
+\ define a local word
+:: sum-of-pows ( -- n ) 0 10 0 do i 2^n + loop ;
+ 
+var map
+{ $key [ 1 2 sums-of-pows ] } -> map
+
+map.key 3 @ . \ prints out 1023
+map.key 1 42 !
+
+\ define a Lua callback
+: love.keypressed (: key :) key $escape = if #( os.exit ) then ;
+```
+
 ## 👍 Why Equinox?
 
 Popular retro gaming platforms like the [TIC-80](https://tic80.com/) tiny computer and 2D game engines like [Love2D](https://love2d.org/) usually use [Lua](https://www.lua.org/) for scripting. 
@@ -93,26 +113,6 @@ However, this performance difference is expected to improve in the future.
  * Equinox doesn't have its own standard library besides the stack manipulation words and a few others for table construction, so you need to use Lua functions.
  * The majority of the Equinox words are macros (immediate words), including the arithmetic operators and stack manipulation words.
  * In the current version user defined immediate words are not supported.
-
-## Syntax That Fits on a Postcard
-
-#### Example:
-
-```forth
-alias: 2^n 2 swap #( math.pow 2 1 )
-
-\ define a local word
-:: sum-of-pows ( -- n ) 0 10 0 do i 2^n + loop ;
- 
-var map
-{ $key [ 1 2 sums-of-pows ] } -> map
-
-map.key 3 @ . \ prints out 1023
-map.key 1 42 !
-
-\ define a Lua callback
-: love.keypressed (: key :) key $escape = if #( os.exit ) then ;
-```
 
 ## Documentation
  * [Core](doc/core.md)
