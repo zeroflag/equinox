@@ -61,12 +61,11 @@ $ equinox file.eqx
 
 * For Love2D sample project see this repository: [VimSnake](https://github.com/zeroflag/vimsnake).
 
-## 🌾 Syntax That Fits on a Grain of Rice
-
-#### Syntax
+## ☕ Syntax That Fits on a Coffee Bean
 
 ```forth
- "abc" # 10 + .
+ \ only numbers, words and strings
+ "abc" # 1.25 + . 
 ```
 
 #### Example:
