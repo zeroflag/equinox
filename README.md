@@ -94,6 +94,26 @@ However, this performance difference is expected to improve in the future.
  * The majority of the Equinox words are macros (immediate words), including the arithmetic operators and stack manipulation words.
  * In the current version user defined immediate words are not supported.
 
+## Syntax That Fits on a Postcard
+
+#### Example:
+
+```forth
+alias: 2^n 2 swap #( math.pow 2 1 )
+
+\ define a local word
+:: sum-of-pows ( -- n ) 0 10 0 do i 2^n + loop ;
+ 
+var map
+{ $key [ 1 2 sums-of-pows ] } -> map
+map.key 3 @ .
+map.key 1 42 !
+
+\ define a Lua callback
+: love.keypressed (: key :)
+  key $escape = if #( os.exit ) then ;
+```
+
 ## Documentation
  * [Core](doc/core.md)
  * [Variables](doc/vars.md)
