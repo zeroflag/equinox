@@ -106,12 +106,12 @@ alias: 2^n 2 swap #( math.pow 2 1 )
  
 var map
 { $key [ 1 2 sums-of-pows ] } -> map
+
 map.key 3 @ .
 map.key 1 42 !
 
 \ define a Lua callback
-: love.keypressed (: key :)
-  key $escape = if #( os.exit ) then ;
+: love.keypressed (: key :) key $escape = if #( os.exit ) then ;
 ```
 
 ## Documentation
