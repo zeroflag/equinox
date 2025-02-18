@@ -72,7 +72,7 @@ alias: 2^n 2 swap #( math.pow 2 1 )
 :: sum-of-pows ( -- n ) 0 10 0 do i 2^n + loop ;
  
 var map
-{ $key [ 1 2 sums-of-pows ] } -> map
+{ $key [ 1 2 "apple" sums-of-pows ] } -> map
 
 map.key 3 @ . \ prints out 1023
 map.key 1 42 !
