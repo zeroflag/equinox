@@ -65,9 +65,7 @@ $ equinox file.eqx
 
 ```forth
  \ only numbers, words and strings/symbols
- 1.25
- "aString" # ( length ) *
-  $aSymbol # + . 
+  1.25 "aString" $aSymbol .. ( concat ) # ( length ) * 
 ```
 
 #### Example:
