@@ -3257,7 +3257,7 @@ return utils
 end
 end
 
-__VERSION__="0.1-311"
+__VERSION__="0.1-312"
 
 local Compiler = require("compiler")
 local Optimizer = require("ast_optimizer")
@@ -3289,6 +3289,7 @@ alias: need #( require 1 1 )
 alias: type #( type 1 1 )
 alias: max  #( math.max 2 1 )
 alias: min  #( math.min 2 1 )
+alias: pow  #( math.pow 2 1 )
 alias: # size
 alias: emit #( string.char 1 1 ) #( io.write 1 0 )
 
