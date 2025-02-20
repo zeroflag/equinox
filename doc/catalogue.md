@@ -20,6 +20,7 @@
 | `or`  | Logical OR               | `( bool1 bool2 -- bool )` | Yes       |
 | `max` | Maximum of two values    | `( n1 n2 -- max )`        | No        |
 | `min` | Minimum of two values    | `( n1 n2 -- min )`        | No        |
+| `pow` | A base raised to a power | `( n1 n2 -- n1^n2 )`      | No        |
 
 ## Stack Manipulation
 
