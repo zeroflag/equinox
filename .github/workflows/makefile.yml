@@ -11,10 +11,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@master
-    - uses: leafo/gh-actions-lua@v10
-      with:
-        luaVersion: "5.1"
+    #- uses: actions/checkout@master
+    #- uses: leafo/gh-actions-lua@v10
+    #  with:
+    #    luaVersion: "5.1"
         
     - name: Install LuaRocks
       uses: leafo/gh-actions-luarocks@v4.3.0
