@@ -25,6 +25,7 @@ jobs:
       shell: bash
       run: |
         sudo ./.luarocks/bin/luarocks install luacov
+        sudo ./.luarocks/bin/luarocks install luacov-coveralls
         
     - name: Check Lua
       run: lua -v
