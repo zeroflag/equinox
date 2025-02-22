@@ -32,4 +32,5 @@ jobs:
       run: ls -al
       
     - name: Run tests
+      shell: sh
       run: make coverage
