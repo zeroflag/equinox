@@ -25,6 +25,7 @@ jobs:
     - name: Check Lua
       run: |
         lua -v
+        which lua
         luarocks list
         lua -e 'print(require("luacov"))'
 
@@ -32,5 +33,4 @@ jobs:
       run: ls -al
       
     - name: Run tests
-      shell: sh
       run: make coverage

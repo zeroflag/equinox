@@ -1,4 +1,3 @@
-SHELL = /bin/sh
 LUA54 = lua5.4
 LUA51 = lua5.1
 LUA_VERSIONS := $(LUA54) $(LUA51) luajit lua
