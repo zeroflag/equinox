@@ -30,7 +30,7 @@ jobs:
     - name: Check Lua
       run: |
         lua -v
-        sudo ./.luarocks/bin/luarocks --list
+        sudo ./.luarocks/bin/luarocks list
 
     - name: Check cwd
       run: ls -al
