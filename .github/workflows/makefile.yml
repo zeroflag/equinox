@@ -28,7 +28,9 @@ jobs:
         sudo ./.luarocks/bin/luarocks install luacov-coveralls
         
     - name: Check Lua
-      run: lua -v
+      run: |
+        lua -v
+        sudo luarocks --list
 
     - name: Check cwd
       run: ls -al
