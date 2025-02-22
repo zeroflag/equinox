@@ -24,13 +24,13 @@ jobs:
     - name: Install dependencies
       shell: bash
       run: |
-        sudo ./.luarocks/bin/luarocks install luacov
-        sudo ./.luarocks/bin/luarocks install luacov-coveralls
+        sudo luarocks install luacov
+        sudo luarocks install luacov-coveralls
         
     - name: Check Lua
       run: |
         lua -v
-        sudo ./.luarocks/bin/luarocks list
+        sudo luarocks list
         lua -e 'print(require("luacov"))'
 
     - name: Check cwd
