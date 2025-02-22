@@ -19,7 +19,9 @@ NC := \033[0m
 GET_VERSION = version=$$(cat $(SRC_DIR)/version/version.txt)
 
 export LUA_PATH=$(SRC_DIR)/?.lua;$(TEST_DIR)/?.lua;;
-export PATH="/home/runner/work/equinox/equinox/.lua/bin:$(PATH)"
+export PATH:="/home/runner/work/equinox/equinox/.lua/bin:$(PATH)"
+
+SHELL := env PATH=$(PATH) /bin/sh
 
 all: clean test version bundle rockspec
 
