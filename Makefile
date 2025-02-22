@@ -55,7 +55,7 @@ test:
 		if ! command -v $$luaver > /dev/null 2>&1; then \
 			echo "$$luaver is not installed skippping"; \
 		else \
-			if [ $$coverage = "true" ] && $$luaver -e 'require("luacov")' 2>/dev/null; then \
+			if [ $$coverage = "true" ] && $$luaver -e 'require("luacov")' >/dev/null 2>&1; then \
 				echo "luacov is installed"; \
 				luacmd="$$luaver -lluacov"; \
 			else \
