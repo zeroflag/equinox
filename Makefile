@@ -64,12 +64,11 @@ test:
 					echo "luacov is NOT installed"; \
 				fi ; \
 			fi ; \
-      luacmd="$$luaver -lluacov"; \
-      $(MAKE) -s lua_tests luaver="$$luacmd" || exit 1; \
-      $(MAKE) -s eqx_tests luaver="$$luacmd" opt=-o0 || exit 1; \
-      $(MAKE) -s eqx_tests luaver="$$luacmd" opt=-o1 || exit 1; \
-      $(MAKE) -s out_tests luaver="$$luacmd" opt=-o0 || exit 1; \
-      $(MAKE) -s out_tests luaver="$$luacmd" opt=-o1 || exit 1; \
+			$(MAKE) -s lua_tests luaver="$$luacmd" || exit 1; \
+			$(MAKE) -s eqx_tests luaver="$$luacmd" opt=-o0 || exit 1; \
+			$(MAKE) -s eqx_tests luaver="$$luacmd" opt=-o1 || exit 1; \
+			$(MAKE) -s out_tests luaver="$$luacmd" opt=-o0 || exit 1; \
+			$(MAKE) -s out_tests luaver="$$luacmd" opt=-o1 || exit 1; \
 			$(MAKE) -s opt_tests luaver="$$luacmd" || exit 1; \
 		fi; \
 	done ;
