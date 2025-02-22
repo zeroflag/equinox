@@ -25,7 +25,7 @@ jobs:
     - name: Check Lua
       run: |
         lua -v
-        sudo luarocks list
+        luarocks list
         lua -e 'print(require("luacov"))'
 
     - name: Check cwd
