@@ -31,7 +31,7 @@ jobs:
       run: |
         lua -v
         sudo ./.luarocks/bin/luarocks list
-        lua -e 'require("luacov")'
+        lua -e 'print(require("luacov"))'
 
     - name: Check cwd
       run: ls -al
