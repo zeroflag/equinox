@@ -55,12 +55,14 @@ test:
 		if ! command -v $$luaver > /dev/null 2>&1; then \
 			echo "$$luaver is not installed skippping"; \
 		else \
-			if [ $$coverage = "true" ] && $$luaver -e 'require("luacov")' >/dev/null 2>&1; then \
-				echo "luacov is installed"; \
-				luacmd="$$luaver -lluacov"; \
-			else \
-				echo "luacov is NOT installed"; \
-				luacmd="$$luaver"; \
+			luacmd="$$luaver"; \
+			if [ "$$coverage" = "true" ]; then \
+				if $$luaver -e 'require("luacov")' >/dev/null 2>&1; then \
+					echo "luacov is installed"; \
+					luacmd="$$luaver -lluacov"; \
+				else \
+					echo "luacov is NOT installed"; \
+				fi ; \
 			fi ; \
       $(MAKE) -s lua_tests luaver="$$luacmd" || exit 1; \
       $(MAKE) -s eqx_tests luaver="$$luacmd" opt=-o0 || exit 1; \
