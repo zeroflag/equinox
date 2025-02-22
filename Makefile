@@ -57,7 +57,7 @@ test:
 		else \
 			luacmd="$$luaver"; \
 			if [ "$$coverage" = "true" ]; then \
-				if $$luaver -e 'require("luacov")' >/dev/null 2>&1; then \
+				if "$$luaver" -e 'require("luacov")' >/dev/null 2>&1; then \
 					echo "luacov is installed"; \
 					luacmd="$$luaver -lluacov"; \
 				else \
