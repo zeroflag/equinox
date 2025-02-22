@@ -12,7 +12,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@master
-
     - uses: leafo/gh-actions-lua@v10
       with:
         luaVersion: "5.1.5"
@@ -20,8 +19,8 @@ jobs:
         
     - name: Install dependencies
       run: |
-        sudo luarocks install luacov
-        sudo luarocks install luacov-coveralls
+        luarocks install luacov
+        luarocks install luacov-coveralls
         
     - name: Check Lua
       run: |
