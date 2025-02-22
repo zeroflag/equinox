@@ -19,6 +19,7 @@ NC := \033[0m
 GET_VERSION = version=$$(cat $(SRC_DIR)/version/version.txt)
 
 export LUA_PATH=$(SRC_DIR)/?.lua;$(TEST_DIR)/?.lua;;
+export PATH := ".lua/bin:$(PATH)"
 
 all: clean test version bundle rockspec
 
