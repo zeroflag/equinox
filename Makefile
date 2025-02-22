@@ -1,3 +1,4 @@
+SHELL = /bin/sh
 LUA54 = lua5.4
 LUA51 = lua5.1
 LUA_VERSIONS := $(LUA54) $(LUA51) luajit lua
@@ -57,8 +58,7 @@ test:
 		else \
 			luacmd="$$luaver"; \
 			if [ "$$coverage" = "true" ]; then \
-				#if "$$luaver" -e 'require("luacov")' >/dev/null 2>&1; then \
-				if "$$luaver" -e 'require("luacov")'; then \
+				if "$$luaver" -e 'require("luacov")' >/dev/null 2>&1; then \
 					echo "luacov is installed"; \
 					luacmd="$$luaver -lluacov"; \
 				else \
