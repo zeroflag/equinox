@@ -28,9 +28,9 @@ jobs:
         which lua
         luarocks list
         lua -e 'print(require("luacov"))'
-
-    - name: Check cwd
-      run: ls -al
+        run: ls -al
       
     - name: Run tests
-      run: make coverage
+      run: |
+        echo "PATH: $PATH"
+        make coverage
