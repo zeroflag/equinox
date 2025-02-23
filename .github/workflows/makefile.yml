@@ -35,4 +35,4 @@ jobs:
         github-token: ${{ secrets.GITHUB_TOKEN }}
       run: |
         make coverage
-        luacov-coveralls
+        # luacov-coveralls
