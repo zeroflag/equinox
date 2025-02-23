@@ -21,17 +21,5 @@ jobs:
       run: |
         luarocks install luacov
         luarocks install luacov-coveralls
-        
-    - name: Check Lua
-      run: |
-        lua -v
-        which lua
-        luarocks list
-        lua -e 'print(require("luacov"))'
-        ls -al
-      
-    - name: Run tests
-      env:
-        PKG_CONFIG_PATH: ./.lua/lib/pkgconfig/
-      run: |
         make coverage
+        
