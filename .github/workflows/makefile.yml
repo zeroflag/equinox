@@ -31,5 +31,8 @@ jobs:
         ls -al .luarocks
       
     - name: Run tests
+      env:
+        COVERALLS_REPO_TOKEN=${{ secrets.COVERALLS_REPO_TOKEN }}
       run: |
         make coverage
+        luacov-coveralls
