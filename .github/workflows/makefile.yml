@@ -28,7 +28,7 @@ jobs:
         which lua
         luarocks list
         lua -e 'print(require("luacov"))'
-        ls -al
+        ls -al .luarocks
       
     - name: Run tests
       run: |
