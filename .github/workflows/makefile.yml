@@ -32,5 +32,4 @@ jobs:
       
     - name: Run tests
       run: |
-        # make coverage
-        lua -lluacov src/equinox.lua tests/*.eqx
+        make coverage
