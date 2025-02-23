@@ -33,5 +33,4 @@ jobs:
     - name: Run tests
       run: |
         # make coverage
-        make bundle
         lua -lluacov src/equinox.lua tests/*.eqx
