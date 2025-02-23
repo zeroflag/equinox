@@ -32,5 +32,4 @@ jobs:
       
     - name: Run tests
       run: |
-        echo "PATH: $PATH"
-        make coverage
+        LUA_PATH=/home/runner/work/equinox/equinox/.luarocks:$LUA_PATH make coverage
