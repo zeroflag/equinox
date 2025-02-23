@@ -31,5 +31,7 @@ jobs:
         ls -al
       
     - name: Run tests
+      env:
+        PKG_CONFIG_PATH: ./.lua/lib/pkgconfig/
       run: |
-        LUA_PATH=/home/runner/work/equinox/equinox/.luarocks:$LUA_PATH make coverage
+        make coverage
