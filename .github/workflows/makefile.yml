@@ -21,5 +21,17 @@ jobs:
       run: |
         luarocks install luacov
         luarocks install luacov-coveralls
-        make coverage
         
+    - name: Check Lua
+      run: |
+        lua -v
+        which lua
+        luarocks list
+        lua -e 'print(require("luacov"))'
+        ls -al
+      
+    - name: Run tests
+      run: |
+        lua -lluacov
+        make coverage
+        lua -lluacov src/equinox_bundle.lua tests/*.eqx
