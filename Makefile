@@ -51,10 +51,10 @@ opt_tests:
 
 test:
 	@for luaver in $(LUA_VERSIONS); do \
-		echo "* $$luaver"; \
 		if ! command -v $$luaver > /dev/null 2>&1; then \
 			echo "$$luaver is not installed skippping"; \
 		else \
+			echo "* $$luaver @ $$(which $$luaver)"; \
 			luacmd="$$luaver"; \
 			if [ "$$coverage" = "true" ]; then \
 				if "$$luaver" -e 'require("luacov")' >/dev/null 2>&1; then \
