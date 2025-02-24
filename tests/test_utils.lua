@@ -18,3 +18,5 @@ assert(utils.startswith("abc", "a"))
 assert(utils.startswith("abc", "ab"))
 assert(utils.startswith("abc", "abc"))
 assert(not utils.startswith("abc", "abcd"))
+
+assert(utils.extension("a f.eqx") == ".eqx")
