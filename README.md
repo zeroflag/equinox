@@ -2,6 +2,8 @@
 
 ![{master}](https://github.com/zeroflag/equinox/actions/workflows/makefile.yml/badge.svg) 
 
+[![Coverage Status](https://coveralls.io/repos/github/zeroflag/equinox/badge.svg?branch=master)](https://coveralls.io/github/zeroflag/equinox?branch=master)
+
 ```forth
  _____            _                   _____          _   _     
 | ____|__ _ _   _(_)_ __   _____  __ |  ___|__  _ __| |_| |__  
