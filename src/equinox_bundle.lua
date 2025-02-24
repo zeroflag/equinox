@@ -478,32 +478,6 @@ function InlineGeneralUnary:optimize(ast, i, result)
   table.insert(result, operator)
 end
 
-function InlineGeneralUnary:optimize(ast, i, result)
-  local p1, operator = ast[i], ast[i + 1]
-  local target
-  if is_push_unop_pop(operator) then
-    -- unary is embedded into a push
-    target = operator.exp
-  else
-    target = operator
-  end
-
-  if is_dup(p1) then
-    self:log(operator.name .. " (dup)")
-    target.exp.op = "tos"
-    target.exp.name ="stack_peek"
-  elseif is_over(p1) then
-    self:log(operator.name .. " (over)")
-    target.exp.op = "tos2"
-    target.exp.name ="stack_peek"
-  else
-    self:log(operator.name)
-    target.exp = p1.exp
-  end
-
-  table.insert(result, operator)
-end
-
 --[[
  Inline DUP followed by binary operator
 
@@ -3257,7 +3231,7 @@ return utils
 end
 end
 
-__VERSION__="0.1-350"
+__VERSION__="0.1-351"
 
 local Compiler = require("compiler")
 local Optimizer = require("ast_optimizer")
