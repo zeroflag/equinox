@@ -1,6 +1,6 @@
 ## Equinox - Forth Programming Language That Targets Lua 🌑
 
-![{master}](https://github.com/zeroflag/equinox/actions/workflows/makefile.yml/badge.svg) [![Coverage Status](https://coveralls.io/repos/github/zeroflag/equinox/badge.svg?branch=master&kill_cache=1)](https://coveralls.io/github/zeroflag/equinox?branch=master&kill_cache=1)
+![{master}](https://github.com/zeroflag/equinox/actions/workflows/makefile.yml/badge.svg) [![Coverage Status](https://coveralls.io/repos/github/zeroflag/equinox/badge.svg?branch=master&kill_cache=1)](https://coveralls.io/github/zeroflag/equinox?branch=master)
 
 ```forth
  _____            _                   _____          _   _     
