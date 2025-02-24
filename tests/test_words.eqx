@@ -5,5 +5,9 @@ adepth 0 =assert
 
 9 >! 3 =assert
 
+:: loc-word 4 + ;
+
+6 loc-word 10 =assert
+
 depth 0 =assert
 adepth 0 =assert

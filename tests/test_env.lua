@@ -39,3 +39,8 @@ assert(not root:has_var("c2c"))
 assert(not child1:has_var("c2c"))
 assert(not child2:has_var("c2c"))
 assert(child2_child:has_var("c2c"))
+
+assert(#root:var_names() == 1)
+assert(#child1:var_names() == 2)
+assert(#child2:var_names() == 2)
+assert(#child2_child:var_names() == 3)
