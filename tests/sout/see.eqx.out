@@ -2,3 +2,5 @@ function _c1_()
 push(depth())
 apush(pop())
 end
+N/A. Alias
+N/A. Macro (immediate word)
