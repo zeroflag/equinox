@@ -9,6 +9,7 @@ adepth 0 =assert
 502 1002 #( math.min 2 ) 502 =assert
 
 math.pi #( math.cos 1 ) -1 =assert
+math $pi @ #( math.cos 1 ) -1 =assert
 
 "55" #( tonumber 1 ) 55 =assert
 16 #( math.sqrt 1 ) 4 =assert

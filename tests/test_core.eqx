@@ -151,6 +151,8 @@ depth 0 =assert
 
 1 2 >a 3 a> - - 0 =assert
 
+nil >a a> nil =assert
+
 2 8 pow 256 =assert
 
 10 20

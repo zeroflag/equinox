@@ -68,6 +68,11 @@ assert(pop() == 3)
 assert(pop() == 2)
 assert(pop() == 1)
 
+push_many(nil, 2)
+assert(depth() == 2)
+assert(pop() == 2)
+assert(pop() == nil)
+
 function multi_return()
   return 4, 5
 end

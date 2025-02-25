@@ -43,10 +43,6 @@ function ast.pop3rd()
   return {name = "stack_consume", op  = "pop3rd"}
 end
 
-function ast.stack_peek(operation)
-  return {name = "stack_peek", op = operation}
-end
-
 function ast.stack_op(operation)
   return {name = "stack_op", op = operation}
 end
@@ -3231,7 +3227,7 @@ return utils
 end
 end
 
-__VERSION__="0.1-351"
+__VERSION__="0.1-356"
 
 local Compiler = require("compiler")
 local Optimizer = require("ast_optimizer")
