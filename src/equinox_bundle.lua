@@ -3227,7 +3227,7 @@ return utils
 end
 end
 
-__VERSION__="0.1-360"
+__VERSION__="0.1-374"
 
 local Compiler = require("compiler")
 local Optimizer = require("ast_optimizer")
