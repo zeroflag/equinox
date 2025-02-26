@@ -20,3 +20,6 @@ assert(utils.startswith("abc", "abc"))
 assert(not utils.startswith("abc", "abcd"))
 
 assert(utils.extension("a f.eqx") == ".eqx")
+
+assert(utils.file_exists_in_any_of("repl.lua", {"src", "tests"}))
+assert(not utils.file_exists_in_any_of("non_existent", {"src", "tests"}))
