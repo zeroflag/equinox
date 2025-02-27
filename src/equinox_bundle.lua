@@ -3223,11 +3223,16 @@ function utils.startswith(str, prefix)
   return string.sub(str, 1, #prefix) == prefix
 end
 
+function utils.module_available(name)
+  local ok, _ = pcall(require, name)
+  return ok
+end
+
 return utils
 end
 end
 
-__VERSION__="0.1-378"
+__VERSION__="0.1-391"
 
 local Compiler = require("compiler")
 local Optimizer = require("ast_optimizer")

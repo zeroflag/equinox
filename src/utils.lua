@@ -93,4 +93,9 @@ function utils.startswith(str, prefix)
   return string.sub(str, 1, #prefix) == prefix
 end
 
+function utils.module_available(name)
+  local ok, _ = pcall(require, name)
+  return ok
+end
+
 return utils

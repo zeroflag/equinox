@@ -76,6 +76,7 @@ test:
 	@echo "$(GREEN)All tests passed!$(NC)"
 
 coverage:
+	export ENABLE_COV="true"; \
 	$(MAKE) -s test coverage="true" || exit 1; \
 
 version:
@@ -89,7 +90,11 @@ bundle:
 	sed -i "s/^__VERSION__=.*$$/__VERSION__=\"$${version}\"/" $(BUNDLE); \
 
 repl:
-	@lua $(EQUINOX)
+	@if [ "$$coverage" = "true" ]; then \
+		lua -lluacov $(EQUINOX); \
+	else \
+		lua $(EQUINOX); \
+	fi ; \
 
 rockspec:
 	@$(GET_VERSION) ; \
