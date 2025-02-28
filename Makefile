@@ -76,12 +76,12 @@ test:
 	@echo "$(GREEN)All tests passed!$(NC)"
 
 coverage:
-	export ENABLE_COV="true"; \
+	@export ENABLE_COV="true"; \
 	$(MAKE) -s test coverage="true" || exit 1; \
 
 version:
 	@echo "Increase patch version" ; \
-	lua $(SRC_DIR)/version/version.lua ; \
+	lua $(shell [ "$(coverage)" = "true" ] && echo "-lluacov" || echo "") $(SRC_DIR)/version/version.lua ; \
 
 bundle:
 	@$(GET_VERSION) ; \
@@ -90,11 +90,7 @@ bundle:
 	sed -i "s/^__VERSION__=.*$$/__VERSION__=\"$${version}\"/" $(BUNDLE); \
 
 repl:
-	@if [ "$$coverage" = "true" ]; then \
-		lua -lluacov $(EQUINOX); \
-	else \
-		lua $(EQUINOX); \
-	fi ; \
+	@lua $(shell [ "$(coverage)" = "true" ] && echo "-lluacov" || echo "") $(EQUINOX); \
 
 rockspec:
 	@$(GET_VERSION) ; \
