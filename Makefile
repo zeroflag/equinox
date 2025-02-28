@@ -81,7 +81,7 @@ coverage:
 
 version:
 	@echo "Increase patch version" ; \
-	lua $(shell [ "$(coverage)" = "true" ] && echo "-lluacov" || echo "") $(SRC_DIR)/version/version.lua ; \
+	lua $(SRC_DIR)/version/version.lua ; \
 
 bundle:
 	@$(GET_VERSION) ; \

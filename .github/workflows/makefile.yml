@@ -38,4 +38,4 @@ jobs:
       env:
         COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        luacov-coveralls -i 'src/*.lua'
+        luacov-coveralls -i 'src/*.lua' -e 'src/version/*'
