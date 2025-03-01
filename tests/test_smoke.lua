@@ -8,7 +8,7 @@ then
 end
 
 local command = string.format(
-  'echo "7 3 * dup + .\nbye" | make repl coverage="%s" | grep "OK"',
+  'echo ": tst\n7 3 *\ndup +\n; tst .\nbye" | make repl coverage="%s" | grep "OK"',
   coverage
 )
 
