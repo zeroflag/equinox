@@ -13,12 +13,18 @@ The language also supports dot (`.`) notation for property lookup (e.g.: `math.p
   1.25 "aString" $aSymbol .. ( concat ) # ( length ) * 
 ```
 
-Table literals are not part of the syntax; they are defined as Forth words.
+Table literals are *not* part of the syntax; they are defined as Forth words.
 
-```
-forth
+```forth
 [ 1 2 ]
 { $key 123 }
+```
+
+The same is true for comments:
+
+```
+ \ single line comment
+ ( comment ) 
 ```
 
 #### Example:
