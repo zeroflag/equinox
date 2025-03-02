@@ -2,10 +2,10 @@
 
 Equinox syntax consists of numbers, words, and strings/symbols:
 
-* Number: 1.23
-* String: "Hello World\n"
-* Symbol: $key
-* Word: emit
+* Number: `1.23`
+* String: `"Hello World\n"`
+* Symbol: `$key`
+* Word: `emit`
 
 The language also supports dot (`.`) notation for property lookup (e.g.: `math.pi`) and colon (`:`) notation for method calls (e.g.: `astr:upper`).
 
