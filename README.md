@@ -103,7 +103,7 @@ However, this performance difference is expected to improve in the future.
  * [Modules & Objects](doc/modules.md)
  * [Catalogue](doc/catalogue.md)
  
-## The Name
+## 🪐 The Name
 
 The USS Equinox, `NCC-72381`, was a small, Nova class Federation science vessel that stuck in the Delta Quadrant and was (will?) destroyed in 2376.
 
