@@ -61,31 +61,6 @@ $ equinox file.eqx
 
 * For Love2D sample project see this repository: [VimSnake](https://github.com/zeroflag/vimsnake).
 
-## ☕ Syntax That Fits on a Coffee Bean
-
-```forth
- \ only numbers, words and strings/symbols
-  1.25 "aString" $aSymbol .. ( concat ) # ( length ) * 
-```
-
-#### Example:
-
-```forth
-alias: 2^n 2 swap #( math.pow 2 1 )
-
-: sum-of-pows ( -- n ) 0 10 0 do i 2^n + loop ;
- 
-var map
-{ $key [ 1 2 "apple" sums-of-pows ] } -> map
-
-map.key 3 @ . \ prints out 1023
-map.key 1 42 !
-
-\ define a Lua callback
-: love.keypressed (: key :)
-  key $escape = if #( os.exit ) then ;
-```
-
 ## 👍 Why Equinox?
 
 Popular retro gaming platforms like the [TIC-80](https://tic80.com/) tiny computer and 2D game engines like [Love2D](https://love2d.org/) usually use [Lua](https://www.lua.org/) for scripting. 
@@ -120,6 +95,7 @@ However, this performance difference is expected to improve in the future.
  * In the current version user defined immediate words are not supported.
 
 ## 📝 Documentation
+ * [Syntax](doc/syntax.md)
  * [Core](doc/core.md)
  * [Variables](doc/vars.md)
  * [Lua Interop](doc/interop.md)
