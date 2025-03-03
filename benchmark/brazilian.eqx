@@ -1,0 +1,76 @@
+alias: floor #( math.floor 1 1 )
+alias: clock #( os.clock )
+
+: div ( n n -- n ) / floor ;
+
+: prime? ( n -- flag )
+  dup 2 < if drop false exit then
+  dup 2 % 0 = if 2 = exit then
+  dup 3 % 0 = if 3 = exit then
+  5
+  begin
+    2dup dup * >=
+  while
+    2dup % 0 = if drop drop false exit then
+    2 +
+    2dup % 0 = if drop drop false exit then
+    4 +
+  repeat
+  drop drop true ;
+
+: same_digits? ( n b -- ? )
+  2dup % -> var tmp
+  begin
+    tuck div swap
+    over 0 >
+  while
+    2dup % tmp != if
+      drop drop false exit
+    then
+  repeat
+  drop drop true ;
+
+: brazilian? ( n -- ? )
+  dup 7 < if drop false exit then
+  dup 2 % 0 = if drop true exit then
+  dup 1 - 2 do
+    dup i same_digits? if
+      drop true exit
+    then
+  loop
+  drop false ;
+
+: next_prime ( n -- n )
+  begin 2 + dup prime? until ;
+
+[] -> var result
+
+: print_brazilian ( n1 n2 -- )
+  -> var tmp
+  7
+  begin
+    tmp 0 >
+  while
+    dup brazilian? if
+      dup .
+      result over append
+      tmp 1 - -> tmp
+    then
+    over 0 = if
+      next_prime
+    else
+      over +
+    then
+  repeat
+  drop drop cr ;
+
+: sum ( -- n )
+  0
+  result ipairs: _ each
+    each +
+  end ;
+
+clock
+1 5000 print_brazilian
+sum 14530468 =assert
+clock swap ( started ) - . cr
