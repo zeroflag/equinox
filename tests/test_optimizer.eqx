@@ -120,6 +120,11 @@ assert-true
 : tst not ;
 false tst assert-true
 
+2 3 = not assert-true
+3 3 = not assert-false
+4 5 < not assert-false
+4 5 > not assert-true
+
 9999 =assert
 depth 0 =assert
 adepth 0 =assert

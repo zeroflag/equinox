@@ -201,6 +201,7 @@ InlineGeneralUnary = AstMatcher:new()
 TosBinaryInline = AstMatcher:new()
 IncInline = AstMatcher:new()
 NegInline = AstMatcher:new()
+NegBinInline = AstMatcher:new()
 
 --[[
  Inline table at parameters
@@ -257,6 +258,32 @@ end
   8.) [ 1 2 3 ] DUP size   =>   PUSH(#TOS)
   9.) true false over not => PUSH(NOT TOS2)
 ]]--
+function InlineGeneralUnary:optimize(ast, i, result)
+  local p1, operator = ast[i], ast[i + 1]
+  local target
+  if is_push_unop_pop(operator) then
+    -- unary is embedded into a push
+    target = operator.exp
+  else
+    target = operator
+  end
+
+  if is_dup(p1) then
+    self:log(operator.name .. " (dup)")
+    target.exp.op = "tos"
+    target.exp.name ="stack_peek"
+  elseif is_over(p1) then
+    self:log(operator.name .. " (over)")
+    target.exp.op = "tos2"
+    target.exp.name ="stack_peek"
+  else
+    self:log(operator.name)
+    target.exp = p1.exp
+  end
+
+  table.insert(result, operator)
+end
+
 function InlineGeneralUnary:optimize(ast, i, result)
   local p1, operator = ast[i], ast[i + 1]
   local target
@@ -420,6 +447,12 @@ function NegInline:optimize(ast, i, result)
   table.insert(result, asts.stack_op("_neg"))
 end
 
+function NegBinInline:optimize(ast, i, result)
+  self:log("inlining neg binary")
+  local op, neg = ast[i], ast[i + 1]
+  table.insert(result, asts.push(asts.unary_op("not", op.exp)))
+end
+
 return {
 
   PutParamsInline:new(
@@ -472,4 +505,8 @@ return {
 
   IncInline:new("inline inc", {is_inc}),
   NegInline:new("inline neg", {is_neg}),
+
+  NegBinInline:new(
+    "inline negate binary",
+    {is_push_binop, AND(is_stack_op, has_op("_neg"))}),
 }
