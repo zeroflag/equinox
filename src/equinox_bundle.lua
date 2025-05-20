@@ -2532,8 +2532,9 @@ function Parser:next_item()
       token = token .. chr
     elseif begin_str
       and is_escape(chr)
-      and is_quote(self:peek_chr()) then
-      token = token .. chr .. self:read_chr() -- consume \"
+      and (is_escape(self:peek_chr()) or is_quote(self:peek_chr()))
+    then
+      token = token .. chr .. self:read_chr() -- consume \" or \\
     elseif begin_str and ("\r" == chr or "\n" == chr) then
       error(string.format(
            "Unterminated string: %s at line: %d", token, self.line_number))
@@ -3243,7 +3244,7 @@ return utils
 end
 end
 
-__VERSION__="0.1-404"
+__VERSION__="0.1-412"
 
 local Compiler = require("compiler")
 local Optimizer = require("ast_optimizer")

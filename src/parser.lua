@@ -49,8 +49,9 @@ function Parser:next_item()
       token = token .. chr
     elseif begin_str
       and is_escape(chr)
-      and is_quote(self:peek_chr()) then
-      token = token .. chr .. self:read_chr() -- consume \"
+      and (is_escape(self:peek_chr()) or is_quote(self:peek_chr()))
+    then
+      token = token .. chr .. self:read_chr() -- consume \" or \\
     elseif begin_str and ("\r" == chr or "\n" == chr) then
       error(string.format(
            "Unterminated string: %s at line: %d", token, self.line_number))

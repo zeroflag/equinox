@@ -109,3 +109,12 @@ assert_table({
     { token = '"d e f"', kind = "string", line_number=3},
     { token = "678", kind = "number", line_number=6},
   }, parse("\n\n \"a\\nb c\" \"d e f\" \n\n\n678"))
+
+assert_table(
+  { {token = '"\\\\"', kind = "string", line_number=1} },
+  parse('"\\\\"'))
+
+assert_table({
+    { token = '"\\\\"', kind = "string", line_number=1 },
+    { token = '4', kind = "number", line_number=1 }
+  }, parse('"\\\\" 4'))
