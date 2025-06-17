@@ -3244,7 +3244,7 @@ return utils
 end
 end
 
-__VERSION__="0.1-413"
+__VERSION__="0.1-425"
 
 local Compiler = require("compiler")
 local Optimizer = require("ast_optimizer")
@@ -3321,6 +3321,18 @@ local function start_repl()
   repl:start()
 end
 
+local function print_usage()
+  print(string.format("Equinox %s Usage: equinox [FILE.EQX] [OPTIONS]", version()))
+  print("Options:")
+  print("\t-e\tEvaluate CLI parameter. E.g.: equinox -e '1 2 + .'")
+  print("\t-d\tEnable debug mode.")
+  print("\t-o0\tDisable optimizer.")
+  print("\t-o1\tEnable optimizer (default).")
+  print("\t-od\tDebug optimizer.")
+  print("\t-repl\tStart REPL after evaluating a script.")
+  print("To start the REPL run equinox with no parameters.")
+end
+
 function equinox.eval_files(files, log_result)
   local result = nil
   for i, filename in ipairs(files) do
@@ -3336,14 +3348,16 @@ function equinox.init()
   compiler:eval_text(lib)
 end
 
-function equinox.main()
-  if #arg < 1 then
+function equinox.main(args)
+  if #args < 1 then
     equinox.init()
     start_repl()
   else
     local log_result, repl = false, false
-    local files = {}
-    for i, param in ipairs(arg) do
+    local code, files = nil, {}
+    local i = 1
+    while i <= #args do
+      param = args[i]
       if param == "-d" then
         log_result = true
       elseif param == "-o0" then
@@ -3354,12 +3368,23 @@ function equinox.main()
         optimizer:enable_logging(true)
       elseif param == "-repl" then
         repl = true
+      elseif param == "-e" then
+        code = args[i + 1]
+        i = i + 1
+      elseif param == "-h" or param == "--help" then
+        print_usage()
+        os.exit(1)
       else
         table.insert(files, param)
       end
+      i = i + 1
     end
     equinox.init()
-    equinox.eval_files(files, log_result)
+    if code then
+      equinox.eval_text(code, log_result)
+    else
+      equinox.eval_files(files, log_result)
+    end
     if repl then start_repl() end
   end
 end
