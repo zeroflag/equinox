@@ -127,7 +127,7 @@ function equinox.main(args)
         i = i + 1
       elseif param == "-h" or param == "--help" then
         print_usage()
-        os.exit(1)
+        os.exit(0)
       else
         table.insert(files, param)
       end

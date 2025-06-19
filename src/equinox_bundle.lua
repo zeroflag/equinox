@@ -3244,7 +3244,7 @@ return utils
 end
 end
 
-__VERSION__="0.1-425"
+__VERSION__="0.1-429"
 
 local Compiler = require("compiler")
 local Optimizer = require("ast_optimizer")
@@ -3373,7 +3373,7 @@ function equinox.main(args)
         i = i + 1
       elseif param == "-h" or param == "--help" then
         print_usage()
-        os.exit(1)
+        os.exit(0)
       else
         table.insert(files, param)
       end
